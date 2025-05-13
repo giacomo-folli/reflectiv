@@ -2,6 +2,19 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { dev } from '$app/environment';
 import { validateSession } from '$lib/server/auth';
 
+// Import and configure i18n for server-side rendering
+import { init, register } from 'svelte-i18n';
+
+// Register the translation files for SSR
+register('en', () => import('./lib/i18n/locales/en.json'));
+register('it', () => import('./lib/i18n/locales/it.json'));
+
+// Initialize with default locale for SSR
+init({
+  fallbackLocale: 'en',
+  initialLocale: 'en'
+});
+
 /**
  * Handle user authentication
  * @type {import('@sveltejs/kit').Handle}

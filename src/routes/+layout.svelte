@@ -3,7 +3,9 @@
   import PageTransition from '$lib/components/PageTransition.svelte';
   import Transition from '$lib/components/Transition.svelte';
   import Toast from '$lib/components/Toast.svelte';
+  import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
   import { onMount } from 'svelte';
+  import { _ } from 'svelte-i18n';
   
   export let data;
   
@@ -48,6 +50,9 @@
               <button type="submit" class="nav-link nav-link-animated">Logout</button>
             </form>
           </Transition>
+          <Transition transition="fadeIn" delay={350} duration={200}>
+            <LanguageSwitcher />
+          </Transition>
         {:else}
           <Transition transition="fadeIn" delay={200} duration={200}>
             <a href="/" class="nav-link-animated">Home</a>
@@ -57,6 +62,9 @@
           </Transition>
           <Transition transition="fadeIn" delay={300} duration={200}>
             <a href="/register" class="nav-link-animated">Sign Up</a>
+          </Transition>
+          <Transition transition="fadeIn" delay={350} duration={200}>
+            <LanguageSwitcher />
           </Transition>
         {/if}
       </nav>

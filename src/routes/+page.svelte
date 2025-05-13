@@ -1,42 +1,94 @@
 <script>
+  import { _ } from 'svelte-i18n';
+  import { locale } from 'svelte-i18n';
+  import { browser } from '$app/environment';
+  
   export let data;
   
   $: user = data?.user;
+  
+  // Demo content translations
+  const translations = {
+    'en': {
+      title: 'Monthly Reflection Diary Generator',
+      subtitle: 'Create a personalized monthly diary with AI-generated reflection questions for each day.',
+      loggedInMessage: "You're logged in and ready to create your reflection diary.",
+      dashboardButton: 'Go to Dashboard',
+      loginPrompt: 'Please login or sign up to generate your reflection diary.'
+    },
+    'it': {
+      title: 'Generatore di Diario di Riflessione Mensile',
+      subtitle: 'Crea un diario mensile personalizzato con domande di riflessione generate dall\'IA per ogni giorno.',
+      loggedInMessage: "Hai effettuato l'accesso e sei pronto per creare il tuo diario di riflessione.",
+      dashboardButton: 'Vai alla Dashboard',
+      loginPrompt: 'Accedi o registrati per generare il tuo diario di riflessione.'
+    }
+  };
+  
+  // Get translation based on current locale
+  $: currentTranslations = translations[$locale || 'en'];
 </script>
 
 <div class="hero">
-  <h1>Monthly Reflection Diary Generator</h1>
-  <p class="subtitle">Create a personalized monthly diary with AI-generated reflection questions for each day.</p>
+  <h1>{currentTranslations.title}</h1>
+  <p class="subtitle">{currentTranslations.subtitle}</p>
+  
+  <div class="language-demo">
+    <button class="lang-btn {$locale === 'en' ? 'active' : ''}" on:click={() => locale.set('en')}>
+      🇬🇧 English
+    </button>
+    <button class="lang-btn {$locale === 'it' ? 'active' : ''}" on:click={() => locale.set('it')}>
+      🇮🇹 Italiano
+    </button>
+  </div>
   
   <div class="cta-box">
     {#if user}
-      <p>You're logged in and ready to create your reflection diary.</p>
-      <a href="/dashboard" class="btn primary">Go to Dashboard</a>
+      <p>{currentTranslations.loggedInMessage}</p>
+      <a href="/dashboard" class="btn primary">{currentTranslations.dashboardButton}</a>
     {:else}
-      <p class="prompt">Please <a href="/login">login</a> or <a href="/register">sign up</a> to generate your reflection diary.</p>
+      <p class="prompt">
+        {#if $locale === 'en'}
+          Please <a href="/login">login</a> or <a href="/register">sign up</a> to generate your reflection diary.
+        {:else}
+          <a href="/login">Accedi</a> o <a href="/register">registrati</a> per generare il tuo diario di riflessione.
+        {/if}
+      </p>
     {/if}
   </div>
   
   <section class="features">
-    <h2>How It Works</h2>
+    <h2>{$locale === 'en' ? 'How It Works' : 'Come Funziona'}</h2>
     
     <div class="feature-grid">
       <div class="feature">
         <div class="icon">📅</div>
-        <h3>Select a Month</h3>
-        <p>Choose which month and year you want to create a reflection diary for.</p>
+        <h3>{$locale === 'en' ? 'Select a Month' : 'Seleziona un Mese'}</h3>
+        <p>
+          {$locale === 'en' 
+            ? 'Choose which month and year you want to create a reflection diary for.' 
+            : 'Scegli per quale mese e anno desideri creare un diario di riflessione.'}
+        </p>
       </div>
       
       <div class="feature">
         <div class="icon">🧠</div>
-        <h3>AI-Generated Questions</h3>
-        <p>Our system creates thoughtful questions tailored to the month and season.</p>
+        <h3>{$locale === 'en' ? 'AI-Generated Questions' : 'Domande Generate dall\'IA'}</h3>
+        <p>
+          {$locale === 'en'
+            ? 'Our system creates thoughtful questions tailored to the month and season.'
+            : 'Il nostro sistema crea domande significative adattate al mese e alla stagione.'}
+        </p>
       </div>
       
       <div class="feature">
         <div class="icon">📝</div>
-        <h3>Print & Reflect</h3>
-        <p>Download your PDF, print it, and take time each day to reflect and write.</p>
+        <h3>{$locale === 'en' ? 'Print & Reflect' : 'Stampa e Rifletti'}</h3>
+        <p>
+          {$locale === 'en'
+            ? 'Download your PDF, print it, and take time each day to reflect and write.'
+            : 'Scarica il tuo PDF, stampalo e prenditi del tempo ogni giorno per riflettere e scrivere.'}
+        </p>
       </div>
     </div>
   </section>
@@ -137,5 +189,35 @@
     color: #a1a1aa;
     font-size: 0.95rem;
     line-height: 1.5;
+  }
+  
+  /* Language selector styling */
+  .language-demo {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .lang-btn {
+    background-color: #2d3748;
+    color: #a1a1aa;
+    border: 1px solid #4a5568;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .lang-btn:hover {
+    background-color: #4a5568;
+    color: #f3f4f6;
+  }
+  
+  .lang-btn.active {
+    background-color: #6366f1;
+    color: white;
+    border-color: #4f46e5;
   }
 </style>
