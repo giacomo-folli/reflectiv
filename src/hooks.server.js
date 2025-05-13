@@ -1,22 +1,24 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import { dev } from '$app/environment';
+import { validateSession } from '$lib/server/auth';
 
 /**
  * Handle user authentication
  * @type {import('@sveltejs/kit').Handle}
  */
 const handleAuth = async ({ event, resolve }) => {
-  // Get the user ID from the cookie
-  const userId = event.cookies.get('userId');
+  // Get the session ID from the cookie
+  const sessionId = event.cookies.get('sessionId');
   
-  if (userId) {
-    // For MVP, we'll use a simple mock user
-    // In a real app, you would fetch the user data from your database
-    event.locals.user = {
-      id: userId,
-      name: 'Demo User',
-      email: 'user@example.com'
-    };
+  if (sessionId) {
+    // Validate the session and get the user
+    const user = validateSession(sessionId);
+    
+    if (user) {
+      // If session is valid, attach user to locals
+      event.locals.user = user;
+      event.locals.sessionId = sessionId;
+    }
   }
   
   // Continue with the request
