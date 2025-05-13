@@ -1,56 +1,48 @@
-import { registerUser } from '$lib/server/auth.js';
-import { validateRegistrationForm } from '$lib/utils/validationUtils.js';
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
 export function load({ locals }) {
   // If user is already logged in, redirect to dashboard
   if (locals.user) {
-    throw redirect(303, '/dashboard');
+    throw redirect(302, '/dashboard');
   }
-  
-  return {};
 }
 
 /** @type {import('./$types').Actions} */
 export const actions = {
   default: async ({ cookies, request }) => {
-    // Get form data
-    const formData = await request.formData();
-    const name = formData.get('name')?.toString() || '';
-    const email = formData.get('email')?.toString() || '';
-    const password = formData.get('password')?.toString() || '';
-    const confirmPassword = formData.get('confirmPassword')?.toString() || '';
+    const data = await request.formData();
+    const name = data.get('name');
+    const email = data.get('email');
+    const password = data.get('password');
+    const confirmPassword = data.get('confirmPassword');
     
-    // Validate form data
-    const validation = validateRegistrationForm({
-      name,
-      email,
-      password,
-      confirmPassword
+    // In a real app, you'd validate the inputs
+    if (!name || !email || !password || !confirmPassword) {
+      return fail(400, { 
+        message: 'All fields are required' 
+      });
+    }
+    
+    if (password !== confirmPassword) {
+      return fail(400, { 
+        message: 'Passwords do not match' 
+      });
+    }
+    
+    // For demo purposes, let's accept any valid registration
+    // In a real app, you'd check if the email is already registered
+    // and store the user in your database
+    
+    // Set a cookie to represent the user session
+    cookies.set('userId', '1', {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 // 1 day
     });
     
-    if (!validation.isValid) {
-      return {
-        errors: validation.errors,
-        success: false
-      };
-    }
-    
-    try {
-      // Register user
-      const user = await registerUser(email, password, name);
-      
-      // Redirect to login page
-      return {
-        success: true,
-        redirect: '/login'
-      };
-    } catch (error) {
-      return {
-        error: error.message || 'Error creating account',
-        success: false
-      };
-    }
+    // Redirect to the dashboard
+    throw redirect(302, '/dashboard');
   }
 };

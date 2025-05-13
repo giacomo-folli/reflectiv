@@ -1,101 +1,256 @@
 <script>
-  export let form;
+  import { enhance } from '$app/forms';
+  
+  let name = '';
+  let email = '';
+  let password = '';
+  let confirmPassword = '';
+  let error = '';
 </script>
 
-<svelte:head>
-  <title>Register - Monthly Reflection Diary</title>
-</svelte:head>
-
-<div class="container mx-auto px-4 py-12">
-  <div class="max-w-md mx-auto">
-    <h1 class="text-3xl font-bold mb-6 text-center">Create an Account</h1>
-    
-    <div class="card bg-gray-800 rounded-lg shadow-lg p-6">
-      <form method="POST" class="space-y-6">
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            placeholder="John Doe"
-            required
-            class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+<div class="auth-container">
+  <div class="auth-grid">
+    <div class="form-container">
+      <h1>Create Account</h1>
+      <p class="subtitle">Sign up to create your monthly reflection diaries.</p>
+      
+      {#if error}
+        <div class="error-box">
+          {error}
+        </div>
+      {/if}
+      
+      <form method="POST" use:enhance={() => {
+        return async ({ result }) => {
+          if (result.type === 'failure') {
+            error = result.data?.message || 'Registration failed. Please try again.';
+          }
+        };
+      }}>
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            bind:value={name} 
+            required 
+            autocomplete="name"
           />
-          {#if form?.errors?.name}
-            <p class="text-red-400 text-sm mt-1">{form.errors.name}</p>
-          {/if}
         </div>
         
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email address</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="your.email@example.com"
-            required
-            class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            bind:value={email} 
+            required 
+            autocomplete="email"
           />
-          {#if form?.errors?.email}
-            <p class="text-red-400 text-sm mt-1">{form.errors.email}</p>
-          {/if}
         </div>
         
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="••••••••"
-            required
-            class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            bind:value={password} 
+            required 
+            autocomplete="new-password"
           />
-          <p class="text-xs text-gray-400 mt-1">
-            Must be at least 8 characters and contain at least one number
-          </p>
-          {#if form?.errors?.password}
-            <p class="text-red-400 text-sm mt-1">{form.errors.password}</p>
-          {/if}
         </div>
         
-        <div>
-          <label for="confirmPassword" class="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            placeholder="••••••••"
-            required
-            class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password</label>
+          <input 
+            type="password" 
+            id="confirm-password" 
+            name="confirmPassword" 
+            bind:value={confirmPassword} 
+            required 
+            autocomplete="new-password"
           />
-          {#if form?.errors?.confirmPassword}
-            <p class="text-red-400 text-sm mt-1">{form.errors.confirmPassword}</p>
-          {/if}
         </div>
         
-        <div>
-          <button type="submit" class="btn btn-primary w-full">
-            Register
-          </button>
-        </div>
-        
-        {#if form?.error}
-          <div class="bg-red-900/30 border border-red-500 text-red-300 px-4 py-3 rounded-md text-sm">
-            {form.error}
-          </div>
-        {/if}
+        <button type="submit" class="btn btn-primary">Create Account</button>
       </form>
       
-      <div class="mt-6 text-center text-sm text-gray-400">
-        <p>
-          Already have an account?
-          <a href="/login" class="text-indigo-400 hover:text-indigo-300">
-            Log in
-          </a>
-        </p>
+      <p class="auth-link">
+        Already have an account? <a href="/login">Log in here</a>
+      </p>
+    </div>
+    
+    <div class="hero-section">
+      <div class="hero-content">
+        <h2>Begin Your Reflection Journey</h2>
+        <p>Monthly Reflection Diary provides a structured way to document your thoughts and growth throughout each month.</p>
+        <ul>
+          <li>Create personalized diary PDFs for any month</li>
+          <li>Thoughtful questions tailored to each month's themes</li>
+          <li>Enhance with your ChatGPT conversations</li>
+          <li>Download, print, and fill in at your own pace</li>
+        </ul>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+  .auth-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .auth-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    min-height: 500px;
+  }
+  
+  @media (max-width: 768px) {
+    .auth-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .hero-section {
+      display: none;
+    }
+  }
+  
+  .form-container {
+    background-color: #1e293b;
+    border-radius: 0.5rem;
+    padding: 2rem;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: white;
+  }
+  
+  .subtitle {
+    color: #a1a1aa;
+    margin-bottom: 1.5rem;
+  }
+  
+  .error-box {
+    background-color: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.5);
+    color: #ef4444;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #d1d5db;
+    font-size: 0.9rem;
+  }
+  
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid #4b5563;
+    background-color: #374151;
+    color: white;
+    font-size: 1rem;
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  }
+  
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+    width: 100%;
+  }
+  
+  .btn-primary {
+    background-color: #6366f1;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: #4f46e5;
+  }
+  
+  .auth-link {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #a1a1aa;
+  }
+  
+  .auth-link a {
+    color: #8b5cf6;
+    text-decoration: underline;
+  }
+  
+  .hero-section {
+    background-color: #581c87;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .hero-content {
+    padding: 2.5rem;
+    color: white;
+  }
+  
+  .hero-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  
+  .hero-section p {
+    color: #c4b5fd;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+  
+  .hero-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .hero-section li {
+    margin-bottom: 0.75rem;
+    position: relative;
+    padding-left: 1.5rem;
+    color: #ddd6fe;
+  }
+  
+  .hero-section li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #a78bfa;
+  }
+</style>

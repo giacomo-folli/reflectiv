@@ -1,22 +1,33 @@
-import { linkDb } from '$lib/server/db.js';
-import { validateLinkSubmission } from '$lib/utils/validationUtils.js';
-import { redirect } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
+import { DateTime } from 'luxon';
+
+// In-memory storage for links
+// For a complete app, this would be stored in a database
+const linksStorage = new Map();
+
+// Sample link for demo purposes
+linksStorage.set('1', {
+  id: '1',
+  userId: '1',
+  title: 'Career Advice',
+  url: 'https://chat.openai.com/share/example-id-123',
+  createdAt: '2025-05-12'
+});
 
 /** @type {import('./$types').PageServerLoad} */
 export function load({ locals }) {
-  // Check if user is logged in
+  // If user is not logged in, redirect to login page
   if (!locals.user) {
-    throw redirect(303, '/login');
+    throw redirect(302, '/login');
   }
   
-  // Get user data
-  const user = locals.user;
-  
-  // Get user's links
-  const links = linkDb.findByUserId(user.id);
+  // Get links for the current user
+  const links = Array.from(linksStorage.values())
+    .filter(link => link.userId === locals.user.id)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   
   return {
-    user,
+    user: locals.user,
     links
   };
 }
@@ -24,31 +35,35 @@ export function load({ locals }) {
 /** @type {import('./$types').Actions} */
 export const actions = {
   addLink: async ({ locals, request }) => {
-    // Check if user is logged in
+    // If user is not logged in, return error
     if (!locals.user) {
-      throw redirect(303, '/login');
+      return fail(401, { message: 'You must be logged in to add links' });
     }
     
-    // Get form data
-    const formData = await request.formData();
-    const title = formData.get('title')?.toString() || '';
-    const url = formData.get('url')?.toString() || '';
+    const data = await request.formData();
+    const title = data.get('title') || '';
+    const url = data.get('url');
     
-    // Validate form data
-    const validation = validateLinkSubmission({ title, url });
-    
-    if (!validation.isValid) {
-      return {
-        errors: validation.errors,
-        success: false
-      };
+    // Validate URL
+    if (!url) {
+      return fail(400, { message: 'URL is required' });
     }
     
-    // Create link
-    linkDb.createLink({
+    // Validate URL format (basic check)
+    if (!url.toString().startsWith('https://chat.openai.com/share/')) {
+      return fail(400, { message: 'URL must be a valid ChatGPT shared link' });
+    }
+    
+    // Generate a unique ID
+    const id = crypto.randomUUID();
+    
+    // Save the link
+    linksStorage.set(id, {
+      id,
       userId: locals.user.id,
-      title,
-      url
+      title: title.toString(),
+      url: url.toString(),
+      createdAt: DateTime.now().toISODate()
     });
     
     return {
@@ -57,35 +72,26 @@ export const actions = {
   },
   
   deleteLink: async ({ locals, request }) => {
-    // Check if user is logged in
+    // If user is not logged in, return error
     if (!locals.user) {
-      throw redirect(303, '/login');
+      return fail(401, { message: 'You must be logged in to delete links' });
     }
     
-    // Get form data
-    const formData = await request.formData();
-    const linkId = formData.get('linkId')?.toString();
+    const data = await request.formData();
+    const id = data.get('id');
     
-    if (!linkId) {
-      return {
-        error: 'Link ID is required',
-        success: false
-      };
+    if (!id) {
+      return fail(400, { message: 'Link ID is required' });
     }
     
-    // Get link
-    const link = linkDb.findById(linkId);
-    
-    // Check if link exists and belongs to user
+    // Check if the link exists and belongs to the user
+    const link = linksStorage.get(id.toString());
     if (!link || link.userId !== locals.user.id) {
-      return {
-        error: 'Link not found',
-        success: false
-      };
+      return fail(404, { message: 'Link not found' });
     }
     
-    // Delete link
-    linkDb.deleteLink(linkId);
+    // Delete the link
+    linksStorage.delete(id.toString());
     
     return {
       success: true
