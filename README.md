@@ -127,10 +127,18 @@ For local development and testing, you can use these credentials:
 
 ## Data Persistence
 
-The current version uses in-memory storage for demonstration purposes. In a production environment, you should:
+The application uses SQLite for data persistence:
 
-1. Replace the in-memory data stores in `src/lib/server/db.js` with a proper database solution
-2. Update the authentication mechanisms for production security
+1. User data, sessions, and links are stored in a SQLite database
+2. The database file is located in the `./data` directory by default
+3. The location can be configured with the `DATA_DIR` environment variable
+4. When using Docker, the database is persisted using a named Docker volume
+
+For production environments with higher traffic, you might want to:
+
+1. Consider upgrading to a more robust database solution like PostgreSQL
+2. Implement database migrations for schema changes
+3. Enhance the authentication mechanisms with additional security features
 
 ## Authentication
 
