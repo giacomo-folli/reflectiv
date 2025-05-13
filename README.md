@@ -75,7 +75,7 @@ npm run preview
 - [Docker](https://www.docker.com/get-started)
 - [Docker Compose](https://docs.docker.com/compose/install/) (usually comes with Docker Desktop)
 
-### Run with Docker Compose
+### Run with Docker Compose (Recommended)
 
 1. Clone the repository:
 
@@ -84,16 +84,25 @@ git clone <repository-url>
 cd monthly-reflection-diary
 ```
 
-2. Create a `.env` file (optional, for environment variables):
+2. Create a `.env` file for environment variables:
 
 ```bash
 cp .env.example .env
 ```
 
-3. Build and start the Docker container:
+3. Edit the `.env` file and set at minimum:
+   - A strong `SESSION_SECRET` (for production)
+   - Your `OPENAI_API_KEY` if using AI features
+   - Set `PUBLIC_BASE_URL` to your domain in production
+
+4. Build and start the Docker container:
 
 ```bash
-docker-compose up -d
+# Build and start in detached mode
+docker-compose up --build -d
+
+# View logs if needed
+docker-compose logs -f
 ```
 
 The application will be available at `http://localhost:5000`.
@@ -101,12 +110,44 @@ The application will be available at `http://localhost:5000`.
 ### Run with Docker directly
 
 ```bash
-# Build the Docker image
+# Build the optimized multi-stage Docker image
 docker build -t reflection-diary .
 
-# Run the container
-docker run -p 5000:5000 -d reflection-diary
+# Run the container with appropriate environment variables
+docker run -p 5000:5000 \
+  -e NODE_ENV=production \
+  -e SESSION_SECRET=your_secret_here \
+  -e PUBLIC_BASE_URL=http://localhost:5000 \
+  -v reflection_diary_data:/app/data \
+  -d reflection-diary
 ```
+
+### Docker Data Persistence
+
+The application stores data in a Docker volume:
+
+- Data is stored in the named volume `reflection_diary_data`
+- The volume persists across container restarts and rebuilds
+- Backup the volume for production deployments:
+
+```bash
+# Backup the database volume
+docker run --rm -v reflection_diary_data:/data -v $(pwd):/backup alpine \
+  tar czf /backup/reflection_diary_backup.tar.gz /data
+
+# Restore from a backup
+docker run --rm -v reflection_diary_data:/data -v $(pwd):/backup alpine \
+  sh -c "rm -rf /data/* && tar xzf /backup/reflection_diary_backup.tar.gz -C /"
+```
+
+### Health Checks & Monitoring
+
+The Docker setup includes:
+
+- Automatic health checks at `/health` endpoint
+- Container restart policy for fault tolerance
+- Resource limits to prevent resource exhaustion
+- Log rotation to manage disk space
 
 ## Test Credentials
 
