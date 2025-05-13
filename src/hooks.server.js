@@ -1,24 +1,19 @@
-import { validateSession } from '$lib/server/auth';
-
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
-  // Get the session cookie
-  const sessionId = event.cookies.get('sessionId');
+  // Get the user ID from the cookie
+  const userId = event.cookies.get('userId');
   
-  if (sessionId) {
-    // Validate the session and get the user
-    const user = validateSession(sessionId);
-    
-    if (user) {
-      // Set the user in locals for access in load functions
-      event.locals.user = user;
-      event.locals.sessionId = sessionId;
-    } else {
-      // Invalid or expired session, clear the cookie
-      event.cookies.delete('sessionId', { path: '/' });
-    }
+  if (userId) {
+    // For MVP, we'll use a simple mock user
+    // In a real app, you would fetch the user data from your database
+    event.locals.user = {
+      id: userId,
+      name: 'Demo User',
+      email: 'user@example.com'
+    };
   }
   
-  // Resolve the request
-  return resolve(event);
+  // Continue with the request
+  const response = await resolve(event);
+  return response;
 }
