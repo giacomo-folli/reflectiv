@@ -1,4 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
+import { registerUser, loginUser } from '$lib/server/auth';
 
 /** @type {import('./$types').PageServerLoad} */
 export function load({ locals }) {
@@ -11,38 +12,56 @@ export function load({ locals }) {
 /** @type {import('./$types').Actions} */
 export const actions = {
   default: async ({ cookies, request }) => {
-    const data = await request.formData();
-    const name = data.get('name');
-    const email = data.get('email');
-    const password = data.get('password');
-    const confirmPassword = data.get('confirmPassword');
-    
-    // In a real app, you'd validate the inputs
-    if (!name || !email || !password || !confirmPassword) {
+    try {
+      const data = await request.formData();
+      const name = data.get('name')?.toString();
+      const email = data.get('email')?.toString();
+      const password = data.get('password')?.toString();
+      const confirmPassword = data.get('confirmPassword')?.toString();
+      
+      // Store form values for re-populating the form on error
+      const formValues = { name, email };
+      
+      // Validate required fields
+      if (!name || !email || !password || !confirmPassword) {
+        return fail(400, { 
+          message: 'All fields are required',
+          ...formValues
+        });
+      }
+      
+      // Validate password match
+      if (password !== confirmPassword) {
+        return fail(400, { 
+          message: 'Passwords do not match',
+          ...formValues
+        });
+      }
+      
+      // Register the new user
+      const user = await registerUser(email, password, name);
+      
+      // Log in the newly registered user
+      const { sessionId } = await loginUser(email, password);
+      
+      // Set session cookie
+      cookies.set('sessionId', sessionId, {
+        path: '/',
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24 * 7 // 7 days
+      });
+      
+      // Redirect to the dashboard
+      throw redirect(302, '/dashboard');
+    } catch (error) {
+      // Handle registration errors
       return fail(400, { 
-        message: 'All fields are required' 
+        message: error.message || 'Registration failed. Please try again.',
+        name: request.formData().get('name'),
+        email: request.formData().get('email')
       });
     }
-    
-    if (password !== confirmPassword) {
-      return fail(400, { 
-        message: 'Passwords do not match' 
-      });
-    }
-    
-    // For demo purposes, let's accept any valid registration
-    // In a real app, you'd check if the email is already registered
-    // and store the user in your database
-    
-    // Set a cookie to represent the user session
-    cookies.set('userId', '1', {
-      path: '/',
-      httpOnly: true,
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 // 1 day
-    });
-    
-    // Redirect to the dashboard
-    throw redirect(302, '/dashboard');
   }
 };

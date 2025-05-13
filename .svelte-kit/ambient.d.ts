@@ -26,6 +26,8 @@
  * ```
  */
 declare module '$env/static/private' {
+	export const SESSION_SECRET: string;
+	export const SESSION_COOKIE_SECURE: string;
 	export const REPLIT_PID1_FLAG_REPLIT_RTLD_LOADER: string;
 	export const npm_command: string;
 	export const npm_config_userconfig: string;
@@ -77,7 +79,6 @@ declare module '$env/static/private' {
 	export const npm_config_prefix: string;
 	export const REPL_LANGUAGE: string;
 	export const USER: string;
-	export const SESSION_SECRET: string;
 	export const REPL_HOME: string;
 	export const REPLIT_PID1_VERSION: string;
 	export const DISPLAY: string;
@@ -118,7 +119,7 @@ declare module '$env/static/private' {
  * ```
  */
 declare module '$env/static/public' {
-	
+	export const PUBLIC_BASE_URL: string;
 }
 
 /**
@@ -137,6 +138,8 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		SESSION_SECRET: string;
+		SESSION_COOKIE_SECURE: string;
 		REPLIT_PID1_FLAG_REPLIT_RTLD_LOADER: string;
 		npm_command: string;
 		npm_config_userconfig: string;
@@ -188,7 +191,6 @@ declare module '$env/dynamic/private' {
 		npm_config_prefix: string;
 		REPL_LANGUAGE: string;
 		USER: string;
-		SESSION_SECRET: string;
 		REPL_HOME: string;
 		REPLIT_PID1_VERSION: string;
 		DISPLAY: string;
@@ -236,6 +238,7 @@ declare module '$env/dynamic/private' {
  */
 declare module '$env/dynamic/public' {
 	export const env: {
+		PUBLIC_BASE_URL: string;
 		[key: `PUBLIC_${string}`]: string | undefined;
 	}
 }

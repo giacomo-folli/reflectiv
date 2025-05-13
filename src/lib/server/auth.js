@@ -1,5 +1,6 @@
 import { userDb, sessionDb } from './db.js';
 import { createHash } from 'crypto';
+import { dev } from '$app/environment';
 
 /**
  * Hash a password for secure storage
@@ -31,6 +32,21 @@ export function verifyPassword(password, hashedPassword) {
  * @returns {Object} - Newly created user object (without password)
  */
 export async function registerUser(email, password, name) {
+  // Validate inputs
+  if (!email || !password || !name) {
+    throw new Error('Email, password, and name are required');
+  }
+  
+  // Basic email validation
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new Error('Invalid email address');
+  }
+  
+  // Basic password validation
+  if (password.length < 8) {
+    throw new Error('Password must be at least 8 characters long');
+  }
+  
   // Check if user already exists
   const existingUser = userDb.findByEmail(email);
   if (existingUser) {
@@ -57,7 +73,23 @@ export async function registerUser(email, password, name) {
  * @returns {Object} - Session object with user information
  */
 export async function loginUser(email, password) {
-  // Find user by email
+  // Handle demo/test user in development
+  if (dev && email === 'test@example.com' && password === 'password123') {
+    const user = userDb.findByEmail('test@example.com');
+    if (user) {
+      // Create a new session for test user
+      const session = sessionDb.createSession(user.id);
+      
+      // Return session with user data (excluding password)
+      const { passwordHash: _, ...userWithoutPassword } = user;
+      return {
+        sessionId: session.id,
+        user: userWithoutPassword
+      };
+    }
+  }
+  
+  // Find user by email for standard login
   const user = userDb.findByEmail(email);
   if (!user) {
     throw new Error('Invalid email or password');
@@ -115,5 +147,16 @@ export function validateSession(sessionId) {
  * @returns {boolean} - Whether the session was successfully ended
  */
 export function logoutUser(sessionId) {
+  if (!sessionId) return false;
   return sessionDb.deleteSession(sessionId);
+}
+
+/**
+ * End all sessions for a user
+ * @param {string} userId - User ID to end all sessions for
+ * @returns {boolean} - Whether the operation was successful
+ */
+export function logoutAllSessions(userId) {
+  if (!userId) return false;
+  return sessionDb.deleteAllUserSessions(userId);
 }
