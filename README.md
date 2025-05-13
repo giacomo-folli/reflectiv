@@ -9,27 +9,33 @@ A SvelteKit application that allows users to store ChatGPT conversation links an
 - Generate personalized monthly reflection diaries as PDFs
 - Responsive design for all devices
 
-## Prerequisites
+## Running the Application
+
+You can run the application either with Node.js directly or using Docker.
+
+## Method 1: Using Node.js Locally
+
+### Prerequisites
 
 - [Node.js](https://nodejs.org/) (version 18.x or later recommended)
 - npm (comes with Node.js)
 
-## Local Development Setup
+### Setup Steps
 
-### Clone the repository
+#### Clone the repository
 
 ```bash
 git clone <repository-url>
 cd monthly-reflection-diary
 ```
 
-### Install dependencies
+#### Install dependencies
 
 ```bash
 npm install
 ```
 
-### Environment Configuration
+#### Environment Configuration
 
 1. Copy the example environment file:
 
@@ -42,7 +48,7 @@ cp .env.example .env
    - Add your `OPENAI_API_KEY` if you're using OpenAI API features
    - Modify other settings as needed
 
-### Start the development server
+#### Start the development server
 
 ```bash
 npm run dev
@@ -50,17 +56,64 @@ npm run dev
 
 The application will be available at `http://localhost:5000`.
 
-### Build for production
+#### Build for production
 
 ```bash
 npm run build
 ```
 
-### Run the production build locally
+#### Run the production build locally
 
 ```bash
 npm run preview
 ```
+
+## Method 2: Using Docker
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/) (usually comes with Docker Desktop)
+
+### Run with Docker Compose
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd monthly-reflection-diary
+```
+
+2. Create a `.env` file (optional, for environment variables):
+
+```bash
+cp .env.example .env
+```
+
+3. Build and start the Docker container:
+
+```bash
+docker-compose up -d
+```
+
+The application will be available at `http://localhost:5000`.
+
+### Run with Docker directly
+
+```bash
+# Build the Docker image
+docker build -t reflection-diary .
+
+# Run the container
+docker run -p 5000:5000 -d reflection-diary
+```
+
+## Test Credentials
+
+For local development and testing, you can use these credentials:
+
+- Email: `test@example.com`
+- Password: `password123`
 
 ## Project Structure
 
@@ -83,7 +136,7 @@ The current version uses in-memory storage for demonstration purposes. In a prod
 
 Authentication currently uses simple session-based cookies:
 
-- For local development, any credentials will work
+- For local development, the test credentials above will work
 - In production, implement proper password hashing and user management
 
 ## PDF Generation

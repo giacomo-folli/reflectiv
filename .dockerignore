@@ -1,0 +1,44 @@
+# Node modules
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Build output
+.svelte-kit
+build
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Git files
+.git
+.gitignore
+
+# Editor files
+.idea
+.vscode
+*.swp
+*.swo
+
+# Docker files (to avoid recursion)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Test files
+coverage
+**/*.test.js
+**/*.spec.js
+
+# Other
+README.md
+LICENSE
+.eslintrc
+.prettierrc
+attached_assets/
