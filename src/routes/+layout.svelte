@@ -1,45 +1,114 @@
 <script>
+  import { page } from '$app/stores';
+  import PageTransition from '$lib/components/PageTransition.svelte';
+  import Transition from '$lib/components/Transition.svelte';
+  import Toast from '$lib/components/Toast.svelte';
+  import { onMount } from 'svelte';
+  
   export let data;
   
   $: user = data?.user;
+  
+  // Only animate after initial page load
+  let initialLoad = true;
+  
+  onMount(() => {
+    // Set initialLoad to false after component is mounted
+    setTimeout(() => {
+      initialLoad = false;
+    }, 100);
+  });
 </script>
 
 <div class="app">
+  <!-- Toast notifications -->
+  <Toast position="top-right" />
+  
   <header>
     <div class="container">
-      <div class="logo">
-        <a href="/">
-          <span class="book-icon">📕</span>
-          Reflection Diary
-        </a>
-      </div>
+      <Transition transition="flyRight" delay={100}>
+        <div class="logo">
+          <a href="/">
+            <span class="book-icon">📕</span>
+            Reflection Diary
+          </a>
+        </div>
+      </Transition>
       
       <nav>
         {#if user}
-          <a href="/">Home</a>
-          <a href="/links">Links</a>
-          <form action="/logout" method="POST">
-            <button type="submit" class="nav-link">Logout</button>
-          </form>
+          <Transition transition="fadeIn" delay={200}>
+            <a href="/" class="nav-link-animated">Home</a>
+          </Transition>
+          <Transition transition="fadeIn" delay={250}>
+            <a href="/links" class="nav-link-animated">Links</a>
+          </Transition>
+          <Transition transition="fadeIn" delay={300}>
+            <form action="/logout" method="POST">
+              <button type="submit" class="nav-link nav-link-animated">Logout</button>
+            </form>
+          </Transition>
         {:else}
-          <a href="/">Home</a>
-          <a href="/login">Login</a>
-          <a href="/register">Sign Up</a>
+          <Transition transition="fadeIn" delay={200}>
+            <a href="/" class="nav-link-animated">Home</a>
+          </Transition>
+          <Transition transition="fadeIn" delay={250}>
+            <a href="/login" class="nav-link-animated">Login</a>
+          </Transition>
+          <Transition transition="fadeIn" delay={300}>
+            <a href="/register" class="nav-link-animated">Sign Up</a>
+          </Transition>
         {/if}
       </nav>
     </div>
   </header>
   
   <main>
-    <slot />
+    <PageTransition url={$page.url.pathname} immediate={initialLoad}>
+      <slot />
+    </PageTransition>
   </main>
   
   <footer>
     <div class="container">
-      <p>© 2025 Reflection Diary. All rights reserved.</p>
+      <Transition transition="fadeIn" delay={400}>
+        <p>© 2025 Reflection Diary. All rights reserved.</p>
+      </Transition>
     </div>
   </footer>
 </div>
+
+<style>
+  /* Add these new styles for micro-interactions */
+  :global(.nav-link-animated) {
+    position: relative;
+  }
+  
+  :global(.nav-link-animated::after) {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: #6366f1;
+    transition: width 0.3s ease;
+  }
+  
+  :global(.nav-link-animated:hover::after) {
+    width: 100%;
+  }
+  
+  /* Smooth page transitions */
+  :global(main) {
+    position: relative;
+    z-index: 1;
+  }
+  
+  :global(.page-transition) {
+    will-change: transform, opacity;
+  }
+</style>
 
 <style>
   :global(body) {
