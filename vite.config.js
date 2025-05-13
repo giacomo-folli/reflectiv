@@ -1,6 +1,7 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 
+
 export default defineConfig({
     plugins: [sveltekit()],
     server: {
@@ -9,9 +10,6 @@ export default defineConfig({
         strictPort: true,
         cors: {
             origin: "*"
-        },
-        fs: {
-            allow: [".."]
         },
         allowedHosts: ["*", ".replit.dev", ".repl.co"]
     },

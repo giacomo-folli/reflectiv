@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { DateTime } from 'luxon';
   
   export let data;
