@@ -26,7 +26,7 @@
   
   <header>
     <div class="container">
-      <Transition transition="flyRight" delay={100}>
+      <Transition transition="flyRight" delay={100} duration={300}>
         <div class="logo">
           <a href="/">
             <span class="book-icon">📕</span>
@@ -37,25 +37,25 @@
       
       <nav>
         {#if user}
-          <Transition transition="fadeIn" delay={200}>
+          <Transition transition="fadeIn" delay={200} duration={200}>
             <a href="/" class="nav-link-animated">Home</a>
           </Transition>
-          <Transition transition="fadeIn" delay={250}>
+          <Transition transition="fadeIn" delay={250} duration={200}>
             <a href="/links" class="nav-link-animated">Links</a>
           </Transition>
-          <Transition transition="fadeIn" delay={300}>
+          <Transition transition="fadeIn" delay={300} duration={200}>
             <form action="/logout" method="POST">
               <button type="submit" class="nav-link nav-link-animated">Logout</button>
             </form>
           </Transition>
         {:else}
-          <Transition transition="fadeIn" delay={200}>
+          <Transition transition="fadeIn" delay={200} duration={200}>
             <a href="/" class="nav-link-animated">Home</a>
           </Transition>
-          <Transition transition="fadeIn" delay={250}>
+          <Transition transition="fadeIn" delay={250} duration={200}>
             <a href="/login" class="nav-link-animated">Login</a>
           </Transition>
-          <Transition transition="fadeIn" delay={300}>
+          <Transition transition="fadeIn" delay={300} duration={200}>
             <a href="/register" class="nav-link-animated">Sign Up</a>
           </Transition>
         {/if}
@@ -71,7 +71,7 @@
   
   <footer>
     <div class="container">
-      <Transition transition="fadeIn" delay={400}>
+      <Transition transition="fadeIn" delay={400} duration={200}>
         <p>© 2025 Reflection Diary. All rights reserved.</p>
       </Transition>
     </div>
@@ -108,9 +108,8 @@
   :global(.page-transition) {
     will-change: transform, opacity;
   }
-</style>
 
-<style>
+  /* Original layout styles */
   :global(body) {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: #111827;

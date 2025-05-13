@@ -2,9 +2,11 @@
   import * as transitions from '$lib/utils/transitionUtils';
   
   export let transition = 'fadeIn';
-  export let duration;
+  export let duration = undefined; // Make explicit it's optional
   export let delay = 0;
-  export let easing;
+  export let easing = undefined; // Make explicit it's optional
+  export let intensity = undefined;
+  export let y = undefined;
   
   // Get the right transition function based on the name
   const getTransition = (name) => {
@@ -17,10 +19,11 @@
   };
   
   // Build params to pass to the transition
-  $: params = {};
+  $: params = { delay };
   $: if (duration !== undefined) params.duration = duration;
-  $: if (delay !== undefined) params.delay = delay;
   $: if (easing !== undefined) params.easing = easing;
+  $: if (intensity !== undefined) params.intensity = intensity;
+  $: if (y !== undefined) params.y = y;
   
   // Get the transition function
   $: transitionFn = getTransition(transition);
