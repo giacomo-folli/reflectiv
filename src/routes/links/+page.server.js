@@ -1,18 +1,6 @@
 import { redirect, fail } from '@sveltejs/kit';
+import { linkDb } from '$lib/server/sqlite-db.js';
 import { DateTime } from 'luxon';
-
-// In-memory storage for links
-// For a complete app, this would be stored in a database
-const linksStorage = new Map();
-
-// Sample link for demo purposes
-linksStorage.set('1', {
-  id: '1',
-  userId: '1',
-  title: 'Career Advice',
-  url: 'https://chat.openai.com/share/example-id-123',
-  createdAt: '2025-05-12'
-});
 
 /** @type {import('./$types').PageServerLoad} */
 export function load({ locals }) {
@@ -21,10 +9,8 @@ export function load({ locals }) {
     throw redirect(302, '/login');
   }
   
-  // Get links for the current user
-  const links = Array.from(linksStorage.values())
-    .filter(link => link.userId === locals.user.id)
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  // Get links for the current user using the SQLite database
+  const links = linkDb.findByUserId(locals.user.id);
   
   return {
     user: locals.user,
@@ -41,8 +27,8 @@ export const actions = {
     }
     
     const data = await request.formData();
-    const title = data.get('title') || '';
-    const url = data.get('url');
+    const title = data.get('title')?.toString() || '';
+    const url = data.get('url')?.toString();
     
     // Validate URL
     if (!url) {
@@ -50,25 +36,25 @@ export const actions = {
     }
     
     // Validate URL format (basic check)
-    if (!url.toString().startsWith('https://chat.openai.com/share/')) {
+    if (!url.startsWith('https://chat.openai.com/share/')) {
       return fail(400, { message: 'URL must be a valid ChatGPT shared link' });
     }
     
-    // Generate a unique ID
-    const id = crypto.randomUUID();
-    
-    // Save the link
-    linksStorage.set(id, {
-      id,
-      userId: locals.user.id,
-      title: title.toString(),
-      url: url.toString(),
-      createdAt: DateTime.now().toISODate()
-    });
-    
-    return {
-      success: true
-    };
+    try {
+      // Save the link to the SQLite database
+      linkDb.createLink({
+        userId: locals.user.id,
+        title: title,
+        url: url
+      });
+      
+      return {
+        success: true
+      };
+    } catch (error) {
+      console.error('Error creating link:', error);
+      return fail(500, { message: 'Failed to add link. Please try again.' });
+    }
   },
   
   deleteLink: async ({ locals, request }) => {
@@ -78,23 +64,32 @@ export const actions = {
     }
     
     const data = await request.formData();
-    const id = data.get('id');
+    const id = data.get('id')?.toString();
     
     if (!id) {
       return fail(400, { message: 'Link ID is required' });
     }
     
-    // Check if the link exists and belongs to the user
-    const link = linksStorage.get(id.toString());
-    if (!link || link.userId !== locals.user.id) {
-      return fail(404, { message: 'Link not found' });
+    try {
+      // Check if the link exists and belongs to the user
+      const link = linkDb.findById(id);
+      if (!link || link.userId !== locals.user.id) {
+        return fail(404, { message: 'Link not found' });
+      }
+      
+      // Delete the link from the SQLite database
+      const success = linkDb.deleteLink(id);
+      
+      if (!success) {
+        return fail(500, { message: 'Failed to delete link. Please try again.' });
+      }
+      
+      return {
+        success: true
+      };
+    } catch (error) {
+      console.error('Error deleting link:', error);
+      return fail(500, { message: 'Failed to delete link. Please try again.' });
     }
-    
-    // Delete the link
-    linksStorage.delete(id.toString());
-    
-    return {
-      success: true
-    };
   }
 };

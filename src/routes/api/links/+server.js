@@ -1,4 +1,4 @@
-import { linkDb } from '$lib/server/db.js';
+import { linkDb } from '$lib/server/sqlite-db.js';
 import { redirect } from '@sveltejs/kit';
 
 /** @type {import('./$types').RequestHandler} */

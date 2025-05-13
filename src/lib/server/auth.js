@@ -1,4 +1,4 @@
-import { userDb, sessionDb } from './db.js';
+import { userDb, sessionDb } from './sqlite-db.js';
 import { createHash } from 'crypto';
 import { dev } from '$app/environment';
 
