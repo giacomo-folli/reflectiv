@@ -25,6 +25,7 @@
   "dependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.0.2",
     "@tailwindcss/typography": "^0.5.10",
-    "jspdf": "^2.5.1"
+    "jspdf": "^2.5.1",
+    "openai": "^4.98.0"
   }
 }

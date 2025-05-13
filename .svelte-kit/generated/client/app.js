@@ -36,4 +36,4 @@ export const hash = false;
 
 export const decode = (type, value) => decoders[type](value);
 
-export { default as root } from '../root.js';
+export { default as root } from '../root.svelte';
