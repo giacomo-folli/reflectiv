@@ -1,9 +1,47 @@
 <script>
   import { enhance } from '$app/forms';
+  import { locale } from 'svelte-i18n';
   
   let email = '';
   let password = '';
   let error = '';
+  
+  // Define translations for both languages
+  const translations = {
+    'en': {
+      title: 'Login',
+      subtitle: 'Sign in to your account to create personalized reflection diaries.',
+      email: 'Email',
+      password: 'Password',
+      signIn: 'Sign In',
+      noAccount: 'Don\'t have an account?',
+      register: 'Register here',
+      errorDefault: 'Login failed. Please try again.',
+      heroTitle: 'Reflect and Grow',
+      heroText: 'Monthly Reflection Diary helps you track your thoughts, personal growth, and insights throughout each month.',
+      feature1: 'Generate personalized reflection questions',
+      feature2: 'Create printable monthly diaries',
+      feature3: 'Enhance questions with your ChatGPT conversation links'
+    },
+    'it': {
+      title: 'Accedi',
+      subtitle: 'Accedi al tuo account per creare diari di riflessione personalizzati.',
+      email: 'Email',
+      password: 'Password',
+      signIn: 'Accedi',
+      noAccount: 'Non hai un account?',
+      register: 'Registrati qui',
+      errorDefault: 'Accesso fallito. Riprova.',
+      heroTitle: 'Rifletti e Cresci',
+      heroText: 'Il Diario di Riflessione Mensile ti aiuta a tenere traccia dei tuoi pensieri, della crescita personale e delle intuizioni durante ogni mese.',
+      feature1: 'Genera domande di riflessione personalizzate',
+      feature2: 'Crea diari mensili stampabili',
+      feature3: 'Arricchisci le domande con i link alle tue conversazioni ChatGPT'
+    }
+  };
+  
+  // Get translations based on current locale
+  $: t = translations[$locale || 'en'];
   
   /**
    * Handle form submission with enhanced protection against CSRF
@@ -13,7 +51,7 @@
     // Return the enhanced form submission
     return async ({ result }) => {
       if (result.type === 'failure') {
-        error = result.data?.message || 'Login failed. Please try again.';
+        error = result.data?.message || t.errorDefault;
       } else if (result.type === 'success') {
         // Will redirect to the dashboard automatically
         console.log('Login successful');
@@ -25,8 +63,8 @@
 <div class="auth-container">
   <div class="auth-grid">
     <div class="form-container">
-      <h1>Login</h1>
-      <p class="subtitle">Sign in to your account to create personalized reflection diaries.</p>
+      <h1>{t.title}</h1>
+      <p class="subtitle">{t.subtitle}</p>
       
       {#if error}
         <div class="error-box">
@@ -36,7 +74,7 @@
       
       <form method="POST" use:enhance={handleLogin}>
         <div class="form-group">
-          <label for="email">Email</label>
+          <label for="email">{t.email}</label>
           <input 
             type="email" 
             id="email" 
@@ -48,7 +86,7 @@
         </div>
         
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="password">{t.password}</label>
           <input 
             type="password" 
             id="password" 
@@ -59,22 +97,31 @@
           />
         </div>
         
-        <button type="submit" class="btn btn-primary">Sign In</button>
+        <button type="submit" class="btn btn-primary">{t.signIn}</button>
       </form>
       
       <p class="auth-link">
-        Don't have an account? <a href="/register">Register here</a>
+        {t.noAccount} <a href="/register">{t.register}</a>
       </p>
+      
+      <div class="language-selector">
+        <button class="lang-btn {$locale === 'en' ? 'active' : ''}" on:click={() => locale.set('en')}>
+          🇬🇧 English
+        </button>
+        <button class="lang-btn {$locale === 'it' ? 'active' : ''}" on:click={() => locale.set('it')}>
+          🇮🇹 Italiano
+        </button>
+      </div>
     </div>
     
     <div class="hero-section">
       <div class="hero-content">
-        <h2>Reflect and Grow</h2>
-        <p>Monthly Reflection Diary helps you track your thoughts, personal growth, and insights throughout each month.</p>
+        <h2>{t.heroTitle}</h2>
+        <p>{t.heroText}</p>
         <ul>
-          <li>Generate personalized reflection questions</li>
-          <li>Create printable monthly diaries</li>
-          <li>Enhance questions with your ChatGPT conversation links</li>
+          <li>{t.feature1}</li>
+          <li>{t.feature2}</li>
+          <li>{t.feature3}</li>
         </ul>
       </div>
     </div>
@@ -235,5 +282,35 @@
     position: absolute;
     left: 0;
     color: #a78bfa;
+  }
+  
+  /* Language selector styling */
+  .language-selector {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .lang-btn {
+    background-color: #2d3748;
+    color: #a1a1aa;
+    border: 1px solid #4a5568;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .lang-btn:hover {
+    background-color: #4a5568;
+    color: #f3f4f6;
+  }
+  
+  .lang-btn.active {
+    background-color: #6366f1;
+    color: white;
+    border-color: #4f46e5;
   }
 </style>

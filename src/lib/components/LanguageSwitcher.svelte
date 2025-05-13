@@ -45,10 +45,44 @@
   });
 </script>
 
-{#if browser}
-  <!-- Capture clicks on the switcher to prevent them from bubbling -->
-  <svelte:window on:click|capture={handleClickOutside} />
-{/if}
+<!-- <svelte:window> tag must be placed at the top level, not inside a block -->
+<svelte:window on:click|capture={browser ? handleClickOutside : null} />
+
+<div class="language-switcher">
+  <button 
+    class="language-toggle" 
+    aria-label="Change language" 
+    on:click={() => isOpen = !isOpen}
+  >
+    {languages.find(lang => lang.code === currentLanguage)?.flag || '🌐'} 
+    <span class="language-name">{languages.find(lang => lang.code === currentLanguage)?.name || 'Language'}</span>
+    <span class="arrow" class:open={isOpen}>▼</span>
+  </button>
+  
+  {#if isOpen}
+    <div class="language-dropdown" transition:fade={{ duration: 150 }}>
+      {#each languages as language}
+        <button 
+          class="language-option" 
+          class:active={currentLanguage === language.code}
+          on:click={() => {
+            changeLanguage(language.code);
+            isOpen = false;
+          }}
+        >
+          <span class="flag">{language.flag}</span>
+          <span class="name">{language.name}</span>
+          
+          {#if currentLanguage === language.code}
+            <Transition transition="fadeIn">
+              <span class="check">✓</span>
+            </Transition>
+          {/if}
+        </button>
+      {/each}
+    </div>
+  {/if}
+</div>
 
 <div class="language-switcher">
   <button 
