@@ -42,7 +42,7 @@ export const actions = {
     } catch (error) {
       return fail(401, { 
         message: error.message || 'Invalid email or password',
-        email: request.formData().get('email')
+        email: email
       });
     }
   }

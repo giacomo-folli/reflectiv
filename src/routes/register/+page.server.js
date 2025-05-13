@@ -59,8 +59,8 @@ export const actions = {
       // Handle registration errors
       return fail(400, { 
         message: error.message || 'Registration failed. Please try again.',
-        name: request.formData().get('name'),
-        email: request.formData().get('email')
+        name,
+        email
       });
     }
   }

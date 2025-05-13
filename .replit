@@ -19,6 +19,10 @@ args = "SvelteKit Server"
 task = "workflow.run"
 args = "Setup SvelteKit"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "DB Info"
+
 [[workflows.workflow]]
 name = "SvelteKit Server"
 author = "agent"
@@ -35,6 +39,14 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npx create-svelte@latest my-app --template skeleton"
+
+[[workflows.workflow]]
+name = "DB Info"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node scripts/db-tools.js info"
 
 [deployment]
 run = ["sh", "-c", "npm run dev"]

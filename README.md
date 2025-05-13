@@ -134,6 +134,21 @@ The application uses SQLite for data persistence:
 3. The location can be configured with the `DATA_DIR` environment variable
 4. When using Docker, the database is persisted using a named Docker volume
 
+### Database Management
+
+The application includes a database management tool for common tasks:
+
+```bash
+# View database information and user accounts
+node scripts/db-tools.js info
+
+# Export database contents as JSON
+node scripts/db-tools.js export
+
+# Reset the database (removes all data)
+node scripts/db-tools.js reset
+```
+
 For production environments with higher traffic, you might want to:
 
 1. Consider upgrading to a more robust database solution like PostgreSQL
