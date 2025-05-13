@@ -5,15 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      # Add args if needed for build-time variables
     image: reflection-diary:latest
     container_name: reflection-diary-app
     ports:
-      - "5000:5000"
+      - "3000:3000"
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-http://localhost:5000}
+      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-http://localhost:3000}
       - SESSION_SECRET=${SESSION_SECRET:-change_this_in_production}
       - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-false}
       - DATA_DIR=/app/data
@@ -23,7 +22,7 @@ services:
       # For SQLite database persistence
       - reflection_diary_data:/app/data
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
       interval: 30s
       timeout: 5s
       retries: 3

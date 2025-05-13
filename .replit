@@ -30,15 +30,11 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
-waitForPort = 5000
+waitForPort = 3000
 
 [[workflows.workflow]]
 name = "Setup SvelteKit"
 author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx create-svelte@latest my-app --template skeleton"
 
 [[workflows.workflow]]
 name = "DB Info"
@@ -52,5 +48,5 @@ args = "node scripts/db-tools.js info"
 run = ["sh", "-c", "npm run dev"]
 
 [[ports]]
-localPort = 5000
+localPort = 3000
 externalPort = 80

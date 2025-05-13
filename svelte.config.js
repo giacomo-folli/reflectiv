@@ -1,14 +1,10 @@
 import adapter from '@sveltejs/adapter-node';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-    kit: {
-        adapter: adapter(),
-        // Disable CSRF protection for development
-        csrf: {
-            checkOrigin: false
-        }
-    }
+    preprocess: [vitePreprocess()],
+    kit: { adapter: adapter() }
 };
 
 export default config;

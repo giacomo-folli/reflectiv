@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev --host 0.0.0.0 --port 5000",
+    "dev": "vite dev --host 0.0.0.0 --port 3000",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0 --port 5000",
+    "preview": "vite preview --host 0.0.0.0 --port 3000",
     "start": "node build/index.js"
   },
   "devDependencies": {

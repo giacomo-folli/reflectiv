@@ -113,3 +113,5 @@ mockups/
 .circleci/
 .github/
 .husky/
+
+.replit

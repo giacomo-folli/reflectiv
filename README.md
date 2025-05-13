@@ -54,7 +54,7 @@ cp .env.example .env
 npm run dev
 ```
 
-The application will be available at `http://localhost:5000`.
+The application will be available at `http://localhost:3000`.
 
 #### Build for production
 
@@ -105,7 +105,7 @@ docker-compose up --build -d
 docker-compose logs -f
 ```
 
-The application will be available at `http://localhost:5000`.
+The application will be available at `http://localhost:3000`.
 
 ### Run with Docker directly
 
@@ -114,10 +114,10 @@ The application will be available at `http://localhost:5000`.
 docker build -t reflection-diary .
 
 # Run the container with appropriate environment variables
-docker run -p 5000:5000 \
+docker run -p 3000:3000 \
   -e NODE_ENV=production \
   -e SESSION_SECRET=your_secret_here \
-  -e PUBLIC_BASE_URL=http://localhost:5000 \
+  -e PUBLIC_BASE_URL=http://localhost:3000 \
   -v reflection_diary_data:/app/data \
   -d reflection-diary
 ```

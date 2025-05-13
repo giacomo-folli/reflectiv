@@ -3,7 +3,7 @@
 USERNAME = giacomofolli
 IMAGE_NAME = reflectiv
 CONTAINER_NAME = reflectiv-container
-PORT = 5000
+PORT = 3000
 
 .PHONY: build run stop logs clean test
 
