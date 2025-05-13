@@ -1,19 +1,20 @@
-# Dependencies
-node_modules
+# ───── Node Dependencies & Caches ─────
+node_modules/
+.npm/
+.pnpm-store/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-.pnpm-store/
-.npm
 
-# Build output
+# ───── Build Output ─────
 .svelte-kit/
 build/
 static/build/
 dist/
 
-# Environment & secrets
+# ───── Environment & Secrets ─────
 .env
 .env.*
 !.env.example
@@ -21,97 +22,28 @@ dist/
 *.key
 .secrets/
 
-# Version control
+# ───── VCS ─────
 .git/
-.github/
 .gitignore
-.gitattributes
+.github/
 
-# Editor directories and files
-.idea/
+# ───── Editor & IDE Files ─────
 .vscode/
-*.swp
-*.swo
-*~
 .project
-.classpath
-.c9/
-*.launch
 .settings/
-*.sublime-*
 
-# Docker files (to avoid recursion)
-Dockerfile*
-docker-compose*.yml
+# ───── Docker Files (only exclude if you don't COPY them into image) ─────
 .dockerignore
 
-# System files
+# ───── OS & System Files ─────
 .DS_Store
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
-# Testing
-/tests/
-/coverage/
-/playwright-report/
-/playwright/.cache/
-**/__tests__/
-**/*.test.js
-**/*.spec.js
-vitest.config.ts
-jest.config.js
-
-# Logs
-logs/
-*.log
-
-# Temporary files
-temp/
-tmp/
-*.tmp
-
-# Documentation
-README.md
-CHANGELOG.md
-LICENSE
-CONTRIBUTING.md
-docs/
-.storybook/
-
-# Configuration files not needed in production
-.eslintrc*
-.prettierrc*
-.stylelintrc*
-.editorconfig
-tsconfig.json
-svelte.config.js
-vite.config.js
-postcss.config.js
-tailwind.config.js
-playwright.config.ts
-
-# Database files (managed via volumes in docker-compose)
-*.sqlite
-*.sqlite3
-*.db
-data/
-
-# Demo/development assets
-attached_assets/
-examples/
-demo/
-mockups/
-
-# Source maps
-*.map
-
-# Build tools and CI configuration
-.travis.yml
-.gitlab-ci.yml
-.circleci/
-.github/
-.husky/
-
-.replit
+# ───── Testing ─────
+tests/
+coverage/
+playwright-report/
+playwright/.cache
