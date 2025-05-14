@@ -17,32 +17,18 @@ export const actions: Actions = {
       const password = data.get("password")?.toString();
       const confirmPassword = data.get("confirmPassword")?.toString();
 
-      // Store form values for re-populating the form on error
       const formValues = { name, email };
 
-      // Validate required fields
       if (!name || !email || !password || !confirmPassword) {
-        return fail(400, {
-          message: "All fields are required",
-          ...formValues,
-        });
+        return fail(400, { message: "All fields are required", ...formValues });
       }
-
-      // Validate password match
       if (password !== confirmPassword) {
-        return fail(400, {
-          message: "Passwords do not match",
-          ...formValues,
-        });
+        return fail(400, { message: "Passwords do not match", ...formValues });
       }
 
-      // Register the new user
       await registerUser(email, password, name);
 
-      // Log in the newly registered user
       const { sessionId } = await loginUser(email, password);
-
-      // Set session cookie
       cookies.set("sessionId", sessionId, {
         path: "/",
         httpOnly: true,
@@ -51,17 +37,14 @@ export const actions: Actions = {
         maxAge: 60 * 60 * 24 * 7, // 7 days
       });
 
-      // Redirect to the dashboard
-      throw redirect(302, "/dashboard");
+      return { success: true };
     } catch (error: unknown) {
       const err =
         error instanceof Error
           ? error.message
           : "Registration failed. Please try again.";
 
-      return fail(400, {
-        message: err,
-      });
+      return fail(400, { message: err });
     }
   },
 };

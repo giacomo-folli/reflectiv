@@ -1,6 +1,5 @@
 import { userDb, sessionDb } from "./sqlite-db";
 import { createHash } from "crypto";
-import { dev } from "$app/environment";
 
 export function hashPassword(password: string) {
   // In a real app, you'd use bcrypt or argon2, but for simplicity we'll use
@@ -51,16 +50,15 @@ export async function registerUser(
 export async function loginUser(email: string, password: string) {
   const user = userDb.findByEmail(email) as any;
   if (!user) {
-    throw new Error("Invalid email");
+    throw new Error("This user doesn't exists");
   }
 
   if (!verifyPassword(password, user.passwordHash as string)) {
-    throw new Error("Invalid password");
+    throw new Error("Invalid password or email");
   }
 
   const session = sessionDb.createSession(user.id) as any;
 
-  // Return session with user data (excluding password)
   const { passwordHash: _, ...userWithoutPassword } = user;
   return {
     sessionId: session.id,
@@ -76,43 +74,29 @@ export async function loginUser(email: string, password: string) {
 export function validateSession(sessionId: string) {
   if (!sessionId) return null;
 
-  // Find session
   const session = sessionDb.findById(sessionId) as any;
   if (!session) return null;
 
-  // Check if session is expired
   if (new Date(session.expiresAt) < new Date()) {
     sessionDb.deleteSession(session.id);
     return null;
   }
 
-  // Get user from session
   const user = userDb.findById(session.userId);
   if (!user) {
     sessionDb.deleteSession(session.id);
     return null;
   }
 
-  // Return user without sensitive data
   const { passwordHash: _, ...userWithoutPassword } = user;
   return userWithoutPassword;
 }
 
-/**
- * End a user session (logout)
- * @param {string} sessionId - Session ID to end
- * @returns {boolean} - Whether the session was successfully ended
- */
 export function logoutUser(sessionId: string) {
   if (!sessionId) return false;
   return sessionDb.deleteSession(sessionId);
 }
 
-/**
- * End all sessions for a user
- * @param {string} userId - User ID to end all sessions for
- * @returns {boolean} - Whether the operation was successful
- */
 export function logoutAllSessions(userId: string) {
   if (!userId) return false;
   return sessionDb.deleteAllUserSessions(userId);

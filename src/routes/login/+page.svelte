@@ -45,7 +45,7 @@
     },
   };
 
-  // Get translations based on current locale
+  // @ts-ignore
   $: t = translations[$locale || "en"];
 
   function handleLogin() {
