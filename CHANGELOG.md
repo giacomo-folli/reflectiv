@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3] - 2025-05-14
+
+### 🐛 Bug Fixes
+
+- Correct typo in navigation path for successful registration
+
 ## [0.0.2] - 2025-05-14
 
 ### 🚀 Features
