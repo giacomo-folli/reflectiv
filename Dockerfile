@@ -20,5 +20,4 @@ RUN ADAPTER=$ADAPTER npm run build
 FROM base AS final
 COPY --from=build /home/node/app /home/node/app
 
-# ENTRYPOINT ["/home/node/app/docker-entrypoint.sh"]
 CMD ["node", "build/index.js"]
