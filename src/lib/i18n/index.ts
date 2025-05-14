@@ -37,7 +37,7 @@ function getUserLocale() {
 }
 
 // Helper function to switch locale
-export function setLocale(newLocale) {
+export function setLocale(newLocale: string) {
   locale.set(newLocale);
   if (browser && localStorage) {
     localStorage.setItem('preferredLocale', newLocale);

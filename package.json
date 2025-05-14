@@ -27,6 +27,7 @@
   "dependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.0.2",
     "@tailwindcss/typography": "^0.5.16",
+    "@types/better-sqlite3": "^7.6.13",
     "better-sqlite3": "^11.10.0",
     "jspdf": "^2.5.2",
     "luxon": "^3.6.1",

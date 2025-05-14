@@ -3,7 +3,7 @@
  * @param {string} email - Email address to validate
  * @returns {boolean} - Whether the email is valid
  */
-export function isValidEmail(email) {
+export function isValidEmail(email: string) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
@@ -13,23 +13,23 @@ export function isValidEmail(email) {
  * @param {string} password - Password to validate
  * @returns {Object} - Object with valid boolean and message string
  */
-export function validatePassword(password) {
+export function validatePassword(password: string) {
   if (!password || password.length < 8) {
-    return { 
-      valid: false, 
-      message: 'Password must be at least 8 characters long' 
+    return {
+      valid: false,
+      message: "Password must be at least 8 characters long",
     };
   }
-  
+
   // Check for at least one number
   if (!/\d/.test(password)) {
-    return { 
-      valid: false, 
-      message: 'Password must contain at least one number' 
+    return {
+      valid: false,
+      message: "Password must contain at least one number",
     };
   }
-  
-  return { valid: true, message: '' };
+
+  return { valid: true, message: "" };
 }
 
 /**
@@ -37,7 +37,7 @@ export function validatePassword(password) {
  * @param {string} url - URL to validate
  * @returns {boolean} - Whether the URL is valid
  */
-export function isValidUrl(url) {
+export function isValidUrl(url: string) {
   try {
     new URL(url);
     return true;
@@ -51,22 +51,22 @@ export function isValidUrl(url) {
  * @param {Object} formData - Form data object with email and password
  * @returns {Object} - Object with errors object and boolean indicating if form is valid
  */
-export function validateLoginForm(formData) {
-  const errors = {};
-  
+export function validateLoginForm(formData: any) {
+  const errors: any = {};
+
   if (!formData.email) {
-    errors.email = 'Email is required';
+    errors.email = "Email is required";
   } else if (!isValidEmail(formData.email)) {
-    errors.email = 'Email is invalid';
+    errors.email = "Email is invalid";
   }
-  
+
   if (!formData.password) {
-    errors.password = 'Password is required';
+    errors.password = "Password is required";
   }
-  
+
   return {
     errors,
-    isValid: Object.keys(errors).length === 0
+    isValid: Object.keys(errors).length === 0,
   };
 }
 
@@ -75,37 +75,37 @@ export function validateLoginForm(formData) {
  * @param {Object} formData - Form data object with name, email, password and confirmPassword
  * @returns {Object} - Object with errors object and boolean indicating if form is valid
  */
-export function validateRegistrationForm(formData) {
-  const errors = {};
-  
+export function validateRegistrationForm(formData: any) {
+  const errors: any = {};
+
   if (!formData.name) {
-    errors.name = 'Name is required';
+    errors.name = "Name is required";
   }
-  
+
   if (!formData.email) {
-    errors.email = 'Email is required';
+    errors.email = "Email is required";
   } else if (!isValidEmail(formData.email)) {
-    errors.email = 'Email is invalid';
+    errors.email = "Email is invalid";
   }
-  
+
   if (!formData.password) {
-    errors.password = 'Password is required';
+    errors.password = "Password is required";
   } else {
     const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.valid) {
       errors.password = passwordValidation.message;
     }
   }
-  
+
   if (!formData.confirmPassword) {
-    errors.confirmPassword = 'Please confirm your password';
+    errors.confirmPassword = "Please confirm your password";
   } else if (formData.password !== formData.confirmPassword) {
-    errors.confirmPassword = 'Passwords do not match';
+    errors.confirmPassword = "Passwords do not match";
   }
-  
+
   return {
     errors,
-    isValid: Object.keys(errors).length === 0
+    isValid: Object.keys(errors).length === 0,
   };
 }
 
@@ -114,25 +114,25 @@ export function validateRegistrationForm(formData) {
  * @param {Object} linkData - Link data object with title and url
  * @returns {Object} - Object with errors object and boolean indicating if form is valid
  */
-export function validateLinkSubmission(linkData) {
-  const errors = {};
-  
+export function validateLinkSubmission(linkData: any) {
+  const errors: any = {};
+
   if (!linkData.title) {
-    errors.title = 'Title is required';
+    errors.title = "Title is required";
   } else if (linkData.title.length < 3) {
-    errors.title = 'Title must be at least 3 characters long';
+    errors.title = "Title must be at least 3 characters long";
   }
-  
+
   if (!linkData.url) {
-    errors.url = 'URL is required';
+    errors.url = "URL is required";
   } else if (!isValidUrl(linkData.url)) {
-    errors.url = 'URL is invalid';
-  } else if (!linkData.url.includes('chat.openai.com/share/')) {
-    errors.url = 'URL must be a ChatGPT shared link';
+    errors.url = "URL is invalid";
+  } else if (!linkData.url.includes("chat.openai.com/share/")) {
+    errors.url = "URL must be a ChatGPT shared link";
   }
-  
+
   return {
     errors,
-    isValid: Object.keys(errors).length === 0
+    isValid: Object.keys(errors).length === 0,
   };
 }

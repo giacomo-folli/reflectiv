@@ -1,31 +1,28 @@
-<script>
-  import { fade, scale } from 'svelte/transition';
-  import { cubicOut } from 'svelte/easing';
-  import { createEventDispatcher } from 'svelte';
-  
-  export let title = '';
-  export let open = false;
-  export let width = '30rem';
-  export let closeOnClickOutside = true;
-  export let showCloseButton = true;
-  
+<script lang="ts">
+  import { fade, scale } from "svelte/transition";
+  import { cubicOut } from "svelte/easing";
+  import { createEventDispatcher } from "svelte";
+
   const dispatch = createEventDispatcher();
-  
-  // Close the modal
+
+  export let title: string = "";
+  export let open: boolean = false;
+  export let width: string = "30rem";
+  export let closeOnClickOutside: boolean = true;
+  export let showCloseButton: boolean = true;
+
   function closeModal() {
-    dispatch('close');
+    dispatch("close");
   }
-  
-  // Handle clicks on the backdrop
-  function handleBackdropClick(e) {
+
+  function handleBackdropClick(e: MouseEvent) {
     if (closeOnClickOutside && e.target === e.currentTarget) {
       closeModal();
     }
   }
-  
-  // Handle ESC key press
-  function handleKeydown(e) {
-    if (open && e.key === 'Escape') {
+
+  function handleKeydown(e: KeyboardEvent) {
+    if (open && e.key === "Escape") {
       closeModal();
     }
   }
@@ -34,32 +31,43 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if open}
-  <div 
-    class="modal-backdrop" 
+  <div
+    class="modal-backdrop"
+    role="presentation"
     on:click={handleBackdropClick}
+    on:keydown|stopPropagation={handleKeydown}
     transition:fade={{ duration: 150 }}
   >
-    <div 
-      class="modal" 
+    <div
+      class="modal"
       style="--modal-width: {width};"
-      transition:scale={{ duration: 200, start: 0.95, opacity: 0, easing: cubicOut }}  
+      transition:scale={{
+        duration: 200,
+        start: 0.95,
+        opacity: 0,
+        easing: cubicOut,
+      }}
     >
       <div class="modal-header">
         {#if title}
           <h2 class="modal-title">{title}</h2>
         {/if}
-        
+
         {#if showCloseButton}
-          <button class="close-button" on:click={closeModal} aria-label="Close modal">
+          <button
+            class="close-button"
+            on:click={closeModal}
+            aria-label="Close modal"
+          >
             &times;
           </button>
         {/if}
       </div>
-      
+
       <div class="modal-content">
         <slot />
       </div>
-      
+
       {#if $$slots.footer}
         <div class="modal-footer">
           <slot name="footer" />
@@ -83,7 +91,7 @@
     justify-content: center;
     padding: 1rem;
   }
-  
+
   .modal {
     background-color: #1a202c;
     border-radius: 0.5rem;
@@ -96,7 +104,7 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     border: 1px solid #2d3748;
   }
-  
+
   .modal-header {
     display: flex;
     justify-content: space-between;
@@ -104,14 +112,14 @@
     padding: 1rem 1.5rem;
     border-bottom: 1px solid #2d3748;
   }
-  
+
   .modal-title {
     font-size: 1.25rem;
     font-weight: 600;
     margin: 0;
     color: #f3f4f6;
   }
-  
+
   .close-button {
     background: transparent;
     border: none;
@@ -128,18 +136,18 @@
     border-radius: 50%;
     line-height: 1;
   }
-  
+
   .close-button:hover {
     color: #f3f4f6;
     background-color: rgba(255, 255, 255, 0.1);
   }
-  
+
   .modal-content {
     padding: 1.5rem;
     overflow-y: auto;
     color: #e5e7eb;
   }
-  
+
   .modal-footer {
     padding: 1rem 1.5rem;
     display: flex;
@@ -147,14 +155,14 @@
     gap: 0.75rem;
     border-top: 1px solid #2d3748;
   }
-  
+
   @media (max-width: 640px) {
     .modal {
       max-width: 100%;
       height: auto;
       max-height: 85vh;
     }
-    
+
     .modal-content {
       padding: 1rem;
     }

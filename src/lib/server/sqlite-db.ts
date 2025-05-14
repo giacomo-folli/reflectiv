@@ -1,14 +1,15 @@
-import Database from 'better-sqlite3';
-import { dev } from '$app/environment';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import Database from "better-sqlite3";
+import { dev } from "$app/environment";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import type { Link, Session, User } from "$lib/types";
 
 // Get the current directory
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Define data directory
-const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '../../../data');
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "../../../data");
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
@@ -16,13 +17,13 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 
 // Database path
-const DB_PATH = path.join(DATA_DIR, 'reflection-diary.sqlite');
+const DB_PATH = path.join(DATA_DIR, "reflection-diary.sqlite");
 
 // Create/connect to SQLite database
 const db = new Database(DB_PATH);
 
 // Enable foreign keys
-db.pragma('foreign_keys = ON');
+db.pragma("foreign_keys = ON");
 
 // Set up tables if they don't exist
 const initDb = () => {
@@ -62,30 +63,36 @@ const initDb = () => {
 
   // Add a test user if in development mode and no users exist
   if (dev) {
-    const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get();
-    
+    const userCount = db
+      .prepare("SELECT COUNT(*) as count FROM users")
+      .get() as any;
+
     if (userCount.count === 0) {
-      db.prepare(`
+      db.prepare(
+        `
         INSERT INTO users (id, email, name, passwordHash, createdAt) 
         VALUES (?, ?, ?, ?, ?)
-      `).run(
-        '1', 
-        'test@example.com', 
-        'Test User', 
-        'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', // 'password123' with SHA-256
-        new Date('2025-05-01').toISOString()
+      `
+      ).run(
+        "1",
+        "test@example.com",
+        "Test User",
+        "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", // 'password123' with SHA-256
+        new Date("2025-05-01").toISOString()
       );
-      
+
       // Add a sample link for the test user
-      db.prepare(`
+      db.prepare(
+        `
         INSERT INTO links (id, userId, title, url, createdAt)
         VALUES (?, ?, ?, ?, ?)
-      `).run(
-        '1',
-        '1',
-        'Sample ChatGPT Conversation',
-        'https://chat.openai.com/share/abc123',
-        new Date('2025-05-10').toISOString()
+      `
+      ).run(
+        "1",
+        "1",
+        "Sample ChatGPT Conversation",
+        "https://chat.openai.com/share/abc123",
+        new Date("2025-05-10").toISOString()
       );
     }
   }
@@ -96,172 +103,195 @@ initDb();
 
 // User repository
 export const userDb = {
-  findByEmail(email) {
-    return db.prepare('SELECT * FROM users WHERE email = ?').get(email) || null;
+  findByEmail(email: string): User | null {
+    return db
+      .prepare("SELECT * FROM users WHERE email = ?")
+      .get(email) as User | null;
   },
-  
-  findById(id) {
-    return db.prepare('SELECT * FROM users WHERE id = ?').get(id) || null;
+
+  findById(id: string | number): User | null {
+    return db
+      .prepare("SELECT * FROM users WHERE id = ?")
+      .get(id) as User | null;
   },
-  
-  createUser(userData) {
+
+  createUser(userData: any): User | null {
     const { id, email, passwordHash, name, createdAt } = {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
-      ...userData
+      ...userData,
     };
-    
-    db.prepare(`
+
+    db.prepare(
+      `
       INSERT INTO users (id, email, name, passwordHash, createdAt)
       VALUES (?, ?, ?, ?, ?)
-    `).run(id, email, name, passwordHash, createdAt);
-    
+    `
+    ).run(id, email, name, passwordHash, createdAt);
+
     return this.findById(id);
   },
-  
-  updateUser(id, userData) {
+
+  updateUser(id: string | number, userData: any): User | null {
     const user = this.findById(id);
     if (!user) return null;
-    
+
     const updates = [];
     const values = [];
-    
-    // Build dynamic update query
+
     for (const [key, value] of Object.entries(userData)) {
-      if (key !== 'id' && key !== 'createdAt') {
+      if (key !== "id" && key !== "createdAt") {
         updates.push(`${key} = ?`);
         values.push(value);
       }
     }
-    
+
     if (updates.length === 0) return user;
-    
+
     values.push(id); // for the WHERE clause
-    
-    db.prepare(`
+
+    db.prepare(
+      `
       UPDATE users 
-      SET ${updates.join(', ')}
+      SET ${updates.join(", ")}
       WHERE id = ?
-    `).run(...values);
-    
+    `
+    ).run(...values);
+
     return this.findById(id);
   },
-  
-  deleteUser(id) {
-    const result = db.prepare('DELETE FROM users WHERE id = ?').run(id);
+
+  deleteUser(id: string | number) {
+    const result = db.prepare("DELETE FROM users WHERE id = ?").run(id);
     return result.changes > 0;
   },
-  
-  // For debugging in development mode only
+
   debug() {
     if (dev) {
-      return db.prepare('SELECT * FROM users').all();
+      return db.prepare("SELECT * FROM users").all();
     }
     return null;
-  }
+  },
 };
 
 // Session repository
 export const sessionDb = {
-  createSession(userId) {
+  createSession(userId: string | number): Session | null {
     const id = crypto.randomUUID();
     const createdAt = new Date().toISOString();
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7 days
-    
-    db.prepare(`
+    const expiresAt = new Date(
+      Date.now() + 7 * 24 * 60 * 60 * 1000
+    ).toISOString(); // 7 days
+
+    db.prepare(
+      `
       INSERT INTO sessions (id, userId, createdAt, expiresAt)
       VALUES (?, ?, ?, ?)
-    `).run(id, userId, createdAt, expiresAt);
-    
+    `
+    ).run(id, userId, createdAt, expiresAt);
+
     return this.findById(id);
   },
-  
-  findById(sessionId) {
-    return db.prepare('SELECT * FROM sessions WHERE id = ?').get(sessionId) || null;
+
+  findById(sessionId: string | number) {
+    return db
+      .prepare("SELECT * FROM sessions WHERE id = ?")
+      .get(sessionId) as Session | null;
   },
-  
-  deleteSession(sessionId) {
-    const result = db.prepare('DELETE FROM sessions WHERE id = ?').run(sessionId);
+
+  deleteSession(sessionId: string | number) {
+    const result = db
+      .prepare("DELETE FROM sessions WHERE id = ?")
+      .run(sessionId);
     return result.changes > 0;
   },
-  
-  deleteAllUserSessions(userId) {
-    const result = db.prepare('DELETE FROM sessions WHERE userId = ?').run(userId);
+
+  deleteAllUserSessions(userId: string | number) {
+    const result = db
+      .prepare("DELETE FROM sessions WHERE userId = ?")
+      .run(userId);
     return result.changes > 0;
   },
-  
-  // For debugging in development mode only
+
   debug() {
     if (dev) {
-      return db.prepare('SELECT * FROM sessions').all();
+      return db.prepare("SELECT * FROM sessions").all();
     }
     return null;
-  }
+  },
 };
 
 // Link repository
 export const linkDb = {
-  createLink(linkData) {
+  createLink(linkData: any): Link | null {
     const { id, userId, title, url, createdAt } = {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
-      ...linkData
+      ...linkData,
     };
-    
-    db.prepare(`
+
+    db.prepare(
+      `
       INSERT INTO links (id, userId, title, url, createdAt)
       VALUES (?, ?, ?, ?, ?)
-    `).run(id, userId, title || '', url, createdAt);
-    
+    `
+    ).run(id, userId, title || "", url, createdAt);
+
     return this.findById(id);
   },
-  
-  findByUserId(userId) {
-    return db.prepare('SELECT * FROM links WHERE userId = ? ORDER BY createdAt DESC').all(userId);
+
+  findByUserId(userId: string | number) {
+    return db
+      .prepare("SELECT * FROM links WHERE userId = ? ORDER BY createdAt DESC")
+      .all(userId) as Link[] | null;
   },
-  
-  findById(id) {
-    return db.prepare('SELECT * FROM links WHERE id = ?').get(id) || null;
+
+  findById(id: string | number) {
+    return db
+      .prepare("SELECT * FROM links WHERE id = ?")
+      .get(id) as Link | null;
   },
-  
-  updateLink(id, linkData) {
+
+  updateLink(id: string | number, linkData: any): Link | null {
     const link = this.findById(id);
     if (!link) return null;
-    
+
     const updates = [];
     const values = [];
-    
+
     // Build dynamic update query
     for (const [key, value] of Object.entries(linkData)) {
-      if (key !== 'id' && key !== 'userId' && key !== 'createdAt') {
+      if (key !== "id" && key !== "userId" && key !== "createdAt") {
         updates.push(`${key} = ?`);
         values.push(value);
       }
     }
-    
+
     if (updates.length === 0) return link;
-    
+
     values.push(id); // for the WHERE clause
-    
-    db.prepare(`
+
+    db.prepare(
+      `
       UPDATE links
-      SET ${updates.join(', ')}
+      SET ${updates.join(", ")}
       WHERE id = ?
-    `).run(...values);
-    
+    `
+    ).run(...values);
+
     return this.findById(id);
   },
-  
-  deleteLink(id) {
-    const result = db.prepare('DELETE FROM links WHERE id = ?').run(id);
+
+  deleteLink(id: string | number) {
+    const result = db.prepare("DELETE FROM links WHERE id = ?").run(id);
     return result.changes > 0;
   },
-  
+
   // For debugging in development mode only
   debug() {
     if (dev) {
-      return db.prepare('SELECT * FROM links').all();
+      return db.prepare("SELECT * FROM links").all();
     }
     return null;
-  }
+  },
 };
