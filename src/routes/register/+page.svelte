@@ -56,7 +56,7 @@
   function handleRegister() {
     return async ({ result }: any) => {
       if (result.type === "success") {
-        await goto("/dasboard");
+        await goto("/dashboard");
       }
 
       error = result.data?.message || t.errorDefault;
