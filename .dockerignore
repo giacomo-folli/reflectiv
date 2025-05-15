@@ -31,6 +31,7 @@ dist/
 .vscode/
 .project
 .settings/
+.windsurf
 
 # ───── Docker Files (only exclude if you don't COPY them into image) ─────
 .dockerignore

@@ -17,6 +17,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+.windsurf
+
 # Editor directories and files
 .idea
 .DS_Store
