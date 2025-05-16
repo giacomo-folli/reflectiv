@@ -59,72 +59,87 @@
   const monthName = DateTime.local(year, month).toFormat('MMMM');
 </script>
 
-<div class="review-dialog">
-  <div class="dialog-header">
-    <div class="header-content">
-      <h2>Review Your {monthName} {year} Reflection Diary</h2>
-      <p class="subtitle">Customize your diary content before generating the final PDF</p>
+<div class="flex flex-col h-full text-gray-200 p-6">
+  <div class="flex justify-between items-start pb-6 border-b border-gray-700 mb-6">
+    <div class="flex-1">
+      <h2 class="text-2xl font-semibold text-white m-0 mb-2">Review Your {monthName} {year} Reflection Diary</h2>
+      <p class="text-gray-400 m-0 text-sm">Customize your diary content before generating the final PDF</p>
     </div>
-    <button on:click={cancel} class="close-btn" aria-label="Close">×</button>
+    <button 
+      on:click={cancel} 
+      class="bg-transparent border-none text-gray-400 text-3xl leading-none cursor-pointer p-1 rounded hover:text-white hover:bg-white/10 transition-colors ml-4"
+      aria-label="Close"
+    >×</button>
   </div>
   
-  <div class="dialog-content">
-    <section class="mantra-section">
-      <h3>Monthly Mantra</h3>
-      <p class="section-desc">This mantra will appear on the cover page of your diary</p>
+  <div class="flex-1 overflow-y-auto pr-4">
+    <section class="mb-10 bg-gray-800/50 rounded-lg p-6 border border-gray-700/50">
+      <h3 class="text-lg font-medium text-white m-0 mb-2">Monthly Mantra</h3>
+      <p class="text-gray-400 text-sm m-0 mb-4">This mantra will appear on the cover page of your diary</p>
       <textarea 
         bind:value={diaryContent.monthlyMantra}
         on:input={() => updateMantra(diaryContent.monthlyMantra)}
         rows="2"
+        class="w-full bg-gray-800 border border-gray-700 rounded-md p-3 text-white font-inherit text-base resize-vertical focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25"
       ></textarea>
     </section>
     
-    <section class="weekly-focus-section">
-      <h3>Weekly Focus Areas</h3>
-      <p class="section-desc">These focus areas will help guide your reflections each week</p>
+    <section class="mb-10 bg-gray-800/50 rounded-lg p-6 border border-gray-700/50">
+      <h3 class="text-lg font-medium text-white m-0 mb-2">Weekly Focus Areas</h3>
+      <p class="text-gray-400 text-sm m-0 mb-4">These focus areas will help guide your reflections each week</p>
       
-      <div class="weekly-focus-grid">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {#each diaryContent.weeklyFocus as focus, i}
-          <div class="focus-item">
-            <label for="focus-{i}">Week {i+1}</label>
+          <div class="flex flex-col">
+            <label for="focus-{i}" class="text-sm text-gray-300 mb-1">Week {i+1}</label>
             <input 
               id="focus-{i}" 
               type="text" 
               bind:value={diaryContent.weeklyFocus[i]}
               on:input={(e) => updateWeeklyFocus(i, e.currentTarget.value)}
+              class="bg-gray-800 border border-gray-700 rounded-md p-3 text-white font-inherit text-base w-full focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25"
             />
           </div>
         {/each}
       </div>
     </section>
     
-    <section class="questions-section">
-      <div class="questions-header">
-        <h3>Daily Reflection Questions</h3>
-        <div class="pagination">
-          <span>Page {currentPage + 1} of {totalPages}</span>
-          <div class="pagination-controls">
-            <button on:click={prevPage} disabled={currentPage === 0} class="pagination-btn">
+    <section class="mb-10 bg-gray-800/50 rounded-lg p-6 border border-gray-700/50">
+      <div class="flex justify-between items-center flex-wrap gap-4 mb-3">
+        <h3 class="text-lg font-medium text-white m-0">Daily Reflection Questions</h3>
+        <div class="flex flex-col items-end gap-1">
+          <span class="text-sm text-gray-400">Page {currentPage + 1} of {totalPages}</span>
+          <div class="flex gap-2">
+            <button 
+              on:click={prevPage} 
+              disabled={currentPage === 0} 
+              class="bg-gray-700 border-none py-1.5 px-3 rounded text-sm text-gray-200 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
+            >
               ← Previous
             </button>
-            <button on:click={nextPage} disabled={currentPage === totalPages - 1} class="pagination-btn">
+            <button 
+              on:click={nextPage} 
+              disabled={currentPage === totalPages - 1} 
+              class="bg-gray-700 border-none py-1.5 px-3 rounded text-sm text-gray-200 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
+            >
               Next →
             </button>
           </div>
         </div>
       </div>
       
-      <p class="section-desc">Customize these questions that will appear on each day of your diary</p>
+      <p class="text-gray-400 text-sm m-0 mb-4">Customize these questions that will appear on each day of your diary</p>
       
-      <div class="questions-list">
+      <div class="grid gap-2">
         {#each displayQuestions as question, i}
-          <div class="question-item">
-            <label for="question-{i}">Day {currentPage * questionsPerPage + i + 1}</label>
+          <div class="flex flex-col bg-gray-800/70 py-1 rounded-md">
+            <label for="question-{i}" class="text-base text-gray-300 mb-2 font-medium">Day {currentPage * questionsPerPage + i + 1}</label>
             <textarea 
               id="question-{i}" 
-              rows="3"
+              rows="1"
               bind:value={displayQuestions[i]}
               on:input={(e) => updateQuestion(i, e.currentTarget.value)}
+              class="bg-gray-800 border border-gray-700 rounded-md p-3 text-white font-inherit text-base w-full resize-vertical focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25"
             ></textarea>
           </div>
         {/each}
@@ -132,230 +147,18 @@
     </section>
   </div>
   
-  <div class="dialog-footer">
-    <button on:click={cancel} class="btn secondary">Cancel</button>
-    <button on:click={confirm} class="btn primary">Generate PDF</button>
+  <div class="flex justify-end gap-3 pt-6 border-t border-gray-700 mt-6">
+    <button 
+      on:click={cancel} 
+      class="inline-flex items-center justify-center px-6 py-3 rounded-md font-medium bg-gray-600 hover:bg-gray-700 text-white transition-all"
+    >
+      Cancel
+    </button>
+    <button 
+      on:click={confirm} 
+      class="inline-flex items-center justify-center px-6 py-3 rounded-md font-medium bg-indigo-500 hover:bg-indigo-600 text-white transition-all hover:-translate-y-0.5"
+    >
+      Generate PDF
+    </button>
   </div>
 </div>
-
-<style>
-  .review-dialog {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    color: #e2e8f0;
-    padding: 1.5rem;
-  }
-  
-  .dialog-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #334155;
-    margin-bottom: 1.5rem;
-  }
-  
-  .header-content {
-    flex: 1;
-  }
-  
-  .dialog-header h2 {
-    font-size: 1.5rem;
-    margin: 0 0 0.5rem 0;
-    color: white;
-  }
-  
-  .subtitle {
-    color: #94a3b8;
-    margin: 0;
-    font-size: 0.9rem;
-  }
-  
-  .close-btn {
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    font-size: 1.75rem;
-    line-height: 1;
-    cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    margin-left: 1rem;
-    transition: all 0.2s ease;
-  }
-  
-  .close-btn:hover {
-    color: white;
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .dialog-content {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 1rem;
-  }
-  
-  section {
-    margin-bottom: 2.5rem;
-    background-color: rgba(30, 41, 59, 0.5);
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    border: 1px solid rgba(51, 65, 85, 0.5);
-  }
-  
-  h3 {
-    font-size: 1.1rem;
-    margin: 0 0 0.5rem 0;
-    color: white;
-  }
-  
-  .section-desc {
-    color: #94a3b8;
-    font-size: 0.85rem;
-    margin: 0 0 1rem 0;
-  }
-  
-  textarea, input {
-    width: 100%;
-    background-color: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 0.375rem;
-    padding: 0.75rem;
-    color: white;
-    font-family: inherit;
-    font-size: 0.9rem;
-    resize: vertical;
-  }
-  
-  textarea:focus, input:focus {
-    outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
-  }
-  
-  .weekly-focus-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-  
-  @media (max-width: 640px) {
-    .weekly-focus-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  .focus-item {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .focus-item label {
-    font-size: 0.85rem;
-    margin-bottom: 0.25rem;
-    color: #cbd5e1;
-  }
-  
-  .questions-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
-  }
-  
-  .pagination {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.25rem;
-    font-size: 0.85rem;
-    color: #94a3b8;
-  }
-  
-  .pagination-controls {
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .pagination-btn {
-    background-color: #334155;
-    border: none;
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.25rem;
-    font-size: 0.8rem;
-    color: #e2e8f0;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-  }
-  
-  .pagination-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
-  .pagination-btn:not(:disabled):hover {
-    background-color: #475569;
-  }
-  
-  .questions-list {
-    display: grid;
-    gap: 1.25rem;
-  }
-  
-  .question-item {
-    display: flex;
-    flex-direction: column;
-    background-color: rgba(30, 41, 59, 0.7);
-    padding: 1rem;
-    border-radius: 0.375rem;
-  }
-  
-  .question-item label {
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    color: #cbd5e1;
-    font-weight: 500;
-  }
-  
-  .dialog-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #334155;
-    margin-top: 1.5rem;
-  }
-  
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.375rem;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: white;
-  }
-  
-  .primary {
-    background-color: #6366f1;
-  }
-  
-  .primary:hover {
-    background-color: #4f46e5;
-    transform: translateY(-1px);
-  }
-  
-  .secondary {
-    background-color: #475569;
-  }
-  
-  .secondary:hover {
-    background-color: #334155;
-  }
-</style>

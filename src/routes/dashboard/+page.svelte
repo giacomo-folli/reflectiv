@@ -55,28 +55,35 @@
     closePreview(); // Close the preview if it was open
     isLoading = true;
     errorMessage = "";
-    
+
     try {
       const month = parseInt(selectedMonth);
       const year = parseInt(selectedYear);
-      
+
       // In a real implementation, this would be a fetch call to the API
       // const response = await fetch(`/api/diary-content?month=${month}&year=${year}`);
       // if (!response.ok) throw new Error('Failed to generate diary content');
       // const data = await response.json();
-      
+
       // Using mock data for now
       diaryContent = generateMockReflectionContent(month, year);
-      
+
       // Move to the review step
       showReview = true;
     } catch (error) {
-      console.error('Error generating content:', error);
-      errorMessage = 'Failed to generate diary content. Please try again.';
+      console.error("Error generating content:", error);
+      errorMessage = "Failed to generate diary content. Please try again.";
     } finally {
       isLoading = false;
     }
   }
+
+  // TO REMOVE
+  // TO REMOVE
+  // TO REMOVE
+  // TO REMOVE
+  // TO REMOVE
+  startInteractiveFlow();
 
   // Interactive flow: Step 2 - Review and customize
   function handleContentConfirm(event: CustomEvent) {
@@ -94,39 +101,38 @@
   async function generateFinalPDF() {
     isLoading = true;
     errorMessage = "";
-    
+
     try {
       const month = parseInt(selectedMonth);
       const year = parseInt(selectedYear);
-      
+
       // In a real implementation, this would post the customized content to generate the PDF
-      const response = await fetch('/api/generate-pdf', {
-        method: 'POST',
+      const response = await fetch("/api/generate-pdf", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           month,
           year,
-          content: diaryContent
-        })
+          content: diaryContent,
+        }),
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to generate PDF');
+        throw new Error("Failed to generate PDF");
       }
-      
+
       const data = await response.json();
-      
+
       // Show confirmation
       showConfirmation = true;
-      
+
       // In a real implementation, we would trigger the PDF download
       // For now, we're just showing a confirmation
-      
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      errorMessage = 'Failed to generate PDF. Please try again.';
+      console.error("Error generating PDF:", error);
+      errorMessage = "Failed to generate PDF. Please try again.";
     } finally {
       isLoading = false;
     }
@@ -152,34 +158,48 @@
   }
 </script>
 
-<div class="dashboard">
-  <h1>Monthly Reflection Diary Generator</h1>
-  <p class="subtitle">
+<div class="max-w-3xl mx-auto px-4 py-4 text-center">
+  <h1 class="text-3xl font-bold mb-3 text-white">
+    Monthly Reflection Diary Generator
+  </h1>
+  <p class="text-gray-400 mb-8">
     Create a personalized monthly diary with AI-generated reflection questions
     for each day.
   </p>
 
-  <div class="cta-links">
-    <a href="/links" class="add-links-btn">
-      <span class="icon">🔗</span>
+  <div class="mb-8">
+    <a
+      href="/links"
+      class="inline-flex items-center bg-purple-900/20 border border-purple-400/30 text-purple-300 py-3 px-6 rounded-md text-sm hover:bg-purple-900/30 hover:border-purple-400/40 transition-colors"
+    >
+      <span class="mr-2">🔗</span>
       Add ChatGPT Links for Better Personalization
     </a>
   </div>
 
-  <div class="generator-form">
-    <div class="form-grid">
-      <div class="form-group">
-        <label for="month">Month</label>
-        <select id="month" bind:value={selectedMonth}>
+  <div class="bg-gray-800 rounded-lg p-8 relative">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+      <div class="text-left">
+        <label for="month" class="block text-gray-300 text-sm mb-2">Month</label
+        >
+        <select
+          id="month"
+          bind:value={selectedMonth}
+          class="w-full p-3 rounded-md border border-gray-600 bg-gray-700 text-white"
+        >
           {#each months as month}
             <option value={month.value}>{month.label}</option>
           {/each}
         </select>
       </div>
 
-      <div class="form-group">
-        <label for="year">Year</label>
-        <select id="year" bind:value={selectedYear}>
+      <div class="text-left">
+        <label for="year" class="block text-gray-300 text-sm mb-2">Year</label>
+        <select
+          id="year"
+          bind:value={selectedYear}
+          class="w-full p-3 rounded-md border border-gray-600 bg-gray-700 text-white"
+        >
           {#each years as year}
             <option value={year.value}>{year.label}</option>
           {/each}
@@ -187,29 +207,39 @@
       </div>
     </div>
 
-    <div class="action-buttons">
-      <button on:click={openPreview} class="btn preview-btn">
-        <span class="icon">👁️</span>
+    <div class="grid grid-cols-2 gap-4">
+      <button
+        on:click={openPreview}
+        class="flex items-center justify-center py-3 px-4 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-md transition-colors"
+      >
+        <span class="mr-2">👁️</span>
         Preview
       </button>
 
-      <button on:click={startInteractiveFlow} class="btn generate-btn">
-        <span class="icon">✨</span>
+      <button
+        on:click={startInteractiveFlow}
+        class="flex items-center justify-center py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition-colors"
+      >
+        <span class="mr-2">✨</span>
         Generate Content
       </button>
     </div>
-    
+
     <!-- Show loading indicator -->
     {#if isLoading}
-      <div class="loading-indicator">
-        <div class="spinner"></div>
+      <div class="mt-6 flex flex-col items-center text-gray-400">
+        <div
+          class="w-10 h-10 mb-4 rounded-full border-3 border-indigo-600/30 border-t-indigo-600 animate-spin"
+        ></div>
         <p>Generating your personalized content...</p>
       </div>
     {/if}
-    
+
     <!-- Show error message if applicable -->
     {#if errorMessage}
-      <div class="error-message">
+      <div
+        class="mt-6 p-4 bg-red-900/10 border-l-4 border-red-500 text-red-400 text-left rounded"
+      >
         <p>{errorMessage}</p>
       </div>
     {/if}
@@ -218,46 +248,89 @@
 
 <!-- Preview Modal -->
 {#if showPreview}
-  <div class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Diary Preview</h2>
-        <button on:click={closePreview} class="close-btn">&times;</button>
+  <div
+    class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4"
+  >
+    <div
+      class="bg-gray-800 rounded-lg w-full max-w-xl shadow-xl flex flex-col max-h-[calc(100vh-2rem)]"
+    >
+      <div
+        class="px-5 py-4 border-b border-gray-700 flex justify-between items-center"
+      >
+        <h2 class="text-xl font-medium text-white m-0">Diary Preview</h2>
+        <button
+          on:click={closePreview}
+          class="bg-transparent border-0 text-gray-400 text-2xl hover:text-white"
+          >&times;</button
+        >
       </div>
 
-      <div class="modal-content">
-        <h3>{getMonthName(selectedMonth)} {selectedYear}</h3>
+      <div class="p-6 overflow-y-auto flex-1">
+        <h3 class="text-2xl font-bold text-white mb-5">
+          {getMonthName(selectedMonth)}
+          {selectedYear}
+        </h3>
 
-        <p>Your diary will include:</p>
+        <p class="text-gray-300 mb-4">Your diary will include:</p>
 
-        <ul class="feature-list">
-          <li>A beautiful cover page with a personalized monthly mantra</li>
-          <li>Weekly focus areas to guide your month</li>
-          <li>
+        <ul class="text-left pl-6 mb-6 space-y-2">
+          <li class="text-gray-300 marker:text-purple-400">
+            A beautiful cover page with a personalized monthly mantra
+          </li>
+          <li class="text-gray-300 marker:text-purple-400">
+            Weekly focus areas to guide your month
+          </li>
+          <li class="text-gray-300 marker:text-purple-400">
             {DateTime.local(parseInt(selectedYear), parseInt(selectedMonth))
               .daysInMonth} daily pages with reflection questions
           </li>
-          <li>Space to write your answers</li>
-          <li>Clean, printable layout</li>
+          <li class="text-gray-300 marker:text-purple-400">
+            Space to write your answers
+          </li>
+          <li class="text-gray-300 marker:text-purple-400">
+            Clean, printable layout
+          </li>
         </ul>
 
-        <div class="flow-explanation">
-          <h4>How it works:</h4>
-          <ol>
-            <li><strong>Generate Content:</strong> AI creates questions, a monthly mantra, and weekly focus areas</li>
-            <li><strong>Review & Customize:</strong> Edit any content to match your preferences</li>
-            <li><strong>Generate PDF:</strong> Create your personalized reflection diary</li>
+        <div class="bg-indigo-900/5 p-4 rounded-md mb-6 text-left">
+          <h4 class="text-indigo-300 font-medium mb-2">How it works:</h4>
+          <ol class="pl-6 m-0">
+            <li class="text-gray-300 mb-2">
+              <strong class="text-indigo-300">Generate Content:</strong> AI creates
+              questions, a monthly mantra, and weekly focus areas
+            </li>
+            <li class="text-gray-300 mb-2">
+              <strong class="text-indigo-300">Review & Customize:</strong> Edit any
+              content to match your preferences
+            </li>
+            <li class="text-gray-300">
+              <strong class="text-indigo-300">Generate PDF:</strong> Create your
+              personalized reflection diary
+            </li>
           </ol>
         </div>
 
-        <p class="note">
-          The interactive PDF generation allows you to customize all content before creating your diary.
+        <p
+          class="bg-indigo-900/10 border-l-4 border-indigo-600 p-4 rounded text-indigo-300 text-sm text-left"
+        >
+          The interactive PDF generation allows you to customize all content
+          before creating your diary.
         </p>
       </div>
 
-      <div class="modal-footer">
-        <button on:click={closePreview} class="btn secondary">Close</button>
-        <button on:click={startInteractiveFlow} class="btn primary">Start Generation</button>
+      <div class="px-5 py-4 border-t border-gray-700 flex justify-end gap-3">
+        <button
+          on:click={closePreview}
+          class="py-2 px-4 bg-gray-600 hover:bg-gray-500 text-white font-medium rounded-md"
+        >
+          Close
+        </button>
+        <button
+          on:click={startInteractiveFlow}
+          class="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md"
+        >
+          Start Generation
+        </button>
       </div>
     </div>
   </div>
@@ -265,12 +338,14 @@
 
 <!-- Review Dialog -->
 {#if showReview && diaryContent}
-  <div class="modal-overlay">
-    <div class="modal review-dialog-modal">
-      <DiaryReviewDialog 
-        month={parseInt(selectedMonth)} 
+  <div
+    class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4"
+  >
+    <div class="bg-gray-800 rounded-lg w-full max-w-3xl shadow-xl">
+      <DiaryReviewDialog
+        month={parseInt(selectedMonth)}
         year={parseInt(selectedYear)}
-        diaryContent={diaryContent}
+        {diaryContent}
         on:confirm={handleContentConfirm}
         on:cancel={handleReviewCancel}
       />
@@ -280,376 +355,77 @@
 
 <!-- Confirmation Dialog -->
 {#if showConfirmation}
-  <div class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>PDF Generated Successfully!</h2>
-        <button on:click={closeConfirmation} class="close-btn">&times;</button>
+  <div
+    class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4"
+  >
+    <div
+      class="bg-gray-800 rounded-lg w-full max-w-xl shadow-xl flex flex-col max-h-[calc(100vh-2rem)]"
+    >
+      <div
+        class="px-5 py-4 border-b border-gray-700 flex justify-between items-center"
+      >
+        <h2 class="text-xl font-medium text-white m-0">
+          PDF Generated Successfully!
+        </h2>
+        <button
+          on:click={closeConfirmation}
+          class="bg-transparent border-0 text-gray-400 text-2xl hover:text-white"
+          >&times;</button
+        >
       </div>
 
-      <div class="modal-content">
-        <div class="success-icon">✅</div>
-        <h3>Your {getMonthName(selectedMonth)} {selectedYear} Reflection Diary is ready</h3>
-        
-        <p>Your personalized diary has been created with:</p>
-        <ul class="success-list">
-          <li>Your customized monthly mantra</li>
-          <li>Your personalized weekly focus areas</li>
-          <li>{diaryContent.questions.length} daily reflection questions</li>
-          <li>Beautiful formatting for easy printing</li>
+      <div class="p-6 overflow-y-auto flex-1">
+        <div class="text-5xl mb-4 text-green-500">✅</div>
+        <h3 class="text-2xl font-bold text-white mb-5">
+          Your {getMonthName(selectedMonth)}
+          {selectedYear} Reflection Diary is ready
+        </h3>
+
+        <p class="text-gray-300 mb-4">
+          Your personalized diary has been created with:
+        </p>
+        <ul class="text-left pl-6 mb-6 space-y-2">
+          <li class="text-gray-300 marker:text-green-500">
+            Your customized monthly mantra
+          </li>
+          <li class="text-gray-300 marker:text-green-500">
+            Your personalized weekly focus areas
+          </li>
+          <li class="text-gray-300 marker:text-green-500">
+            {diaryContent.questions.length} daily reflection questions
+          </li>
+          <li class="text-gray-300 marker:text-green-500">
+            Beautiful formatting for easy printing
+          </li>
         </ul>
-        
-        <div class="download-instructions">
-          <p>Click the button below to download your PDF.</p>
-          <p class="note">In a real implementation, the PDF would automatically download at this point.</p>
+
+        <div class="mt-6 mb-2">
+          <p class="text-gray-300 mb-2">
+            Click the button below to download your PDF.
+          </p>
+          <p
+            class="bg-indigo-900/10 border-l-4 border-indigo-600 p-4 rounded text-indigo-300 text-sm text-left"
+          >
+            In a real implementation, the PDF would automatically download at
+            this point.
+          </p>
         </div>
       </div>
 
-      <div class="modal-footer">
-        <button on:click={closeConfirmation} class="btn secondary">Close</button>
-        <button class="btn primary">
-          <span class="icon">📥</span>
+      <div class="px-5 py-4 border-t border-gray-700 flex justify-end gap-3">
+        <button
+          on:click={closeConfirmation}
+          class="py-2 px-4 bg-gray-600 hover:bg-gray-500 text-white font-medium rounded-md"
+        >
+          Close
+        </button>
+        <button
+          class="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md flex items-center"
+        >
+          <span class="mr-2">📥</span>
           Download PDF
         </button>
       </div>
     </div>
   </div>
 {/if}
-
-<style>
-  .dashboard {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1rem;
-    text-align: center;
-  }
-
-  h1 {
-    font-size: 2.2rem;
-    margin-bottom: 0.75rem;
-    color: white;
-  }
-
-  .subtitle {
-    color: #a1a1aa;
-    margin-bottom: 2rem;
-  }
-
-  .cta-links {
-    margin-bottom: 2rem;
-  }
-
-  .add-links-btn {
-    display: inline-flex;
-    align-items: center;
-    background-color: rgba(91, 33, 182, 0.2);
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    color: #a78bfa;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.375rem;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition:
-      background-color 0.15s ease-in-out,
-      border-color 0.15s ease-in-out;
-  }
-
-  .add-links-btn:hover {
-    background-color: rgba(91, 33, 182, 0.3);
-    border-color: rgba(139, 92, 246, 0.4);
-  }
-
-  .icon {
-    margin-right: 0.5rem;
-  }
-
-  .generator-form {
-    background-color: #1e293b;
-    border-radius: 0.5rem;
-    padding: 2rem;
-    position: relative;
-  }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  @media (max-width: 600px) {
-    .form-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .form-group {
-    text-align: left;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #d1d5db;
-    font-size: 0.9rem;
-  }
-
-  select {
-    width: 100%;
-    padding: 0.75rem;
-    border-radius: 0.375rem;
-    border: 1px solid #4b5563;
-    background-color: #374151;
-    color: white;
-    font-size: 1rem;
-  }
-
-  .action-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 1rem;
-    border-radius: 0.375rem;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
-    color: white;
-  }
-
-  .preview-btn {
-    background-color: #374151;
-  }
-
-  .preview-btn:hover {
-    background-color: #4b5563;
-  }
-
-  .generate-btn {
-    background-color: #6366f1;
-  }
-
-  .generate-btn:hover {
-    background-color: #4f46e5;
-  }
-
-  .loading-indicator {
-    margin-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #a1a1aa;
-  }
-
-  .spinner {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 1rem;
-    border-radius: 50%;
-    border: 3px solid rgba(99, 102, 241, 0.3);
-    border-top-color: #6366f1;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .error-message {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    background-color: rgba(239, 68, 68, 0.1);
-    border-left: 4px solid #ef4444;
-    color: #fca5a5;
-    text-align: left;
-    border-radius: 0.25rem;
-  }
-
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    padding: 1rem;
-  }
-
-  .modal {
-    background-color: #1e293b;
-    border-radius: 0.5rem;
-    width: 100%;
-    max-width: 600px;
-    box-shadow:
-      0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    max-height: calc(100vh - 2rem);
-    display: flex;
-    flex-direction: column;
-  }
-
-  .review-dialog-modal {
-    max-width: 800px;
-  }
-
-  .modal-header {
-    padding: 1.25rem;
-    border-bottom: 1px solid #2d3748;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .modal-header h2 {
-    font-size: 1.25rem;
-    margin: 0;
-    color: white;
-  }
-
-  .close-btn {
-    background: none;
-    border: none;
-    color: #a1a1aa;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0;
-  }
-
-  .close-btn:hover {
-    color: white;
-  }
-
-  .modal-content {
-    padding: 1.5rem;
-    overflow-y: auto;
-    flex: 1;
-  }
-
-  .modal-content h3 {
-    margin-top: 0;
-    margin-bottom: 1.25rem;
-    color: white;
-    font-size: 1.5rem;
-  }
-
-  .feature-list {
-    text-align: left;
-    padding-left: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .feature-list li {
-    margin-bottom: 0.5rem;
-    color: #d1d5db;
-    position: relative;
-  }
-
-  .feature-list li::marker {
-    color: #8b5cf6;
-  }
-
-  .flow-explanation {
-    background-color: rgba(99, 102, 241, 0.05);
-    padding: 1rem;
-    border-radius: 0.375rem;
-    margin-bottom: 1.5rem;
-    text-align: left;
-  }
-
-  .flow-explanation h4 {
-    color: #a5b4fc;
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-  }
-
-  .flow-explanation ol {
-    padding-left: 1.5rem;
-    margin: 0;
-  }
-
-  .flow-explanation li {
-    color: #d1d5db;
-    margin-bottom: 0.5rem;
-  }
-
-  .flow-explanation strong {
-    color: #a5b4fc;
-  }
-
-  .note {
-    background-color: rgba(99, 102, 241, 0.1);
-    border-left: 4px solid #6366f1;
-    padding: 1rem;
-    border-radius: 0.25rem;
-    color: #a5b4fc;
-    font-size: 0.9rem;
-    text-align: left;
-  }
-
-  .modal-footer {
-    padding: 1.25rem;
-    border-top: 1px solid #2d3748;
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-  }
-
-  .modal-footer .btn {
-    padding: 0.5rem 1rem;
-  }
-
-  .primary {
-    background-color: #6366f1;
-  }
-
-  .primary:hover {
-    background-color: #4f46e5;
-  }
-
-  .secondary {
-    background-color: #4b5563;
-  }
-
-  .secondary:hover {
-    background-color: #374151;
-  }
-
-  .success-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: #22c55e;
-  }
-
-  .success-list {
-    text-align: left;
-    padding-left: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .success-list li {
-    margin-bottom: 0.5rem;
-    color: #d1d5db;
-  }
-
-  .success-list li::marker {
-    color: #22c55e;
-  }
-
-  .download-instructions {
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-</style>

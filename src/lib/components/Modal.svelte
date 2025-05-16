@@ -32,15 +32,15 @@
 
 {#if open}
   <div
-    class="modal-backdrop"
+    class="fixed top-0 left-0 w-full h-full bg-black/70 z-50 flex items-center justify-center p-4"
     role="presentation"
     on:click={handleBackdropClick}
     on:keydown|stopPropagation={handleKeydown}
     transition:fade={{ duration: 150 }}
   >
     <div
-      class="modal"
-      style="--modal-width: {width};"
+      class="bg-gray-900 rounded-lg w-full border border-gray-700 flex flex-col overflow-hidden shadow-2xl"
+      style="max-width: {width}; max-height: 90vh;"
       transition:scale={{
         duration: 200,
         start: 0.95,
@@ -48,14 +48,14 @@
         easing: cubicOut,
       }}
     >
-      <div class="modal-header">
+      <div class="flex justify-between items-center p-4 sm:px-6 border-b border-gray-700">
         {#if title}
-          <h2 class="modal-title">{title}</h2>
+          <h2 class="text-xl font-semibold text-gray-100 m-0">{title}</h2>
         {/if}
 
         {#if showCloseButton}
           <button
-            class="close-button"
+            class="bg-transparent border-none text-4xl leading-none text-gray-400 p-0 flex items-center justify-center transition-colors hover:text-gray-100 hover:bg-gray-800/50 rounded-full w-6 h-6"
             on:click={closeModal}
             aria-label="Close modal"
           >
@@ -64,107 +64,15 @@
         {/if}
       </div>
 
-      <div class="modal-content">
+      <div class="p-4 sm:p-6 overflow-y-auto text-gray-200">
         <slot />
       </div>
 
       {#if $$slots.footer}
-        <div class="modal-footer">
+        <div class="p-4 sm:px-6 flex justify-end gap-3 border-t border-gray-700">
           <slot name="footer" />
         </div>
       {/if}
     </div>
   </div>
 {/if}
-
-<style>
-  .modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-
-  .modal {
-    background-color: #1a202c;
-    border-radius: 0.5rem;
-    width: 100%;
-    max-width: var(--modal-width);
-    max-height: 90vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border: 1px solid #2d3748;
-  }
-
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #2d3748;
-  }
-
-  .modal-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0;
-    color: #f3f4f6;
-  }
-
-  .close-button {
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    padding: 0;
-    width: 1.5rem;
-    height: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #a1a1aa;
-    cursor: pointer;
-    transition: color 0.2s;
-    border-radius: 50%;
-    line-height: 1;
-  }
-
-  .close-button:hover {
-    color: #f3f4f6;
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .modal-content {
-    padding: 1.5rem;
-    overflow-y: auto;
-    color: #e5e7eb;
-  }
-
-  .modal-footer {
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    border-top: 1px solid #2d3748;
-  }
-
-  @media (max-width: 640px) {
-    .modal {
-      max-width: 100%;
-      height: auto;
-      max-height: 85vh;
-    }
-
-    .modal-content {
-      padding: 1rem;
-    }
-  }
-</style>

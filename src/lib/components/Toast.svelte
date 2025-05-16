@@ -6,144 +6,54 @@
 
   const icons = { info: "📣", success: "✅", warning: "⚠️", error: "❌" };
 
-  $: positionClass = `toast-container position-${position}`;
+  $: positionClasses = {
+    "top-right": "top-0 right-0",
+    "top-left": "top-0 left-0",
+    "bottom-right": "bottom-0 right-0",
+    "bottom-left": "bottom-0 left-0"
+  }[position] || "top-0 right-0";
+
+  $: typeClasses = {
+    info: "bg-blue-800",
+    success: "bg-green-800",
+    warning: "bg-amber-700",
+    error: "bg-red-700"
+  };
 </script>
 
-<div class={positionClass}>
+<div class={`fixed z-50 flex flex-col gap-3 max-w-96 w-full p-4 pointer-events-none ${positionClasses}`}>
   {#each $toastStore as toast (toast.id)}
     <div
-      class="toast toast-{toast.type}"
+      class={`flex items-center p-3 rounded-md shadow-lg overflow-hidden pointer-events-auto ${typeClasses[toast.type]} text-white relative`}
       in:fly={{ y: position.includes("top") ? -20 : 20, duration: 300 }}
       out:fade={{ duration: 200 }}
     >
-      <div class="toast-icon">
+      <div class="mr-3">
         {icons[toast.type]}
       </div>
-      <div class="toast-content">
+      <div class="flex-1 text-sm">
         {toast.message}
       </div>
-      <button class="toast-close" on:click={() => removeToast(toast.id)}>
+      <button 
+        class="bg-transparent border-none text-white/70 cursor-pointer text-xl p-0 flex items-center justify-center transition-opacity hover:opacity-100 hover:bg-white/10 rounded-full w-6 h-6" 
+        on:click={() => removeToast(toast.id)}
+      >
         &times;
       </button>
 
       <!-- Progress bar -->
       {#if toast.duration > 0}
         <div
-          class="toast-progress"
-          style="animation-duration: {toast.duration}ms;"
+          class="absolute bottom-0 left-0 h-0.5 bg-white/50 origin-left"
+          style={`animation: toast-progress-shrink ${toast.duration}ms linear forwards;`}
         />
       {/if}
     </div>
   {/each}
 </div>
 
-<style>
-  .toast-container {
-    position: fixed;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    max-width: 24rem;
-    width: 100%;
-    padding: 1rem;
-    pointer-events: none;
-  }
-
-  /* Position variants */
-  .position-top-right {
-    top: 0;
-    right: 0;
-  }
-
-  .position-top-left {
-    top: 0;
-    left: 0;
-  }
-
-  .position-bottom-right {
-    bottom: 0;
-    right: 0;
-  }
-
-  .position-bottom-left {
-    bottom: 0;
-    left: 0;
-  }
-
-  .toast {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    border-radius: 0.375rem;
-    box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    overflow: hidden;
-    pointer-events: auto;
-  }
-
-  /* Toast variants */
-  .toast-info {
-    background-color: #1e40af;
-    color: white;
-  }
-
-  .toast-success {
-    background-color: #047857;
-    color: white;
-  }
-
-  .toast-warning {
-    background-color: #b45309;
-    color: white;
-  }
-
-  .toast-error {
-    background-color: #b91c1c;
-    color: white;
-  }
-
-  .toast-icon {
-    margin-right: 0.75rem;
-  }
-
-  .toast-content {
-    flex: 1;
-    font-size: 0.875rem;
-  }
-
-  .toast-close {
-    background: none;
-    border: none;
-    color: currentColor;
-    opacity: 0.7;
-    cursor: pointer;
-    font-size: 1.25rem;
-    padding: 0 0.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.2s;
-  }
-
-  .toast-close:hover {
-    opacity: 1;
-  }
-
-  .toast-progress {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 3px;
-    background-color: rgba(255, 255, 255, 0.5);
-    width: 100%;
-    transform-origin: left;
-    animation: progress-shrink linear forwards;
-  }
-
-  @keyframes progress-shrink {
+<style global>
+  @keyframes toast-progress-shrink {
     0% {
       transform: scaleX(1);
     }
@@ -153,7 +63,7 @@
   }
 
   @media (max-width: 640px) {
-    .toast-container {
+    .max-w-96 {
       max-width: 100%;
     }
   }

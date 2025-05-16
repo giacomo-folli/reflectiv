@@ -27,7 +27,7 @@
     const y = e.clientY - rect.top;
 
     const ripple = document.createElement("span");
-    ripple.classList.add("ripple");
+    ripple.classList.add("absolute", "rounded-full", "bg-white/40", "pointer-events-none", "transform", "scale-0", "animate-ripple");
     ripple.style.left = `${x}px`;
     ripple.style.top = `${y}px`;
 
@@ -40,209 +40,76 @@
   }
 
   // Calculate button classes based on props
-  $: buttonClass = `btn btn-${variant} btn-${size} ${loading ? "loading" : ""} ${icon ? "with-icon" : ""} ${rightIcon ? "with-right-icon" : ""} ${fullWidth ? "full-width" : ""}`;
+  $: variantClasses = {
+    primary: "bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700",
+    secondary: "bg-gray-600 hover:bg-gray-700 active:bg-gray-800",
+    outline: "bg-transparent border border-indigo-500 text-indigo-500 hover:bg-indigo-500/10 active:bg-indigo-500/20",
+    ghost: "bg-transparent text-indigo-500 hover:bg-indigo-500/10 active:bg-indigo-500/20",
+    danger: "bg-red-500 hover:bg-red-600 active:bg-red-700"
+  }[variant] || "bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700";
+
+  $: sizeClasses = {
+    sm: "h-8 text-sm px-3 min-w-16",
+    md: "h-10 text-base px-4 min-w-20",
+    lg: "h-12 text-lg px-5 min-w-24"
+  }[size] || "h-10 text-base px-4 min-w-20";
+
+  $: buttonClasses = `
+    relative inline-flex items-center justify-center font-medium rounded-md 
+    overflow-hidden cursor-pointer border-none transition-all duration-150 
+    focus:outline-none focus:ring-2 focus:ring-indigo-500/40 
+    ${variantClasses} 
+    ${sizeClasses} 
+    ${loading ? "text-transparent" : ""} 
+    ${icon ? "pl-3" : ""} 
+    ${rightIcon ? "pr-3" : ""} 
+    ${fullWidth ? "w-full" : ""} 
+    ${disabled ? "opacity-65 cursor-not-allowed pointer-events-none" : ""}
+    active:translate-y-px
+  `.trim().replace(/\s+/g, ' ');
 </script>
 
 <button
   {type}
-  class={buttonClass}
+  class={buttonClasses}
   on:click={handleClick}
   {disabled}
   {...$$restProps}
 >
   {#if loading}
-    <Spinner
-      size={size === "sm" ? 16 : size === "lg" ? 24 : 20}
-      color="currentColor"
-      immediate={true}
-    />
+    <div class="absolute inset-0 flex items-center justify-center">
+      <Spinner
+        size={size === "sm" ? 16 : size === "lg" ? 24 : 20}
+        color="currentColor"
+        immediate={true}
+      />
+    </div>
   {:else if icon}
-    <span class="icon">
+    <span class="flex items-center mr-2">
       <slot name="icon"></slot>
     </span>
   {/if}
 
-  <span class="label">
+  <span class={loading ? "invisible" : ""}>
     <slot></slot>
   </span>
 
   {#if rightIcon && !loading}
-    <span class="right-icon">
+    <span class="flex items-center ml-2">
       <slot name="right-icon"></slot>
     </span>
   {/if}
 </button>
 
-<style>
-  .btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 500;
-    border-radius: 0.375rem;
-    overflow: hidden;
-    cursor: pointer;
-    border: none;
-    transition: all 0.15s ease;
-    font-family: inherit;
-    white-space: nowrap;
-  }
-
-  .btn:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.4);
-  }
-
-  .btn-sm {
-    height: 2rem;
-    font-size: 0.875rem;
-    padding: 0 0.75rem;
-    min-width: 4rem;
-  }
-
-  .btn-md {
-    height: 2.5rem;
-    font-size: 0.975rem;
-    padding: 0 1rem;
-    min-width: 5rem;
-  }
-
-  .btn-lg {
-    height: 3rem;
-    font-size: 1.125rem;
-    padding: 0 1.25rem;
-    min-width: 6rem;
-  }
-
-  /* Button variants */
-  .btn-primary {
-    background-color: #6366f1;
-    color: white;
-  }
-
-  .btn-primary:hover {
-    background-color: #4f46e5;
-  }
-
-  .btn-primary:active {
-    background-color: #4338ca;
-    transform: translateY(1px);
-  }
-
-  .btn-secondary {
-    background-color: #4b5563;
-    color: white;
-  }
-
-  .btn-secondary:hover {
-    background-color: #374151;
-  }
-
-  .btn-secondary:active {
-    background-color: #1f2937;
-    transform: translateY(1px);
-  }
-
-  .btn-outline {
-    background-color: transparent;
-    border: 1px solid #6366f1;
-    color: #6366f1;
-  }
-
-  .btn-outline:hover {
-    background-color: rgba(99, 102, 241, 0.1);
-  }
-
-  .btn-outline:active {
-    background-color: rgba(99, 102, 241, 0.2);
-    transform: translateY(1px);
-  }
-
-  .btn-ghost {
-    background-color: transparent;
-    color: #6366f1;
-  }
-
-  .btn-ghost:hover {
-    background-color: rgba(99, 102, 241, 0.1);
-  }
-
-  .btn-ghost:active {
-    background-color: rgba(99, 102, 241, 0.2);
-    transform: translateY(1px);
-  }
-
-  .btn-danger {
-    background-color: #ef4444;
-    color: white;
-  }
-
-  .btn-danger:hover {
-    background-color: #dc2626;
-  }
-
-  .btn-danger:active {
-    background-color: #b91c1c;
-    transform: translateY(1px);
-  }
-
-  /* Full width button */
-  .full-width {
-    width: 100%;
-  }
-
-  /* Disabled state */
-  .btn[disabled] {
-    opacity: 0.65;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  /* Loading state */
-  .btn.loading {
-    color: transparent !important;
-  }
-
-  .btn.loading .label {
-    visibility: hidden;
-  }
-
-  /* Ripple effect */
-  .ripple {
-    position: absolute;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.4);
-    transform: scale(0);
-    animation: ripple 0.6s linear;
-    pointer-events: none;
-  }
-
+<style global>
   @keyframes ripple {
     to {
       transform: scale(4);
       opacity: 0;
     }
   }
-
-  /* Icon styling */
-  .icon {
-    display: flex;
-    align-items: center;
-    margin-right: 0.5rem;
-  }
-
-  .right-icon {
-    display: flex;
-    align-items: center;
-    margin-left: 0.5rem;
-  }
-
-  .with-icon {
-    padding-left: 0.75rem;
-  }
-
-  .with-right-icon {
-    padding-right: 0.75rem;
+  
+  .animate-ripple {
+    animation: ripple 0.6s linear;
   }
 </style>

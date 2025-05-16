@@ -59,21 +59,22 @@
   }
 </script>
 
-<div class="auth-container">
-  <div class="auth-grid">
-    <div class="form-container">
-      <h1>{t.title}</h1>
-      <p class="subtitle">{t.subtitle}</p>
+<div class="max-w-5xl mx-auto p-4 sm:p-8">
+  <div class="grid md:grid-cols-2 gap-8 min-h-[500px]">
+    <!-- Form Section -->
+    <div class="bg-gray-800 rounded-lg p-8">
+      <h1 class="text-2xl font-bold text-white mb-2">{t.title}</h1>
+      <p class="text-gray-400 mb-6">{t.subtitle}</p>
 
       {#if error}
-        <div class="error-box">
+        <div class="bg-red-900/20 border border-red-500/50 text-red-400 p-3 rounded-md mb-4">
           {error}
         </div>
       {/if}
 
-      <form method="POST" use:enhance={handleLogin}>
-        <div class="form-group">
-          <label for="email">{t.email}</label>
+      <form method="POST" use:enhance={handleLogin} class="mb-6">
+        <div class="mb-5">
+          <label for="email" class="block text-gray-300 text-sm mb-2">{t.email}</label>
           <input
             type="email"
             id="email"
@@ -81,11 +82,12 @@
             bind:value={email}
             required
             autocomplete="email"
+            class="w-full p-3 rounded-md border border-gray-600 bg-gray-700 text-white text-base focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
 
-        <div class="form-group">
-          <label for="password">{t.password}</label>
+        <div class="mb-5">
+          <label for="password" class="block text-gray-300 text-sm mb-2">{t.password}</label>
           <input
             type="password"
             id="password"
@@ -93,25 +95,33 @@
             bind:value={password}
             required
             autocomplete="current-password"
+            class="w-full p-3 rounded-md border border-gray-600 bg-gray-700 text-white text-base focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
 
-        <button type="submit" class="btn btn-primary">{t.signIn}</button>
+        <button 
+          type="submit" 
+          class="w-full py-3 px-6 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors"
+        >
+          {t.signIn}
+        </button>
       </form>
 
-      <p class="auth-link">
-        {t.noAccount} <a href="/register">{t.register}</a>
+      <p class="text-center text-gray-400 text-sm">
+        {t.noAccount} <a href="/register" class="text-purple-400 hover:text-purple-300 underline">{t.register}</a>
       </p>
 
-      <div class="language-selector">
+      <div class="flex justify-center gap-2 mt-6">
         <button
-          class="lang-btn {$locale === 'en' ? 'active' : ''}"
+          class={"bg-gray-700 text-gray-400 border border-gray-600 rounded-md px-3 py-2 cursor-pointer text-xs transition-all " + 
+                ($locale === 'en' ? 'bg-indigo-600 text-white border-indigo-500' : '')}
           on:click={() => locale.set("en")}
         >
           🇬🇧 English
         </button>
         <button
-          class="lang-btn {$locale === 'it' ? 'active' : ''}"
+          class={"bg-gray-700 text-gray-400 border border-gray-600 rounded-md px-3 py-2 cursor-pointer text-xs transition-all " + 
+                ($locale === 'it' ? 'bg-indigo-600 text-white border-indigo-500' : '')}
           on:click={() => locale.set("it")}
         >
           🇮🇹 Italiano
@@ -119,203 +129,26 @@
       </div>
     </div>
 
-    <div class="hero-section">
-      <div class="hero-content">
-        <h2>{t.heroTitle}</h2>
-        <p>{t.heroText}</p>
-        <ul>
-          <li>{t.feature1}</li>
-          <li>{t.feature2}</li>
-          <li>{t.feature3}</li>
+    <!-- Hero Section -->
+    <div class="hidden md:flex rounded-lg bg-purple-900 items-center justify-center overflow-hidden">
+      <div class="p-10 text-white">
+        <h2 class="text-2xl font-bold mb-4">{t.heroTitle}</h2>
+        <p class="text-purple-200 mb-6 leading-relaxed">{t.heroText}</p>
+        <ul class="space-y-3">
+          <li class="flex items-start">
+            <span class="text-purple-400 mr-2">✓</span>
+            <span class="text-purple-100">{t.feature1}</span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-purple-400 mr-2">✓</span>
+            <span class="text-purple-100">{t.feature2}</span>
+          </li>
+          <li class="flex items-start">
+            <span class="text-purple-400 mr-2">✓</span>
+            <span class="text-purple-100">{t.feature3}</span>
+          </li>
         </ul>
       </div>
     </div>
   </div>
 </div>
-
-<style>
-  .auth-container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-  }
-
-  .auth-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    min-height: 500px;
-  }
-
-  @media (max-width: 768px) {
-    .auth-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .hero-section {
-      display: none;
-    }
-  }
-
-  .form-container {
-    background-color: #1e293b;
-    border-radius: 0.5rem;
-    padding: 2rem;
-  }
-
-  h1 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-    color: white;
-  }
-
-  .subtitle {
-    color: #a1a1aa;
-    margin-bottom: 1.5rem;
-  }
-
-  .error-box {
-    background-color: rgba(220, 38, 38, 0.1);
-    border: 1px solid rgba(220, 38, 38, 0.5);
-    color: #ef4444;
-    padding: 0.75rem;
-    border-radius: 0.375rem;
-    margin-bottom: 1rem;
-  }
-
-  .form-group {
-    margin-bottom: 1.25rem;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #d1d5db;
-    font-size: 0.9rem;
-  }
-
-  input {
-    width: 100%;
-    padding: 0.75rem;
-    border-radius: 0.375rem;
-    border: 1px solid #4b5563;
-    background-color: #374151;
-    color: white;
-    font-size: 1rem;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-  }
-
-  .btn {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.375rem;
-    font-weight: 500;
-    text-align: center;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
-    width: 100%;
-  }
-
-  .btn-primary {
-    background-color: #6366f1;
-    color: white;
-  }
-
-  .btn-primary:hover {
-    background-color: #4f46e5;
-  }
-
-  .auth-link {
-    margin-top: 1.5rem;
-    text-align: center;
-    font-size: 0.95rem;
-    color: #a1a1aa;
-  }
-
-  .auth-link a {
-    color: #8b5cf6;
-    text-decoration: underline;
-  }
-
-  .hero-section {
-    background-color: #2e1065;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .hero-content {
-    padding: 2.5rem;
-    color: white;
-  }
-
-  .hero-section h2 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-  }
-
-  .hero-section p {
-    color: #c4b5fd;
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
-  }
-
-  .hero-section ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .hero-section li {
-    margin-bottom: 0.75rem;
-    position: relative;
-    padding-left: 1.5rem;
-    color: #ddd6fe;
-  }
-
-  .hero-section li:before {
-    content: "✓";
-    position: absolute;
-    left: 0;
-    color: #a78bfa;
-  }
-
-  /* Language selector styling */
-  .language-selector {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-  }
-
-  .lang-btn {
-    background-color: #2d3748;
-    color: #a1a1aa;
-    border: 1px solid #4a5568;
-    border-radius: 0.375rem;
-    padding: 0.5rem 0.75rem;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: all 0.2s ease-in-out;
-  }
-
-  .lang-btn:hover {
-    background-color: #4a5568;
-    color: #f3f4f6;
-  }
-
-  .lang-btn.active {
-    background-color: #6366f1;
-    color: white;
-    border-color: #4f46e5;
-  }
-</style>

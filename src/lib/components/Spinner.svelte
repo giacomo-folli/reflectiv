@@ -22,47 +22,33 @@
 
 {#if show}
   <div
-    class="spinner"
-    style="--size: {size}px; --color: {color}; --width: {width}px;"
+    class="inline-block relative animate-spinner-rotate"
+    style="width: {size}px; height: {size}px;"
     in:fade={{ duration: 150 }}
     out:fade={{ duration: 100 }}
   >
-    <svg viewBox="0 0 50 50">
-      <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"
+    <svg viewBox="0 0 50 50" class="w-full h-full">
+      <circle 
+        class="spinner-circle" 
+        cx="25" 
+        cy="25" 
+        r="20" 
+        fill="none" 
+        stroke-width="5"
+        style="stroke: {color}; stroke-width: {width}px;"
       ></circle>
     </svg>
   </div>
 {/if}
 
-<style>
-  .spinner {
-    display: inline-block;
-    width: var(--size);
-    height: var(--size);
-    position: relative;
-  }
-
-  svg {
-    animation: rotate 1.5s linear infinite;
-    width: 100%;
-    height: 100%;
-  }
-
-  .path {
-    stroke: var(--color);
-    stroke-width: var(--width);
-    stroke-linecap: round;
-    transform-origin: center;
-    animation: dash 1.5s ease-in-out infinite;
-  }
-
-  @keyframes rotate {
+<style global>
+  @keyframes spinner-rotate {
     100% {
       transform: rotate(360deg);
     }
   }
 
-  @keyframes dash {
+  @keyframes spinner-dash {
     0% {
       stroke-dasharray: 1, 150;
       stroke-dashoffset: 0;
@@ -75,5 +61,15 @@
       stroke-dasharray: 90, 150;
       stroke-dashoffset: -124;
     }
+  }
+
+  .animate-spinner-rotate {
+    animation: spinner-rotate 1.5s linear infinite;
+  }
+
+  .spinner-circle {
+    stroke-linecap: round;
+    transform-origin: center;
+    animation: spinner-dash 1.5s ease-in-out infinite;
   }
 </style>
