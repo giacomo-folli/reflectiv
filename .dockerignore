@@ -1,0 +1,50 @@
+# ───── Node Dependencies & Caches ─────
+node_modules/
+.npm/
+.pnpm-store/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ───── Build Output ─────
+.svelte-kit/
+build/
+static/build/
+dist/
+
+# ───── Environment & Secrets ─────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.secrets/
+
+# ───── VCS ─────
+.git/
+.gitignore
+.github/
+
+# ───── Editor & IDE Files ─────
+.vscode/
+.project
+.settings/
+.windsurf
+
+# ───── Docker Files (only exclude if you don't COPY them into image) ─────
+.dockerignore
+
+# ───── OS & System Files ─────
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ───── Testing ─────
+tests/
+coverage/
+playwright-report/
+playwright/.cache
