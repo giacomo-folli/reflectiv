@@ -1,117 +1,19 @@
 import { DateTime } from "luxon";
 import { jsPDF } from "jspdf";
-import { error, redirect } from "@sveltejs/kit";
+import { error, json, redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { mockGeneratePdfResponse } from "$lib/mock-data";
-
-// Define some reflection questions by month
-const reflectionQuestions = {
-  1: [
-    // January
-    "What new beginnings are you looking forward to this year?",
-    "How can you establish better habits this month?",
-    "What would make this year different from the last?",
-    "What's one skill you'd like to develop this year?",
-    "How can you make more time for self-reflection this month?",
-  ],
-  2: [
-    // February
-    "How are you progressing on your goals for the year?",
-    "What relationships would you like to nurture this month?",
-    "What self-care practices have been most effective for you lately?",
-    "How can you show more compassion to yourself and others?",
-    "What habits would you like to leave behind this month?",
-  ],
-  3: [
-    // March
-    "What signs of new growth do you see in your life?",
-    "How can you bring more balance into your daily routine?",
-    "What limiting beliefs are holding you back right now?",
-    "What can you do to feel more energized this month?",
-    "How might you welcome change rather than resist it?",
-  ],
-  4: [
-    // April
-    "What aspects of your life need refreshing or renewal?",
-    "How can you bring more play and creativity into your days?",
-    "What's one small step you could take toward a big goal?",
-    "What obstacles have you overcome recently?",
-    "How can you better nurture your physical well-being this month?",
-  ],
-  5: [
-    // May
-    "What are you most grateful for in this season of your life?",
-    "How can you create more space for what truly matters?",
-    "What do you want to accomplish before the year is halfway over?",
-    "How can you incorporate more nature into your daily routine?",
-    "What would bring you more joy right now?",
-  ],
-  6: [
-    // June
-    "How has the first half of your year unfolded?",
-    "What do you want to experience more of in the coming months?",
-    "What are you learning about yourself lately?",
-    "How can you better align your actions with your values?",
-    "What would make this summer meaningful for you?",
-  ],
-  7: [
-    // July
-    "What adventure would you like to have before summer ends?",
-    "How can you find more moments of rest and relaxation?",
-    "What's something you've been putting off that you could tackle now?",
-    "How can you express more gratitude in your daily life?",
-    "What boundary do you need to establish or reinforce?",
-  ],
-  8: [
-    // August
-    "What has been your biggest lesson so far this year?",
-    "How can you prepare for the transition to autumn?",
-    "What habits would you like to establish before the busy fall season?",
-    "How can you better connect with your community?",
-    "What would make you feel more fulfilled in your work or studies?",
-  ],
-  9: [
-    // September
-    "What new routine would benefit your wellbeing this season?",
-    "How can you create more structure in your days?",
-    "What goal would you like to accomplish before year's end?",
-    "How can you continue learning and growing this month?",
-    "What can you let go of to make room for new opportunities?",
-  ],
-  10: [
-    // October
-    "What transformation are you currently experiencing?",
-    "How can you embrace change rather than resist it?",
-    "What brings you comfort during times of transition?",
-    "How can you better honor your needs and limitations?",
-    "What deeper questions have been on your mind lately?",
-  ],
-  11: [
-    // November
-    "What are you most grateful for in this season of life?",
-    "How can you express more appreciation to those around you?",
-    "What traditions bring you the most meaning?",
-    "How do you want to feel as the year draws to a close?",
-    "What can you do now to reduce stress during the holiday season?",
-  ],
-  12: [
-    // December
-    "How have you grown or changed this year?",
-    "What are you most proud of accomplishing?",
-    "What lessons will you carry forward into the new year?",
-    "How can you create moments of peace amid the holiday bustle?",
-    "What intentions would you like to set for the coming year?",
-  ],
-};
+import { generateMockReflectionContent } from "$lib/mock-diary-content";
 
 /**
  * Generate a PDF document with reflection questions for each day of the month
  * @param {number} month - Month (1-12)
  * @param {number} year - Year (e.g., 2025)
  * @param {object} userData - User data for personalization
+ * @param {object} diaryContent - Content for the diary (questions, mantra, focus areas)
  * @returns {Uint8Array} - PDF file as a byte array
  */
-function generateDiary(month: number, year: number, userData: any) {
+function generateDiary(month: number, year: number, userData: any, diaryContent: any) {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
   // Format month name and determine days in month
@@ -139,6 +41,13 @@ function generateDiary(month: number, year: number, userData: any) {
     doc.text(`Created for: ${userData.name}`, 105, 140, { align: "center" });
   }
 
+  // Add monthly mantra
+  if (diaryContent?.monthlyMantra) {
+    doc.setFontSize(14);
+    const splitMantra = doc.splitTextToSize(diaryContent.monthlyMantra, 150);
+    doc.text(splitMantra, 105, 180, { align: "center" });
+  }
+
   doc.setFontSize(12);
   doc.text(
     `Generated on ${DateTime.now().toFormat("MMMM d, yyyy")}`,
@@ -147,10 +56,55 @@ function generateDiary(month: number, year: number, userData: any) {
     { align: "center" }
   );
 
-  // @ts-ignore
-  const monthQuestions = reflectionQuestions[month] || reflectionQuestions[1];
+  // Weekly focus page
+  if (diaryContent?.weeklyFocus && diaryContent.weeklyFocus.length > 0) {
+    doc.addPage();
+    
+    // Page background
+    doc.setFillColor(25, 30, 45); // Dark blue-gray
+    doc.rect(0, 0, 210, 297, "F");
+    
+    // Add content
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.text(`Monthly Focus Areas`, 105, 30, {
+      align: "center",
+    });
+    
+    doc.setDrawColor(99, 102, 241); // Indigo
+    doc.setLineWidth(0.5);
+    doc.line(30, 40, 180, 40);
+    
+    let yPosition = 70;
+    
+    diaryContent.weeklyFocus.forEach((focus: string, index: number) => {
+      doc.setFillColor(35, 40, 55); // Slightly lighter background for each section
+      doc.roundedRect(25, yPosition - 15, 160, 40, 5, 5, 'F');
+      
+      doc.setFontSize(16);
+      doc.setTextColor(180, 180, 255);
+      doc.text(`Week ${index + 1}`, 35, yPosition);
+      
+      doc.setFontSize(14);
+      doc.setTextColor(255, 255, 255);
+      const splitFocus = doc.splitTextToSize(focus, 140);
+      doc.text(splitFocus, 35, yPosition + 10);
+      
+      yPosition += 60;
+    });
+    
+    // Add page number
+    doc.setFontSize(10);
+    doc.setTextColor(180, 180, 180);
+    doc.text(`Page 2 of ${daysInMonth + 2}`, 105, 287, {
+      align: "center",
+    });
+  }
 
-  // @ts-ignore
+  // Get questions to use
+  const questions = diaryContent?.questions || [];
+  
+  // Daily pages with questions
   for (let day = 1; day <= daysInMonth; day++) {
     doc.addPage();
 
@@ -171,8 +125,8 @@ function generateDiary(month: number, year: number, userData: any) {
 
     // Daily question
     // Cycle through questions to ensure we have enough for the month
-    const questionIndex = (day - 1) % monthQuestions.length;
-    const question = monthQuestions[questionIndex];
+    const questionIndex = (day - 1) % questions.length;
+    const question = questions[questionIndex];
 
     doc.setFontSize(14);
     doc.setTextColor(180, 180, 255);
@@ -206,9 +160,7 @@ function generateDiary(month: number, year: number, userData: any) {
     // Add page number
     doc.setTextColor(150, 150, 170);
     doc.setFontSize(10);
-
-    //@ts-ignore
-    doc.text(`Page ${day + 1} of ${daysInMonth + 1}`, 105, 287, {
+    doc.text(`Page ${day + 2} of ${daysInMonth + 2}`, 105, 287, {
       align: "center",
     });
   }
@@ -216,6 +168,7 @@ function generateDiary(month: number, year: number, userData: any) {
   return doc.output("arraybuffer");
 }
 
+// GET endpoint for backward compatibility - redirects to dashboard
 export const GET: RequestHandler = ({ url, locals }) => {
   // Check if user is logged in
   if (!locals.user) {
@@ -225,6 +178,11 @@ export const GET: RequestHandler = ({ url, locals }) => {
   // Get query parameters
   const monthParam = url.searchParams.get("month");
   const yearParam = url.searchParams.get("year");
+
+  // If called directly, redirect to dashboard
+  if (!url.searchParams.get("from_review")) {
+    throw redirect(302, "/dashboard");
+  }
 
   // Validate parameters
   if (!monthParam || !yearParam) {
@@ -242,11 +200,11 @@ export const GET: RequestHandler = ({ url, locals }) => {
     throw error(400, "Year must be between 2000 and 2100");
   }
 
-  // Get month name for filename
-  const monthName = DateTime.local(year, month).toFormat("MMMM");
-
+  // Generate mock content
+  const diaryContent = generateMockReflectionContent(month, year);
+  
   // Generate PDF
-  const pdfData = generateDiary(month, year, locals.user);
+  const pdfData = generateDiary(month, year, locals.user, diaryContent);
 
   // Return mock PDF response for development
   return new Response(JSON.stringify(mockGeneratePdfResponse), {
@@ -255,4 +213,41 @@ export const GET: RequestHandler = ({ url, locals }) => {
       "Content-Type": "application/json",
     },
   });
+};
+
+// POST endpoint for the new interactive flow
+export const POST: RequestHandler = async ({ request, locals }) => {
+  // Check if user is logged in
+  if (!locals.user) {
+    throw error(401, "You must be logged in to generate a PDF");
+  }
+
+  try {
+    const data = await request.json();
+    
+    // Validate the data
+    if (!data.month || !data.year || !data.content) {
+      throw error(400, "Missing required data for PDF generation");
+    }
+
+    const { month, year, content } = data;
+    
+    if (isNaN(month) || month < 1 || month > 12) {
+      throw error(400, "Month must be between 1 and 12");
+    }
+
+    if (isNaN(year) || year < 2000 || year > 2100) {
+      throw error(400, "Year must be between 2000 and 2100");
+    }
+    
+    // Generate PDF with user-customized content
+    // In a real implementation, this would generate and return the actual PDF
+    // const pdfData = generateDiary(month, year, locals.user, content);
+    
+    // For development, return mock response
+    return json(mockGeneratePdfResponse);
+  } catch (e) {
+    console.error("Error generating PDF:", e);
+    throw error(500, "Failed to generate PDF");
+  }
 };
