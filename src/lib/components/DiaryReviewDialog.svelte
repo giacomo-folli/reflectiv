@@ -61,8 +61,11 @@
 
 <div class="review-dialog">
   <div class="dialog-header">
-    <h2>Review Your {monthName} {year} Reflection Diary</h2>
-    <p class="subtitle">Customize your diary content before generating the final PDF</p>
+    <div class="header-content">
+      <h2>Review Your {monthName} {year} Reflection Diary</h2>
+      <p class="subtitle">Customize your diary content before generating the final PDF</p>
+    </div>
+    <button on:click={cancel} class="close-btn" aria-label="Close">×</button>
   </div>
   
   <div class="dialog-content">
@@ -119,7 +122,7 @@
             <label for="question-{i}">Day {currentPage * questionsPerPage + i + 1}</label>
             <textarea 
               id="question-{i}" 
-              rows="2"
+              rows="3"
               bind:value={displayQuestions[i]}
               on:input={(e) => updateQuestion(i, e.currentTarget.value)}
             ></textarea>
@@ -141,12 +144,20 @@
     flex-direction: column;
     height: 100%;
     color: #e2e8f0;
+    padding: 1.5rem;
   }
   
   .dialog-header {
-    padding-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 1.5rem;
     border-bottom: 1px solid #334155;
     margin-bottom: 1.5rem;
+  }
+  
+  .header-content {
+    flex: 1;
   }
   
   .dialog-header h2 {
@@ -161,14 +172,36 @@
     font-size: 0.9rem;
   }
   
+  .close-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    margin-left: 1rem;
+    transition: all 0.2s ease;
+  }
+  
+  .close-btn:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
   .dialog-content {
     flex: 1;
     overflow-y: auto;
-    padding-right: 0.5rem;
+    padding-right: 1rem;
   }
   
   section {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    background-color: rgba(30, 41, 59, 0.5);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(51, 65, 85, 0.5);
   }
   
   h3 {
@@ -230,7 +263,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
   }
   
   .pagination {
@@ -250,11 +283,12 @@
   .pagination-btn {
     background-color: #334155;
     border: none;
-    padding: 0.25rem 0.5rem;
+    padding: 0.375rem 0.75rem;
     border-radius: 0.25rem;
     font-size: 0.8rem;
     color: #e2e8f0;
     cursor: pointer;
+    transition: background-color 0.15s ease;
   }
   
   .pagination-btn:disabled {
@@ -268,25 +302,29 @@
   
   .questions-list {
     display: grid;
-    gap: 1rem;
+    gap: 1.25rem;
   }
   
   .question-item {
     display: flex;
     flex-direction: column;
+    background-color: rgba(30, 41, 59, 0.7);
+    padding: 1rem;
+    border-radius: 0.375rem;
   }
   
   .question-item label {
-    font-size: 0.85rem;
-    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
     color: #cbd5e1;
+    font-weight: 500;
   }
   
   .dialog-footer {
     display: flex;
     justify-content: flex-end;
     gap: 0.75rem;
-    padding-top: 1.25rem;
+    padding-top: 1.5rem;
     border-top: 1px solid #334155;
     margin-top: 1.5rem;
   }
@@ -300,7 +338,7 @@
     font-weight: 500;
     border: none;
     cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
+    transition: all 0.2s ease;
     color: white;
   }
   
@@ -310,6 +348,7 @@
   
   .primary:hover {
     background-color: #4f46e5;
+    transform: translateY(-1px);
   }
   
   .secondary {
