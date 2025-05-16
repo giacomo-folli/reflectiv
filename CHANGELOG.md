@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0] - 2025-05-16
+
+### 🚀 Features
+
+- Add mock data and types for API endpoints related to chat processing and diary entries
+- Implement user authentication with login and registration functionality
+
+### 🚜 Refactor
+
+- UI components for links, login, and registration pages
+- Clean up code formatting and improve PDF generation logic
+- Improve code formatting and enhance PDF generation logic
+- Simplify confirmation dialog and enhance diary readiness message
+
+### ⚙️ Miscellaneous Tasks
+
+- Remove Playwright configuration and dependencies; update .gitignore and package files
+- Remove cached files from git
+- Remove project task list from tasks.md
+
 ## [0.0.3] - 2025-05-14
 
 ### 🐛 Bug Fixes
