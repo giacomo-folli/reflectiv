@@ -125,7 +125,7 @@
 
       // Show confirmation without waiting for the PDF to download
       showConfirmation = true;
-      
+
       // The actual download will happen when the user clicks the Download button in the confirmation dialog
     } catch (error) {
       console.error("Error generating PDF:", error);
@@ -372,40 +372,13 @@
         >
       </div>
 
-      <div class="p-6 overflow-y-auto flex-1">
+      <div class="w-full text-center p-6 overflow-y-auto flex-1">
         <div class="text-5xl mb-4 text-green-500">✅</div>
-        <h3 class="text-2xl font-bold text-white mb-5">
-          Your {getMonthName(selectedMonth)}
-          {selectedYear} Reflection Diary is ready
-        </h3>
-
-        <p class="text-gray-300 mb-4">
-          Your personalized diary has been created with:
-        </p>
-        <ul class="text-left pl-6 mb-6 space-y-2">
-          <li class="text-gray-300 marker:text-green-500">
-            Your customized monthly mantra
-          </li>
-          <li class="text-gray-300 marker:text-green-500">
-            Your personalized weekly focus areas
-          </li>
-          <li class="text-gray-300 marker:text-green-500">
-            {diaryContent.questions.length} daily reflection questions
-          </li>
-          <li class="text-gray-300 marker:text-green-500">
-            Beautiful formatting for easy printing
-          </li>
-        </ul>
+        <h3 class="text-2xl font-bold text-white mb-5">Your diary is ready</h3>
 
         <div class="mt-6 mb-2">
           <p class="text-gray-300 mb-2">
             Click the button below to download your PDF.
-          </p>
-          <p
-            class="bg-indigo-900/10 border-l-4 border-indigo-600 p-4 rounded text-indigo-300 text-sm text-left"
-          >
-            In a real implementation, the PDF would automatically download at
-            this point.
           </p>
         </div>
       </div>
