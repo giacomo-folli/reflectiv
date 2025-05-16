@@ -168,7 +168,10 @@ function generateDiary(month: number, year: number, userData: any, diaryContent:
   return doc.output("arraybuffer");
 }
 
-// GET endpoint for backward compatibility - redirects to dashboard
+// Store the latest user-customized diary content
+let lastGeneratedContent: Map<string, any> = new Map();
+
+// GET endpoint for downloading the generated PDF
 export const GET: RequestHandler = ({ url, locals }) => {
   // Check if user is logged in
   if (!locals.user) {
@@ -200,17 +203,22 @@ export const GET: RequestHandler = ({ url, locals }) => {
     throw error(400, "Year must be between 2000 and 2100");
   }
 
-  // Generate mock content
-  const diaryContent = generateMockReflectionContent(month, year);
+  // Try to get user's customized content from the stored data
+  const contentKey = `${locals.user.id}-${year}-${month}`;
+  const userCustomContent = lastGeneratedContent.get(contentKey);
   
-  // Generate PDF
+  // If no customized content was found, fall back to generated mock content
+  const diaryContent = userCustomContent || generateMockReflectionContent(month, year);
+  
+  // Generate PDF with the appropriate content
   const pdfData = generateDiary(month, year, locals.user, diaryContent);
 
-  // Return mock PDF response for development
-  return new Response(JSON.stringify(mockGeneratePdfResponse), {
+  // Return the actual PDF file with appropriate headers
+  return new Response(pdfData, {
     status: 200,
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="reflection-diary-${year}-${month}.pdf"`
     },
   });
 };
@@ -240,12 +248,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       throw error(400, "Year must be between 2000 and 2100");
     }
     
-    // Generate PDF with user-customized content
-    // In a real implementation, this would generate and return the actual PDF
-    // const pdfData = generateDiary(month, year, locals.user, content);
+    // Store the content for use in GET requests
+    const contentKey = `${locals.user.id}-${year}-${month}`;
+    lastGeneratedContent.set(contentKey, content);
     
-    // For development, return mock response
-    return json(mockGeneratePdfResponse);
+    // Generate PDF with user-customized content
+    const pdfData = generateDiary(month, year, locals.user, content);
+    
+    // Return success response
+    return json({ success: true, message: "PDF content prepared for download" });
   } catch (e) {
     console.error("Error generating PDF:", e);
     throw error(500, "Failed to generate PDF");

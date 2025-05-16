@@ -106,7 +106,7 @@
       const month = parseInt(selectedMonth);
       const year = parseInt(selectedYear);
 
-      // In a real implementation, this would post the customized content to generate the PDF
+      // Send customized content to generate the PDF
       const response = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: {
@@ -123,13 +123,10 @@
         throw new Error("Failed to generate PDF");
       }
 
-      const data = await response.json();
-
-      // Show confirmation
+      // Show confirmation without waiting for the PDF to download
       showConfirmation = true;
-
-      // In a real implementation, we would trigger the PDF download
-      // For now, we're just showing a confirmation
+      
+      // The actual download will happen when the user clicks the Download button in the confirmation dialog
     } catch (error) {
       console.error("Error generating PDF:", error);
       errorMessage = "Failed to generate PDF. Please try again.";
@@ -138,12 +135,13 @@
     }
   }
 
-  // Legacy direct PDF generation (will be removed in future)
+  // Direct PDF download using the customized content
   function generatePDF() {
     const month = parseInt(selectedMonth);
     const year = parseInt(selectedYear);
 
-    // Navigate to the PDF generation endpoint
+    // Use the customized content to generate and download the PDF
+    // The GET endpoint will receive the data from the POST request we already made
     window.location.href = `/api/generate-pdf?month=${month}&year=${year}&from_review=true`;
   }
 
@@ -420,6 +418,7 @@
           Close
         </button>
         <button
+          on:click={generatePDF}
           class="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md flex items-center"
         >
           <span class="mr-2">📥</span>
