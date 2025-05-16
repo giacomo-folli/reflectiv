@@ -13,13 +13,19 @@ import { generateMockReflectionContent } from "$lib/mock-diary-content";
  * @param {object} diaryContent - Content for the diary (questions, mantra, focus areas)
  * @returns {Uint8Array} - PDF file as a byte array
  */
-function generateDiary(month: number, year: number, userData: any, diaryContent: any) {
+function generateDiary(
+  month: number,
+  year: number,
+  userData: any,
+  diaryContent: any
+) {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
   // Format month name and determine days in month
   const monthDate = DateTime.local(year, month);
   const monthName = monthDate.toFormat("MMMM");
-  const daysInMonth = monthDate.daysInMonth;
+  let daysInMonth = monthDate.daysInMonth;
+  if (!daysInMonth) daysInMonth = 30;
 
   // Set font styles
   doc.setFont("helvetica");
@@ -59,40 +65,40 @@ function generateDiary(month: number, year: number, userData: any, diaryContent:
   // Weekly focus page
   if (diaryContent?.weeklyFocus && diaryContent.weeklyFocus.length > 0) {
     doc.addPage();
-    
+
     // Page background
     doc.setFillColor(25, 30, 45); // Dark blue-gray
     doc.rect(0, 0, 210, 297, "F");
-    
+
     // Add content
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.text(`Monthly Focus Areas`, 105, 30, {
       align: "center",
     });
-    
+
     doc.setDrawColor(99, 102, 241); // Indigo
     doc.setLineWidth(0.5);
     doc.line(30, 40, 180, 40);
-    
+
     let yPosition = 70;
-    
+
     diaryContent.weeklyFocus.forEach((focus: string, index: number) => {
       doc.setFillColor(35, 40, 55); // Slightly lighter background for each section
-      doc.roundedRect(25, yPosition - 15, 160, 40, 5, 5, 'F');
-      
+      doc.roundedRect(25, yPosition - 15, 160, 40, 5, 5, "F");
+
       doc.setFontSize(16);
       doc.setTextColor(180, 180, 255);
       doc.text(`Week ${index + 1}`, 35, yPosition);
-      
+
       doc.setFontSize(14);
       doc.setTextColor(255, 255, 255);
       const splitFocus = doc.splitTextToSize(focus, 140);
       doc.text(splitFocus, 35, yPosition + 10);
-      
+
       yPosition += 60;
     });
-    
+
     // Add page number
     doc.setFontSize(10);
     doc.setTextColor(180, 180, 180);
@@ -103,7 +109,7 @@ function generateDiary(month: number, year: number, userData: any, diaryContent:
 
   // Get questions to use
   const questions = diaryContent?.questions || [];
-  
+
   // Daily pages with questions
   for (let day = 1; day <= daysInMonth; day++) {
     doc.addPage();
@@ -206,10 +212,11 @@ export const GET: RequestHandler = ({ url, locals }) => {
   // Try to get user's customized content from the stored data
   const contentKey = `${locals.user.id}-${year}-${month}`;
   const userCustomContent = lastGeneratedContent.get(contentKey);
-  
+
   // If no customized content was found, fall back to generated mock content
-  const diaryContent = userCustomContent || generateMockReflectionContent(month, year);
-  
+  const diaryContent =
+    userCustomContent || generateMockReflectionContent(month, year);
+
   // Generate PDF with the appropriate content
   const pdfData = generateDiary(month, year, locals.user, diaryContent);
 
@@ -218,7 +225,7 @@ export const GET: RequestHandler = ({ url, locals }) => {
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="reflection-diary-${year}-${month}.pdf"`
+      "Content-Disposition": `attachment; filename="reflection-diary-${year}-${month}.pdf"`,
     },
   });
 };
@@ -232,14 +239,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   try {
     const data = await request.json();
-    
+
     // Validate the data
     if (!data.month || !data.year || !data.content) {
       throw error(400, "Missing required data for PDF generation");
     }
 
     const { month, year, content } = data;
-    
+
     if (isNaN(month) || month < 1 || month > 12) {
       throw error(400, "Month must be between 1 and 12");
     }
@@ -247,16 +254,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     if (isNaN(year) || year < 2000 || year > 2100) {
       throw error(400, "Year must be between 2000 and 2100");
     }
-    
+
     // Store the content for use in GET requests
     const contentKey = `${locals.user.id}-${year}-${month}`;
     lastGeneratedContent.set(contentKey, content);
-    
+
     // Generate PDF with user-customized content
     const pdfData = generateDiary(month, year, locals.user, content);
-    
+
     // Return success response
-    return json({ success: true, message: "PDF content prepared for download" });
+    return json({
+      success: true,
+      message: "PDF content prepared for download",
+    });
   } catch (e) {
     console.error("Error generating PDF:", e);
     throw error(500, "Failed to generate PDF");
