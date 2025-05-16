@@ -146,9 +146,9 @@
   <div class="flex-1 overflow-y-auto pr-2">
     <!-- Step 1: Monthly Mantra -->
     {#if currentStep === 0}
-      <section class="mb-6 bg-gray-800/50 rounded-lg p-6 border border-gray-700/50">
+      <section class="mb-6 bg-gray-800/50 rounded-lg p-5 border border-gray-700/50">
         <h3 class="text-lg font-medium text-white m-0 mb-2">Monthly Mantra</h3>
-        <p class="text-gray-400 text-sm m-0 mb-4">This mantra will appear on the cover page of your diary</p>
+        <p class="text-gray-400 text-sm m-0 mb-3">This mantra will appear on the cover page of your diary</p>
         <textarea 
           bind:value={diaryContent.monthlyMantra}
           on:input={() => updateMantra(diaryContent.monthlyMantra)}
@@ -161,11 +161,11 @@
     
     <!-- Step 2: Weekly Focus Areas -->
     {#if currentStep === 1}
-      <section class="mb-6 bg-gray-800/50 rounded-lg p-6 border border-gray-700/50">
+      <section class="mb-6 bg-gray-800/50 rounded-lg p-5 border border-gray-700/50">
         <h3 class="text-lg font-medium text-white m-0 mb-2">Weekly Focus Areas</h3>
-        <p class="text-gray-400 text-sm m-0 mb-4">These focus areas will help guide your reflections each week</p>
+        <p class="text-gray-400 text-sm m-0 mb-3">These focus areas will help guide your reflections each week</p>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {#each diaryContent.weeklyFocus as focus, i}
             <div class="flex flex-col">
               <label for="focus-{i}" class="text-sm text-gray-300 mb-1">Week {i+1}</label>
@@ -174,7 +174,7 @@
                 type="text" 
                 bind:value={diaryContent.weeklyFocus[i]}
                 on:input={(e) => updateWeeklyFocus(i, e.currentTarget.value)}
-                class="bg-gray-800 border border-gray-700 rounded-md p-3 text-white text-base w-full focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25"
+                class="bg-gray-800 border border-gray-700 rounded-md py-2 px-3 text-white text-sm w-full focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25"
               />
             </div>
           {/each}
@@ -184,23 +184,23 @@
     
     <!-- Step 3: Daily Reflection Questions -->
     {#if currentStep === 2}
-      <section class="mb-6 bg-gray-800/50 rounded-lg p-6 border border-gray-700/50">
-        <div class="flex justify-between items-center flex-wrap gap-4 mb-3">
-          <h3 class="text-lg font-medium text-white m-0">Daily Reflection Questions</h3>
+      <section class="mb-6 bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
+        <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
+          <h3 class="text-base font-medium text-white m-0">Daily Reflection Questions</h3>
           <div class="flex items-center gap-2">
-            <span class="text-sm text-gray-400">Page {currentPage + 1} of {totalPages}</span>
-            <div class="flex gap-2">
+            <span class="text-xs text-gray-400">Page {currentPage + 1} of {totalPages}</span>
+            <div class="flex gap-1">
               <button 
                 on:click={prevPage} 
                 disabled={currentPage === 0} 
-                class="bg-gray-700 border-none py-1.5 px-3 rounded text-sm text-gray-200 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
+                class="bg-gray-700 border-none py-1 px-2 rounded text-xs text-gray-200 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
               >
-                ← Previous
+                ← Prev
               </button>
               <button 
                 on:click={nextPage} 
                 disabled={currentPage === totalPages - 1} 
-                class="bg-gray-700 border-none py-1.5 px-3 rounded text-sm text-gray-200 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
+                class="bg-gray-700 border-none py-1 px-2 rounded text-xs text-gray-200 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
               >
                 Next →
               </button>
@@ -208,18 +208,18 @@
           </div>
         </div>
         
-        <p class="text-gray-400 text-sm m-0 mb-4">Customize these questions that will appear on each day of your diary</p>
+        <p class="text-gray-400 text-xs m-0 mb-3">Customize these questions that will appear on each day of your diary</p>
         
-        <div class="grid gap-4">
+        <div class="grid gap-2 max-h-[350px] overflow-y-auto pr-1">
           {#each displayQuestions as question, i}
-            <div class="flex flex-col bg-gray-800/70 p-4 rounded-md">
-              <label for="question-{i}" class="text-base text-gray-300 mb-2 font-medium">Day {currentPage * questionsPerPage + i + 1}</label>
+            <div class="flex flex-col bg-gray-800/70 py-2 px-3 rounded-md">
+              <label for="question-{i}" class="text-sm text-gray-300 mb-1 font-medium">Day {currentPage * questionsPerPage + i + 1}</label>
               <textarea 
                 id="question-{i}" 
-                rows="2"
+                rows="1"
                 bind:value={displayQuestions[i]}
                 on:input={(e) => updateQuestion(i, e.currentTarget.value)}
-                class="bg-gray-800 border border-gray-700 rounded-md p-3 text-white text-base w-full resize-vertical focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25"
+                class="bg-gray-800 border border-gray-700 rounded-md py-1 px-2 text-white text-sm w-full resize-none focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/25"
               ></textarea>
             </div>
           {/each}
