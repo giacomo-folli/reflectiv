@@ -78,13 +78,6 @@
     }
   }
 
-  // TO REMOVE
-  // TO REMOVE
-  // TO REMOVE
-  // TO REMOVE
-  // TO REMOVE
-  startInteractiveFlow();
-
   // Interactive flow: Step 2 - Review and customize
   function handleContentConfirm(event: CustomEvent) {
     // Get the customized content from the review dialog
