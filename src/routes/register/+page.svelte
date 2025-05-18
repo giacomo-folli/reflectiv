@@ -54,12 +54,13 @@
   $: t = translations[$locale || "en"];
 
   function handleRegister() {
+    error = "";
     return async ({ result }: any) => {
       if (result.type === "success") {
-        await goto("/dashboard");
+        await goto("/dashboard", { invalidateAll: true });
+      } else {
+        error = result.data?.message || t.errorDefault;
       }
-
-      error = result.data?.message || t.errorDefault;
     };
   }
 </script>
