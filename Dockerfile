@@ -5,6 +5,7 @@ ARG ADAPTER=node
 FROM $NODE_IMAGE AS base
 RUN apk update && apk add --no-cache sqlite
 RUN mkdir -p /home/node/app && chown -R node:node /home/node/app
+# RUN mkdir -p /home/node/data && chown -R node:node /home/node/data
 WORKDIR /home/node/app
 USER node
 

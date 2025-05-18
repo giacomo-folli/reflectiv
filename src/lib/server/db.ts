@@ -19,6 +19,9 @@ if (!fs.existsSync(DATA_DIR)) {
 // Database path
 const DB_PATH = path.join(DATA_DIR, "reflection-diary.sqlite");
 
+console.log("DATA_DIR:", DATA_DIR);
+console.log("DB_PATH:", DB_PATH);
+
 // Create/connect to SQLite database
 const db = new Database(DB_PATH);
 
