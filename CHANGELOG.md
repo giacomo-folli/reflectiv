@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2025-05-18
+
+### 🐛 Bug Fixes
+
+- Reload data after register action to load correct view
+
+### 🚜 Refactor
+
+- Replaced bcrypt instead of basic sha256 to hash password
+
 ## [0.1.1] - 2025-05-16
 
 ### 🚜 Refactor
