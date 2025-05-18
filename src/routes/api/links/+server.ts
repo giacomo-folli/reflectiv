@@ -1,4 +1,4 @@
-import { linkDb } from "$lib/server/sqlite-db";
+import { linkDb } from "$lib/server/db";
 import { mockLinksGetResponse, mockLinksPostResponse, mockLinksDeleteResponse } from "$lib/mock-data";
 import type { RequestHandler } from "./$types";
 

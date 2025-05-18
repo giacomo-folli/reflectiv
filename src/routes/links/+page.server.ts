@@ -1,5 +1,5 @@
 import { redirect, fail } from "@sveltejs/kit";
-import { linkDb } from "$lib/server/sqlite-db";
+import { linkDb } from "$lib/server/db";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load = (({ locals }) => {

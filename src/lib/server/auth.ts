@@ -1,64 +1,59 @@
-import { userDb, sessionDb } from "./sqlite-db";
-import { createHash } from "crypto";
+import type { User } from "$lib/types";
+import { userDb, sessionDb } from "./db";
+import bcrypt from "bcrypt";
 
-export function hashPassword(password: string) {
-  // In a real app, you'd use bcrypt or argon2, but for simplicity we'll use
-  // a basic SHA-256 hash (not recommended for production)
-  return createHash("sha256").update(password).digest("hex");
+export async function hashPassword(password: string): Promise<string> {
+  const saltRounds = 12;
+  return await bcrypt.hash(password, saltRounds);
 }
 
-export function verifyPassword(password: string, hashedPassword: string) {
-  const inputHash = hashPassword(password);
-  return inputHash === hashedPassword;
+export async function validatePassword(password: string, hashedPassword: string): Promise<boolean> {
+  return await bcrypt.compare(password, hashedPassword);
 }
 
 export async function registerUser(
   email: string,
   password: string,
   name: string
-) {
+): Promise<Omit<User, 'passwordHash'> | undefined> {
   if (!email || !password || !name) {
     throw new Error("Email, password, and name are required");
   }
-
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     throw new Error("Invalid email address");
   }
-
   if (password.length < 8) {
     throw new Error("Password must be at least 8 characters long");
   }
-
   const existingUser = userDb.findByEmail(email);
   if (existingUser) {
     throw new Error("User with this email already exists");
   }
-
-  const passwordHash = hashPassword(password);
+  const passwordHash = await hashPassword(password);
   const newUser = userDb.createUser({
     email,
     passwordHash,
     name,
   });
-
   if (!newUser) return;
-
   const { passwordHash: _, ...userWithoutPassword } = newUser;
   return userWithoutPassword;
 }
 
-export async function loginUser(email: string, password: string) {
-  const user = userDb.findByEmail(email) as any;
+export async function loginUser(email: string, password: string): Promise<{ sessionId: string; user: Omit<User, 'passwordHash'> }> {
+  const user = userDb.findByEmail(email) as User;
   if (!user) {
     throw new Error("This user doesn't exists");
   }
-
-  if (!verifyPassword(password, user.passwordHash as string)) {
+  const isValid = await validatePassword(password, user.passwordHash);
+  if (!isValid) {
     throw new Error("Invalid password or email");
   }
-
-  const session = sessionDb.createSession(user.id) as any;
-
+  const session = sessionDb.createSession(user.id);
+  if (!session) {
+    throw new Error("Failed to create session");
+  }
+  
   const { passwordHash: _, ...userWithoutPassword } = user;
   return {
     sessionId: session.id,
@@ -66,11 +61,6 @@ export async function loginUser(email: string, password: string) {
   };
 }
 
-/**
- * Validate a session
- * @param {string} sessionId - Session ID to validate
- * @returns {Object|null} - User object if session is valid, null otherwise
- */
 export function validateSession(sessionId: string) {
   if (!sessionId) return null;
 

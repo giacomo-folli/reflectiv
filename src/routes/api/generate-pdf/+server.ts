@@ -114,18 +114,18 @@ function generateDiary(
   for (let day = 1; day <= daysInMonth; day++) {
     doc.addPage();
 
-    // Page background
-    doc.setFillColor(25, 30, 45); // Dark blue-gray
+    // Page background (soft white)
+    doc.setFillColor(248, 249, 250); // Soft off-white
     doc.rect(0, 0, 210, 297, "F");
 
     // Date header
     const dateStr = DateTime.local(year, month, day).toFormat("MMMM d, yyyy");
-    doc.setTextColor(230, 230, 230);
+    doc.setTextColor(20, 20, 20); // Black text
     doc.setFontSize(18);
     doc.text(dateStr, 105, 25, { align: "center" });
 
     // Draw a subtle line
-    doc.setDrawColor(100, 110, 150);
+    doc.setDrawColor(180, 180, 200);
     doc.setLineWidth(0.5);
     doc.line(20, 35, 190, 35);
 
@@ -135,10 +135,10 @@ function generateDiary(
     const question = questions[questionIndex];
 
     doc.setFontSize(14);
-    doc.setTextColor(180, 180, 255);
+    doc.setTextColor(70, 70, 180); // Muted blue for label
     doc.text("Today's Reflection Question:", 20, 50);
 
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(20, 20, 20); // Black for question
     doc.setFontSize(16);
 
     // Handle multi-line questions by wrapping text

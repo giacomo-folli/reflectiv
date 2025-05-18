@@ -14,7 +14,6 @@
   $: user = data?.user;
 
   let initialLoad = true;
-
   onMount(() => {
     setTimeout(() => (initialLoad = false), 100);
   });
@@ -31,7 +30,7 @@
       <Transition transition="flyRight" delay={100} duration={300}>
         <div>
           <a
-            href="/"
+            href={user ? "/dashboard" : "/"}
             class="flex items-center text-gray-100 font-semibold text-xl no-underline"
           >
             <span class="mr-2">📕</span>
@@ -42,13 +41,6 @@
 
       <nav class="flex gap-6 items-center">
         {#if user}
-          <Transition transition="fadeIn" delay={200} duration={200}>
-            <a
-              href="/"
-              class="text-gray-400 hover:text-white text-sm transition-colors relative after:absolute after:w-0 after:h-0.5 after:bg-indigo-500 after:bottom-[-2px] after:left-0 after:transition-all hover:after:w-full"
-              >Home</a
-            >
-          </Transition>
           <Transition transition="fadeIn" delay={250} duration={200}>
             <a
               href="/links"

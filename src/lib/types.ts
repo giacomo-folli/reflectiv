@@ -7,14 +7,14 @@ export type User = {
 };
 
 export type Toast = {
-  id: string | number;
+  id: string;
   message: string;
   type: "info" | "success" | "warning" | "error";
   duration: number;
 };
 
 export type Link = {
-  id: string | number;
+  id: string;
   userId: string;
   url: string;
   title: string;
@@ -22,7 +22,7 @@ export type Link = {
 };
 
 export type Session = {
-  id: string | number;
+  id: string;
   userId: string;
   createdAt: string;
   expiresAt: string;

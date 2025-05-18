@@ -1,4 +1,4 @@
-import { sessionDb, userDb } from "$lib/server/sqlite-db";
+import { sessionDb, userDb } from "$lib/server/db";
 import type { LayoutServerLoad } from "./$types";
 
 export const load: LayoutServerLoad = ({ cookies }) => {

@@ -1,183 +1,297 @@
+import Database from "better-sqlite3";
 import { dev } from "$app/environment";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import type { Link, Session, User } from "$lib/types";
 
-/**
- * In-memory database implementation
- * This is for development and testing purposes only
- * In a production environment, this should be replaced with a proper database
- */
+// Get the current directory
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Helper to generate UUIDs
-// function generateId() {
-//   return crypto.randomUUID();
-// }
+// Define data directory
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "../../../data");
 
-// Store data in memory
-// const store = {
-//   users: [
-//     // Sample user for testing in development
-//     {
-//       id: "1",
-//       email: "test@example.com",
-//       name: "Test User",
-//       passwordHash:
-//         "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", // 'password123' with SHA-256
-//       createdAt: new Date("2025-05-01").toISOString(),
-//     },
-//   ],
-//   sessions: [],
-//   links: [
-//     // Sample link for testing in development
-//     {
-//       id: "1",
-//       userId: "1",
-//       title: "Sample ChatGPT Conversation",
-//       url: "https://chat.openai.com/share/abc123",
-//       createdAt: new Date("2025-05-10").toISOString(),
-//     },
-//   ],
-// };
+// Ensure data directory exists
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
 
-// User data access
-// export const userDb = {
-//   findByEmail(email: string) {
-//     return store.users.find((user) => user.email === email) || null;
-//   },
+// Database path
+const DB_PATH = path.join(DATA_DIR, "reflection-diary.sqlite");
 
-//   findById(id: string | number) {
-//     return store.users.find((user) => user.id === id) || null;
-//   },
+// Create/connect to SQLite database
+const db = new Database(DB_PATH);
 
-//   createUser(userData: any) {
-//     const newUser = {
-//       id: generateId(),
-//       ...userData,
-//       createdAt: new Date().toISOString(),
-//     };
+// Enable foreign keys
+db.pragma("foreign_keys = ON");
 
-//     store.users.push(newUser);
-//     return newUser;
-//   },
+// Set up tables if they don't exist
+const initDb = () => {
+  // Users table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      email TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL,
+      passwordHash TEXT NOT NULL,
+      createdAt TEXT NOT NULL
+    )
+  `);
 
-//   updateUser(id: string | number, userData: any) {
-//     const index = store.users.findIndex((user) => user.id === id);
-//     if (index === -1) return null;
+  // Sessions table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS sessions (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      createdAt TEXT NOT NULL,
+      expiresAt TEXT NOT NULL,
+      FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
+    )
+  `);
 
-//     const updatedUser = { ...store.users[index], ...userData };
-//     store.users[index] = updatedUser;
-//     return updatedUser;
-//   },
+  // Links table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS links (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      title TEXT,
+      url TEXT NOT NULL,
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
+    )
+  `);
 
-//   deleteUser(id: string | number) {
-//     const index = store.users.findIndex((user) => user.id === id);
-//     if (index !== -1) {
-//       store.users.splice(index, 1);
-//       return true;
-//     }
-//     return false;
-//   },
+  // Add a test user if in development mode and no users exist
+  if (dev) {
+    const userCount = db
+      .prepare("SELECT COUNT(*) as count FROM users")
+      .get() as any;
 
-//   // For debugging in development mode only
-//   debug() {
-//     if (dev) {
-//       return [...store.users];
-//     }
-//     return null;
-//   },
-// };
+    if (userCount.count === 0) {
+      db.prepare(
+        `
+        INSERT INTO users (id, email, name, passwordHash, createdAt) 
+        VALUES (?, ?, ?, ?, ?)
+      `
+      ).run(
+        "1",
+        "test@example.com",
+        "Test User",
+        "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", // 'password123' with SHA-256
+        new Date("2025-05-01").toISOString()
+      );
 
-// Session data access
-// export const sessionDb = {
-//   createSession(userId: string | number) {
-//     const sessionId = generateId();
-//     const session = {
-//       id: sessionId,
-//       userId,
-//       createdAt: new Date().toISOString(),
-//       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
-//     };
+      // Add a sample link for the test user
+      db.prepare(
+        `
+        INSERT INTO links (id, userId, title, url, createdAt)
+        VALUES (?, ?, ?, ?, ?)
+      `
+      ).run(
+        "1",
+        "1",
+        "Sample ChatGPT Conversation",
+        "https://chat.openai.com/share/abc123",
+        new Date("2025-05-10").toISOString()
+      );
+    }
+  }
+};
 
-//     store.sessions.push(session);
-//     return session;
-//   },
+// Run database initialization
+initDb();
 
-//   findById(sessionId: string | number) {
-//     return (
-//       store.sessions.find((session) => (session as any).id === sessionId) ||
-//       null
-//     );
-//   },
+// User repository
+export const userDb = {
+  findByEmail(email: string): User | null {
+    return db
+      .prepare("SELECT * FROM users WHERE email = ?")
+      .get(email) as User | null;
+  },
 
-//   deleteSession(sessionId: string | number) {
-//     const index = store.sessions.findIndex(
-//       (session) => (session as any).id === sessionId
-//     );
-//     if (index !== -1) {
-//       store.sessions.splice(index, 1);
-//       return true;
-//     }
-//     return false;
-//   },
+  findById(id: string | number): User | null {
+    return db
+      .prepare("SELECT * FROM users WHERE id = ?")
+      .get(id) as User | null;
+  },
 
-//   deleteAllUserSessions(userId: string | number) {
-//     store.sessions = store.sessions.filter(
-//       (session) => (session as any).userId !== userId
-//     );
-//     return true;
-//   },
+  createUser(userData: any): User | null {
+    const { id, email, passwordHash, name, createdAt } = {
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      ...userData,
+    };
 
-//   // For debugging in development mode only
-//   debug() {
-//     if (dev) {
-//       return [...store.sessions];
-//     }
-//     return null;
-//   },
-// };
+    db.prepare(
+      `
+      INSERT INTO users (id, email, name, passwordHash, createdAt)
+      VALUES (?, ?, ?, ?, ?)
+    `
+    ).run(id, email, name, passwordHash, createdAt);
 
-// Link data access
-// export const linkDb = {
-//   createLink(linkData: any) {
-//     const newLink = {
-//       id: generateId(),
-//       ...linkData,
-//       createdAt: new Date().toISOString(),
-//     };
+    return this.findById(id);
+  },
 
-//     store.links.push(newLink);
-//     return newLink;
-//   },
+  updateUser(id: string | number, userData: any): User | null {
+    const user = this.findById(id);
+    if (!user) return null;
 
-//   findByUserId(userId: string | number) {
-//     return store.links.filter((link) => link.userId === userId);
-//   },
+    const updates = [];
+    const values = [];
 
-//   findById(id: string | number) {
-//     return store.links.find((link) => link.id === id) || null;
-//   },
+    for (const [key, value] of Object.entries(userData)) {
+      if (key !== "id" && key !== "createdAt") {
+        updates.push(`${key} = ?`);
+        values.push(value);
+      }
+    }
 
-//   updateLink(id: string | number, linkData: any) {
-//     const index = store.links.findIndex((link) => link.id === id);
-//     if (index === -1) return null;
+    if (updates.length === 0) return user;
 
-//     const updatedLink = { ...store.links[index], ...linkData };
-//     store.links[index] = updatedLink;
-//     return updatedLink;
-//   },
+    values.push(id); // for the WHERE clause
 
-//   deleteLink(id: string | number) {
-//     const index = store.links.findIndex((link) => link.id === id);
-//     if (index !== -1) {
-//       store.links.splice(index, 1);
-//       return true;
-//     }
-//     return false;
-//   },
+    db.prepare(
+      `
+      UPDATE users 
+      SET ${updates.join(", ")}
+      WHERE id = ?
+    `
+    ).run(...values);
 
-//   // For debugging in development mode only
-//   debug() {
-//     if (dev) {
-//       return [...store.links];
-//     }
-//     return null;
-//   },
-// };
+    return this.findById(id);
+  },
+
+  deleteUser(id: string | number) {
+    const result = db.prepare("DELETE FROM users WHERE id = ?").run(id);
+    return result.changes > 0;
+  },
+
+  debug() {
+    if (dev) {
+      return db.prepare("SELECT * FROM users").all();
+    }
+    return null;
+  },
+};
+
+// Session repository
+export const sessionDb = {
+  createSession(userId: string | number): Session | null {
+    const id = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+    const expiresAt = new Date(
+      Date.now() + 7 * 24 * 60 * 60 * 1000
+    ).toISOString(); // 7 days
+
+    db.prepare(
+      `
+      INSERT INTO sessions (id, userId, createdAt, expiresAt)
+      VALUES (?, ?, ?, ?)
+    `
+    ).run(id, userId, createdAt, expiresAt);
+
+    return this.findById(id);
+  },
+
+  findById(sessionId: string | number) {
+    return db
+      .prepare("SELECT * FROM sessions WHERE id = ?")
+      .get(sessionId) as Session | null;
+  },
+
+  deleteSession(sessionId: string | number) {
+    const result = db
+      .prepare("DELETE FROM sessions WHERE id = ?")
+      .run(sessionId);
+    return result.changes > 0;
+  },
+
+  deleteAllUserSessions(userId: string | number) {
+    const result = db
+      .prepare("DELETE FROM sessions WHERE userId = ?")
+      .run(userId);
+    return result.changes > 0;
+  },
+
+  debug() {
+    if (dev) {
+      return db.prepare("SELECT * FROM sessions").all();
+    }
+    return null;
+  },
+};
+
+// Link repository
+export const linkDb = {
+  createLink(linkData: any): Link | null {
+    const { id, userId, title, url, createdAt } = {
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      ...linkData,
+    };
+
+    db.prepare(
+      `
+      INSERT INTO links (id, userId, title, url, createdAt)
+      VALUES (?, ?, ?, ?, ?)
+    `
+    ).run(id, userId, title || "", url, createdAt);
+
+    return this.findById(id);
+  },
+
+  findByUserId(userId: string | number) {
+    return db
+      .prepare("SELECT * FROM links WHERE userId = ? ORDER BY createdAt DESC")
+      .all(userId) as Link[] | null;
+  },
+
+  findById(id: string | number) {
+    return db
+      .prepare("SELECT * FROM links WHERE id = ?")
+      .get(id) as Link | null;
+  },
+
+  updateLink(id: string | number, linkData: any): Link | null {
+    const link = this.findById(id);
+    if (!link) return null;
+
+    const updates = [];
+    const values = [];
+
+    // Build dynamic update query
+    for (const [key, value] of Object.entries(linkData)) {
+      if (key !== "id" && key !== "userId" && key !== "createdAt") {
+        updates.push(`${key} = ?`);
+        values.push(value);
+      }
+    }
+
+    if (updates.length === 0) return link;
+
+    values.push(id); // for the WHERE clause
+
+    db.prepare(
+      `
+      UPDATE links
+      SET ${updates.join(", ")}
+      WHERE id = ?
+    `
+    ).run(...values);
+
+    return this.findById(id);
+  },
+
+  deleteLink(id: string | number) {
+    const result = db.prepare("DELETE FROM links WHERE id = ?").run(id);
+    return result.changes > 0;
+  },
+
+  // For debugging in development mode only
+  debug() {
+    if (dev) {
+      return db.prepare("SELECT * FROM links").all();
+    }
+    return null;
+  },
+};
