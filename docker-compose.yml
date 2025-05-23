@@ -8,7 +8,7 @@ services:
       args:
         NODE_IMAGE: node:22.11.0-alpine
     image: reflection-diary:latest
-    container_name: reflection-diary-app
+    container_name: reflectiv
     ports:
       - "3000:3000"
     restart: unless-stopped
@@ -21,7 +21,7 @@ services:
       - DATA_DIR=/home/node/app/data
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     volumes:
-      - reflection_diary_data:/home/node/app/data
+      - ./data:/home/node/app/data
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
       interval: 30s
@@ -41,7 +41,3 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
-
-volumes:
-  reflection_diary_data:
-    name: reflection_diary_data
