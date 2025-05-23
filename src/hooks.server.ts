@@ -26,22 +26,7 @@ const handleAuth = async ({ event, resolve }: any) => {
   return await resolve(event);
 };
 
-/**
- * CSRF protection handler
- * Disables cross-site POST protection in development for easier testing
- * @type {import('@sveltejs/kit').Handle}
- */
-const handleCSRF = async ({ event, resolve }: any) => {
-  const response = await resolve(event, {
-    // In development, we'll allow cross-site form submissions for easier testing
-    // In production, this should be set to true
-    transformPageChunk: ({ html }: any) => html,
-  });
-
-  return response;
-};
-
-export const handle = sequence(handleAuth, handleCSRF);
+export const handle = sequence(handleAuth);
 
 export function handleError({ error }: any) {
   console.error("Server error:", error);
