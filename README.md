@@ -158,13 +158,36 @@ For local development and testing, you can use these credentials:
 
 ## Project Structure
 
-- `src/` - Application source code
-  - `routes/` - SvelteKit routes (pages and API endpoints)
-  - `lib/` - Shared components and utilities
-    - `components/` - Reusable Svelte components
-    - `server/` - Server-only utilities and database interfaces
-    - `utils/` - Shared utility functions
-  - `hooks.server.js` - Server-side hooks for authentication and security
+This SvelteKit project follows a standard structure, with clear separation between frontend and backend concerns:
+
+- **`src/`**: Contains all the core application code.
+  - **`app.html`**: The main HTML template for all pages.
+  - **`hooks.client.ts`**: Client-side hooks.
+  - **`hooks.server.ts`**: Server-side hooks (e.g., for authentication, request handling).
+  - **`lib/`**: Libraries, utilities, and components.
+    - **`components/`**: Reusable Svelte components (frontend). These are building blocks for the UI.
+    - **`client/`**: Client-specific code.
+      - **`utils/`**: Utilities that are only used in the browser (e.g., PDF generation, toast notifications, Svelte transitions).
+      - **`types/`**: TypeScript type definitions for client-specific data structures.
+    - **`server/`**: Backend-specific code. This code only runs on the server and is never exposed to the client.
+      - **`auth.ts`**: Authentication logic (password hashing, session management).
+      - **`db.ts`**: Database interaction logic (SQLite setup, queries).
+      - _(Potentially `utils/` or other subdirectories for server-specific utilities)_
+    - **`types/`**: Shared TypeScript type definitions used by both client and server (e.g., API types, core domain types like User, Link).
+    - **`utils/`**: Utility functions that can be used by both client-side and server-side code (e.g., date formatting, validation).
+    - **`i18n/`**: Internationalization setup and locale files.
+  - **`routes/`**: Defines the application's pages and API endpoints.
+    - **`+page.svelte`**: Svelte components for pages (frontend).
+    - **`+page.server.ts`**: Server-side load functions for pages (backend logic for fetching data).
+    - **`+layout.svelte`**: Svelte components for layouts (frontend).
+    - **`+layout.server.ts`**: Server-side load functions for layouts (backend).
+    - **`api/`**: Defines API endpoints.
+      - **`[endpoint]/+server.ts`**: Server-side handlers for API routes (backend).
+- **`static/`**: Static assets (e.g., images, fonts) that are served directly.
+- **`scripts/`**: Standalone Node.js scripts for development and operational tasks (e.g., `db-tools.js` for database management). These are not part of the client bundle.
+- **`.env` / `.env.example`**: Environment variable configuration.
+- **`svelte.config.js`**: SvelteKit configuration.
+- **`vite.config.js`**: Vite bundler configuration.
 
 ## Data Persistence
 

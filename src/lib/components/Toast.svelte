@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fly, fade } from "svelte/transition";
-  import toastStore, { removeToast } from "$lib/utils/toastStore";
+  import toastStore, { removeToast } from "$lib/client/utils/toastStore";
 
   export let position: string = "top-right";
 

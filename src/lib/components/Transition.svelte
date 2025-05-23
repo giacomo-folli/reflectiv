@@ -1,6 +1,6 @@
 <script lang="ts">
-  import * as transitions from "$lib/utils/transitionUtils";
-  import type { TransitionParams, TransitionFn } from "$lib/types/transitions";
+  import * as transitions from "$lib/client/utils/transitionUtils";
+  import type { TransitionParams, TransitionFn } from "$lib/client/types/transitions.types";
 
   export let transition: keyof typeof transitions = "fadeIn";
   export let duration: number | undefined = undefined;

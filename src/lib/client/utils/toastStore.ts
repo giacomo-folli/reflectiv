@@ -1,4 +1,4 @@
-import type { Toast } from "$lib/types";
+import type { Toast } from "$lib/client/types/toast.types";
 import { writable } from "svelte/store";
 
 const toastStore = writable<Toast[]>([]);

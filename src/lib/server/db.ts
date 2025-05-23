@@ -3,7 +3,9 @@ import { dev } from "$app/environment";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import type { Link, Session, User } from "$lib/types";
+import type { Link } from "$lib/types/link.types";
+import type { Session } from "$lib/types/session.types";
+import type { User } from "$lib/types/user.types";
 
 // Get the current directory
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

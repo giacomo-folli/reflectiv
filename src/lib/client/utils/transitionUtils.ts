@@ -1,5 +1,6 @@
 import { cubicOut, elasticOut, backOut, quintOut } from "svelte/easing";
 import { crossfade, fly, fade, slide, scale } from "svelte/transition";
+import type { TransitionParams } from "$lib/client/types/transitions.types";
 
 /**
  * Custom fly transition that can be used for page transitions
@@ -9,7 +10,7 @@ import { crossfade, fly, fade, slide, scale } from "svelte/transition";
  */
 export function pageTransition(
   node: HTMLElement,
-  { delay = 0, duration = 250 } = {}
+  { delay = 0, duration = 250 }: TransitionParams = {}
 ) {
   return {
     delay,
@@ -30,7 +31,7 @@ export function pageTransition(
  * @param {Object} params - Animation parameters
  * @returns {Object} - Transition object
  */
-export function popIn(node: HTMLElement, { delay = 0, duration = 200 } = {}) {
+export function popIn(node: HTMLElement, { delay = 0, duration = 200 }: TransitionParams = {}) {
   return {
     delay,
     duration,
@@ -52,7 +53,7 @@ export function popIn(node: HTMLElement, { delay = 0, duration = 200 } = {}) {
  */
 export function pulse(
   node: HTMLElement,
-  { delay = 0, duration = 400, intensity = 1.05 } = {}
+  { delay = 0, duration = 400, intensity = 1.05 }: TransitionParams = {}
 ) {
   return {
     delay,
@@ -78,7 +79,7 @@ export function pulse(
  */
 export function bounce(
   node: HTMLElement,
-  { delay = 0, duration = 300, y = 10 } = {}
+  { delay = 0, duration = 300, y = 10 }: TransitionParams = {}
 ) {
   return {
     delay,
@@ -100,7 +101,7 @@ export function bounce(
  */
 export function textReveal(
   node: HTMLElement,
-  { delay = 0, duration = 800 } = {}
+  { delay = 0, duration = 800 }: TransitionParams = {}
 ) {
   node.style.position = "relative";
 
@@ -246,29 +247,29 @@ export function float(node: HTMLElement) {
 }
 
 // Export common transitions with sensible defaults
-export const fadeIn = (node: HTMLElement, params: any) =>
+export const fadeIn = (node: HTMLElement, params: TransitionParams) =>
   fade(node, { duration: 200, ...params });
 
-export const fadeOut = (node: HTMLElement, params: any) =>
+export const fadeOut = (node: HTMLElement, params: TransitionParams) =>
   fade(node, { duration: 150, ...params });
 
-export const slideIn = (node: HTMLElement, params: any) =>
+export const slideIn = (node: HTMLElement, params: TransitionParams) =>
   slide(node, { duration: 300, ...params });
 
-export const flyRight = (node: HTMLElement, params: any) =>
+export const flyRight = (node: HTMLElement, params: TransitionParams) =>
   fly(node, { x: 20, y: 0, duration: 250, ...params });
 
-export const flyUp = (node: HTMLElement, params: any) =>
+export const flyUp = (node: HTMLElement, params: TransitionParams) =>
   fly(node, { y: 20, x: 0, duration: 250, ...params });
 
-export const flyLeft = (node: HTMLElement, params: any) =>
+export const flyLeft = (node: HTMLElement, params: TransitionParams) =>
   fly(node, { x: -20, y: 0, duration: 250, ...params });
 
-export const flyDown = (node: HTMLElement, params: any) =>
+export const flyDown = (node: HTMLElement, params: TransitionParams) =>
   fly(node, { y: -20, x: 0, duration: 250, ...params });
 
-export const scaleIn = (node: HTMLElement, params: any) =>
+export const scaleIn = (node: HTMLElement, params: TransitionParams) =>
   scale(node, { start: 0.95, duration: 200, ...params });
 
-export const scaleOut = (node: HTMLElement, params: any) =>
+export const scaleOut = (node: HTMLElement, params: TransitionParams) =>
   scale(node, { start: 1, end: 0.95, duration: 150, ...params });

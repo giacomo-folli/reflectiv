@@ -3,9 +3,9 @@
     staggerChildren,
     fadeIn,
     textReveal,
-  } from "$lib/utils/transitionUtils";
+} from "$lib/client/utils/transitionUtils";
   import { onMount } from "svelte";
-  import { getDiaryPreview } from "$lib/utils/pdfGenerator";
+import { getDiaryPreview } from "$lib/client/utils/pdfGenerator";
 
   export let month;
   export let year;

@@ -1,4 +1,4 @@
-import type { User } from "$lib/types";
+import type { User } from "$lib/types/user.types";
 import { userDb, sessionDb } from "./db";
 import bcrypt from "bcrypt";
 
