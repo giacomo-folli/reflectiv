@@ -1,3 +1,7 @@
+<div style="width: 100%; display: flex; justify-items: center;">
+  <img width="200px" height="auto" src="https://raw.githubusercontent.com/giacomo-folli/reflectiv/refs/heads/main/static/generated-icon.png" />
+</div>
+
 # Monthly Reflection Diary
 
 Welcome to the Monthly Reflection Diary! This application helps you keep track of insightful conversations and learnings by allowing you to store links, such as those from ChatGPT discussions. With these saved links, you can then generate personalized monthly reflection diaries in PDF format, making it easier to consolidate your thoughts, track personal growth, and revisit past insights.
@@ -128,41 +132,6 @@ For local development and testing, you can use these credentials:
 - Email: `test@example.com`
 - Password: `password123`
 
-## 🛠️ How it Works: A Technical Deep Dive
-
-### Project Structure
-
-Understanding the project's layout will help you navigate the codebase. This SvelteKit project uses a standard structure that clearly separates frontend and backend concerns:
-
-- **`src/`**: Contains all the core application code.
-  - **`app.html`**: The main HTML template for all pages.
-  - **`hooks.client.ts`**: Client-side hooks.
-  - **`hooks.server.ts`**: Server-side hooks (e.g., for authentication, request handling).
-  - **`lib/`**: Libraries, utilities, and components.
-    - **`components/`**: Reusable Svelte components (frontend). These are building blocks for the UI.
-    - **`client/`**: Client-specific code (this code only runs in the user's browser).
-      - **`utils/`**: Utilities that are only used in the browser (e.g., PDF generation, toast notifications, Svelte transitions).
-      - **`types/`**: TypeScript type definitions for client-specific data structures.
-    - **`server/`**: Backend-specific code. This code only runs on the server and is never exposed to the client.
-      - **`auth.ts`**: Authentication logic (password hashing, session management).
-      - **`db.ts`**: Database interaction logic (SQLite setup, queries).
-      - _(Potentially `utils/` or other subdirectories for server-specific utilities)_
-    - **`types/`**: Shared TypeScript type definitions used by both client and server (e.g., API types, core domain types like User, Link).
-    - **`utils/`**: Utility functions that can be used by both client-side and server-side code (e.g., date formatting, validation).
-    - **`i18n/`**: Internationalization setup and locale files.
-  - **`routes/`**: Defines the application's pages and API endpoints. SvelteKit uses a file-system based router, so the structure of this directory dictates your app's URLs.
-    - **`+page.svelte`**: Svelte components for pages (frontend).
-    - **`+page.server.ts`**: Server-side load functions for pages (backend logic for fetching data).
-    - **`+layout.svelte`**: Svelte components for layouts (frontend).
-    - **`+layout.server.ts`**: Server-side load functions for layouts (backend).
-    - **`api/`**: Defines API endpoints.
-      - **`[endpoint]/+server.ts`**: Server-side handlers for API routes (backend).
-- **`static/`**: Static assets (e.g., images, fonts) that are served directly.
-- **`scripts/`**: Standalone Node.js scripts for development and operational tasks (e.g., `db-tools.js` for database management). These are not part of the client bundle.
-- **`.env` / `.env.example`**: Environment variable configuration.
-- **`svelte.config.js`**: SvelteKit configuration.
-- **`vite.config.js`**: Vite bundler configuration.
-
 ### Data Persistence
 
 The application uses SQLite for data persistence:
@@ -172,60 +141,12 @@ The application uses SQLite for data persistence:
 3. The location can be configured with the `DATA_DIR` environment variable.
 4. When using Docker, the database is persisted using a named Docker volume (see Docker Specifics section).
 
-#### Database Management
-
-The application includes a database management tool for common tasks:
-
-```bash
-# View database information and user accounts
-node scripts/db-tools.js info
-
-# Export database contents as JSON
-node scripts/db-tools.js export
-
-# Reset the database (removes all data)
-node scripts/db-tools.js reset
-```
-
-For production environments with higher traffic, you might want to:
-
-1. Consider upgrading to a more robust database solution like PostgreSQL.
-2. Implement database migrations for schema changes.
-3. Enhance the authentication mechanisms with additional security features.
-
-### Authentication
-
-Authentication currently uses simple session-based cookies:
-
-- For local development, the test credentials above will work.
-- In production, implement proper password hashing and user management. (Note: The `auth.ts` file includes password hashing.)
-
 ### PDF Generation
 
 The app uses jsPDF to generate reflection diary PDFs:
 
 - Each PDF includes daily reflection questions.
 - Customize the questions in `src/routes/api/generate-pdf/+server.js`.
-
-### Docker Specifics
-
-#### Docker Data Persistence
-
-The application stores data in a Docker volume when run with Docker:
-
-- Data is stored in the named volume `reflection_diary_data`.
-- The volume persists across container restarts and rebuilds.
-- Backup the volume for production deployments:
-
-```bash
-# Backup the database volume
-docker run --rm -v reflection_diary_data:/data -v $(pwd):/backup alpine \
-  tar czf /backup/reflection_diary_backup.tar.gz /data
-
-# Restore from a backup
-docker run --rm -v reflection_diary_data:/data -v $(pwd):/backup alpine \
-  sh -c "rm -rf /data/* && tar xzf /backup/reflection_diary_backup.tar.gz -C /"
-```
 
 #### Health Checks & Monitoring
 
