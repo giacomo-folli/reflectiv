@@ -15,6 +15,7 @@ services:
     environment:
       - NODE_ENV=production
       - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-http://localhost:3000}
+      - ORIGIN=${PUBLIC_BASE_URL:-http://localhost:3000}
       - SESSION_SECRET=${SESSION_SECRET:-change_this_in_production}
       - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-false}
       - DATA_DIR=/home/node/app/data
