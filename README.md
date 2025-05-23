@@ -1,6 +1,8 @@
-<div style="width: 100%; display: flex; justify-items: center;">
-  <img width="200px" height="auto" src="https://raw.githubusercontent.com/giacomo-folli/reflectiv/refs/heads/main/static/generated-icon.png" />
-</div>
+<span style="display:block;text-align:center">
+
+![image logo](https://raw.githubusercontent.com/giacomo-folli/reflectiv/refs/heads/main/static/generated-icon.png){: width=150 height=150} 
+
+</span>
 
 # Monthly Reflection Diary
 
