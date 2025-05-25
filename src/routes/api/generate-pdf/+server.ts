@@ -107,6 +107,65 @@ function generateDiary(
     });
   }
 
+  // ChatGPT Links page
+  if (diaryContent?.chatgptLinks && diaryContent.chatgptLinks.length > 0) {
+    doc.addPage();
+
+    // Page background
+    doc.setFillColor(25, 30, 45); // Dark blue-gray
+    doc.rect(0, 0, 210, 297, "F");
+
+    // Add content
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.text(`Your ChatGPT Conversations`, 105, 30, {
+      align: "center",
+    });
+
+    doc.setDrawColor(99, 102, 241); // Indigo
+    doc.setLineWidth(0.5);
+    doc.line(30, 40, 180, 40);
+
+    let yPosition = 60;
+    const maxLinksPerPage = 8;
+    
+    diaryContent.chatgptLinks.slice(0, maxLinksPerPage).forEach((link: any, index: number) => {
+      if (yPosition > 250) return; // Prevent overflow
+
+      doc.setFillColor(35, 40, 55); // Slightly lighter background for each section
+      doc.roundedRect(25, yPosition - 5, 160, 25, 3, 3, "F");
+
+      doc.setFontSize(14);
+      doc.setTextColor(180, 180, 255);
+      const linkTitle = link.title || `Conversation ${index + 1}`;
+      const truncatedTitle = linkTitle.length > 35 ? linkTitle.substring(0, 32) + '...' : linkTitle;
+      doc.text(truncatedTitle, 30, yPosition + 8);
+
+      doc.setFontSize(10);
+      doc.setTextColor(200, 200, 200);
+      const linkDate = link.createdAt ? new Date(link.createdAt).toLocaleDateString() : '';
+      if (linkDate) {
+        doc.text(linkDate, 30, yPosition + 16);
+      }
+
+      yPosition += 30;
+    });
+
+    if (diaryContent.chatgptLinks.length > maxLinksPerPage) {
+      doc.setFontSize(12);
+      doc.setTextColor(180, 180, 180);
+      doc.text(`... and ${diaryContent.chatgptLinks.length - maxLinksPerPage} more conversations`, 30, yPosition + 10);
+    }
+
+    // Add page number
+    doc.setFontSize(10);
+    doc.setTextColor(180, 180, 180);
+    const pageNumber = diaryContent?.weeklyFocus && diaryContent.weeklyFocus.length > 0 ? 3 : 2;
+    doc.text(`Page ${pageNumber} of ${daysInMonth + pageNumber}`, 105, 287, {
+      align: "center",
+    });
+  }
+
   // Get questions to use
   const questions = diaryContent?.questions || [];
 
@@ -166,7 +225,13 @@ function generateDiary(
     // Add page number
     doc.setTextColor(150, 150, 170);
     doc.setFontSize(10);
-    doc.text(`Page ${day + 2} of ${daysInMonth + 2}`, 105, 287, {
+    
+    // Calculate correct page number based on additional pages
+    let totalAdditionalPages = 1; // Cover page
+    if (diaryContent?.weeklyFocus && diaryContent.weeklyFocus.length > 0) totalAdditionalPages++;
+    if (diaryContent?.chatgptLinks && diaryContent.chatgptLinks.length > 0) totalAdditionalPages++;
+    
+    doc.text(`Page ${day + totalAdditionalPages} of ${daysInMonth + totalAdditionalPages}`, 105, 287, {
       align: "center",
     });
   }
@@ -240,13 +305,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   try {
     const data = await request.json();
 
-    // Validate the data
+    // Validate the data structure matches what the PDF service sends
     if (!data.month || !data.year || !data.content) {
       throw error(400, "Missing required data for PDF generation");
     }
 
-    const { month, year, content } = data;
+    const { month, year, content, chatgptLinks } = data;
 
+    // Validate month and year
     if (isNaN(month) || month < 1 || month > 12) {
       throw error(400, "Month must be between 1 and 12");
     }
@@ -255,20 +321,52 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       throw error(400, "Year must be between 2000 and 2100");
     }
 
+    // Validate content structure
+    if (!content.questions || !Array.isArray(content.questions) || content.questions.length === 0) {
+      throw error(400, "Content must include valid questions array");
+    }
+
+    if (!content.monthlyMantra || typeof content.monthlyMantra !== 'string') {
+      throw error(400, "Content must include a monthly mantra");
+    }
+
+    // Validate weeklyFocus if provided
+    if (content.weeklyFocus && (!Array.isArray(content.weeklyFocus) || content.weeklyFocus.some((item: any) => typeof item !== 'string'))) {
+      throw error(400, "Weekly focus must be an array of strings");
+    }
+
+    // Validate chatgptLinks if provided
+    if (chatgptLinks && !Array.isArray(chatgptLinks)) {
+      throw error(400, "ChatGPT links must be an array");
+    }
+
+    // Prepare the complete diary content including ChatGPT links
+    const completeContent = {
+      ...content,
+      chatgptLinks: chatgptLinks || []
+    };
+
     // Store the content for use in GET requests
     const contentKey = `${locals.user.id}-${year}-${month}`;
-    lastGeneratedContent.set(contentKey, content);
+    lastGeneratedContent.set(contentKey, completeContent);
 
-    // Generate PDF with user-customized content
-    const pdfData = generateDiary(month, year, locals.user, content);
-
-    // Return success response
+    // Return success response matching the service interface
     return json({
       success: true,
       message: "PDF content prepared for download",
     });
   } catch (e) {
     console.error("Error generating PDF:", e);
-    throw error(500, "Failed to generate PDF");
+    
+    // Return structured error response
+    if (e && typeof e === 'object' && 'status' in e) {
+      throw e; // Re-throw SvelteKit errors
+    }
+    
+    return json({
+      success: false,
+      message: "Failed to generate PDF",
+      error: e instanceof Error ? e.message : "Unknown error occurred"
+    }, { status: 500 });
   }
 };
