@@ -10,16 +10,9 @@ This is my first fullstack project using **Node.js, Docker, and SQLite**, and I'
 
 ---
 
-## 🙏 How You Can Help
+## ⚠️ Disclaimer
 
-I’d love your support in any of the following ways:
-
-* 🐛 **Found a bug?** Open an issue!
-* 📚 **Documentation unclear?** Suggest edits!
-* 💡 **Have an idea?** Reach out or create a feature request!
-* ❤️ **Just want to say hi or give feedback?** I’d love to hear from you!
-
-Whether you’re a dev, a designer, or just curious, your feedback and contributions mean a lot. Don’t hesitate to get involved—every little bit helps!
+This project is a personal reflection tool, **not a substitute for professional help**. If you're struggling, please consider reaching out to a counselor, therapist, or a trusted friend. You're not alone.
 
 ---
 
@@ -44,9 +37,9 @@ cp .env.example .env
 
 At minimum, set:
 
-* `SESSION_SECRET` — a strong secret for securing sessions
-* `OPENAI_API_KEY` — optional, if you want AI features
-* `PUBLIC_BASE_URL` — for local use, set to `http://localhost:3000`
+- `SESSION_SECRET` — a strong secret for securing sessions
+- `OPENAI_API_KEY` — optional, if you want AI features
+- `PUBLIC_BASE_URL` — for local use, set to `http://localhost:3000`
 
 ### 3. Start the app
 
@@ -67,6 +60,13 @@ The app should now be running at: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## ⚠️ Disclaimer
+## 🙏 How You Can Help
 
-This project is a personal reflection tool, **not a substitute for professional help**. If you're struggling, please consider reaching out to a counselor, therapist, or a trusted friend. You're not alone.
+I’d love your support in any of the following ways:
+
+- 🐛 **Found a bug?** Open an issue!
+- 📚 **Documentation unclear?** Suggest edits!
+- 💡 **Have an idea?** Reach out or create a feature request!
+- ❤️ **Just want to say hi or give feedback?** I’d love to hear from you!
+
+Whether you’re a dev, a designer, or just curious, your feedback and contributions mean a lot. Don’t hesitate to get involved—every little bit helps!
