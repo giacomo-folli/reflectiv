@@ -7,10 +7,15 @@ export async function POST({ locals, request }) {
   }
 
   const { links } = await request.json();
-  // TODO: send links to AIService to generate diary data
   const aiService = AiServiceFactory.getInstance();
+
+  // GENERATE PROMPT
+  // PARSE LINKS
+
   const response = await aiService.sendPrompt("Respond only with OK HELLO!");
-  console.log(response); // START FROM HERE (WHAT'S THE RETURN TYPE FROM GEMINI API)
+  console.log("Gemini response is", response);
+
+  // PARSE THE STRUCTURED RESPONSE
 
   // mock data
   const content = {

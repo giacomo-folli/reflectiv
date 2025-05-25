@@ -1,10 +1,12 @@
+import { GoogleGenAI } from "@google/genai";
 import { AiService } from "./AiService";
 
 export class GeminiService extends AiService {
   private readonly apiKey: string;
+  private readonly ai: GoogleGenAI;
+
   private static readonly DEFAULT_BASE_URI =
-    "https://generativelanguage.googleapis.com/v1beta/models";
-  private static readonly MODEL = "/gemini-2.0-flash";
+    "https://generativelanguage.googleapis.com/v1beta/";
 
   constructor(
     apiKey: string,
@@ -12,29 +14,15 @@ export class GeminiService extends AiService {
   ) {
     super(baseUri);
     this.apiKey = apiKey;
+    this.ai = new GoogleGenAI({ apiKey: this.apiKey });
   }
 
   async sendPrompt(prompt: string): Promise<string> {
-    // TODO: Implement actual Gemini API call
-    const response = await this.ask(prompt).catch((err) =>
-      console.error(err instanceof Error ? err.message : err)
-    );
-    return `Gemini response is ${response}`;
-  }
-
-  private async ask(prompt: string): Promise<any> {
-    const uri =
-      GeminiService.DEFAULT_BASE_URI +
-      GeminiService.MODEL +
-      ":generateContent?key=" +
-      this.apiKey;
-
-    const response = await fetch(uri, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+    const response = await this.ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
     });
 
-    return await response.json();
+    return response.text || "";
   }
 }

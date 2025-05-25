@@ -25,6 +25,7 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
+    "@google/genai": "^1.0.1",
     "@sveltejs/vite-plugin-svelte": "^3.0.2",
     "@tailwindcss/typography": "^0.5.10",
     "@types/better-sqlite3": "^7.6.13",
