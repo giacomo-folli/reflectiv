@@ -3,8 +3,6 @@
   import DiaryReviewDialog from "$lib/components/DiaryReviewDialog.svelte";
   import { generateMockReflectionContent } from "$lib/mock-diary-content";
 
-  export let data;
-
   // Get current date for defaults
   const currentDate = DateTime.now();
 
@@ -34,25 +32,14 @@
   }
 
   // States for the interactive flow
-  let showPreview = false;
   let showReview = false;
   let showConfirmation = false;
   let isLoading = false;
   let errorMessage = "";
   let diaryContent: any = null;
 
-  // Function to show preview dialog
-  function openPreview() {
-    showPreview = true;
-  }
-
-  function closePreview() {
-    showPreview = false;
-  }
-
   // Interactive flow: Step 1 - Generate content
   async function startInteractiveFlow() {
-    closePreview(); // Close the preview if it was open
     isLoading = true;
     errorMessage = "";
 
@@ -128,7 +115,6 @@
     }
   }
 
-  // Direct PDF download using the customized content
   function generatePDF() {
     const month = parseInt(selectedMonth);
     const year = parseInt(selectedYear);
@@ -138,12 +124,10 @@
     window.location.href = `/api/generate-pdf?month=${month}&year=${year}&from_review=true`;
   }
 
-  // Close the confirmation dialog
   function closeConfirmation() {
     showConfirmation = false;
   }
 
-  // Get month name from month number
   function getMonthName(month: string) {
     return months.find((m) => m.value === month)?.label || "";
   }
@@ -198,18 +182,10 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
-      <button
-        on:click={openPreview}
-        class="flex items-center justify-center py-3 px-4 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-md transition-colors"
-      >
-        <span class="mr-2">👁️</span>
-        Preview
-      </button>
-
+    <div>
       <button
         on:click={startInteractiveFlow}
-        class="flex items-center justify-center py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition-colors"
+        class="w-full flex items-center justify-center py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition-colors"
       >
         <span class="mr-2">✨</span>
         Generate Content
@@ -236,96 +212,6 @@
     {/if}
   </div>
 </div>
-
-<!-- Preview Modal -->
-{#if showPreview}
-  <div
-    class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4"
-  >
-    <div
-      class="bg-gray-800 rounded-lg w-full max-w-xl shadow-xl flex flex-col max-h-[calc(100vh-2rem)]"
-    >
-      <div
-        class="px-5 py-4 border-b border-gray-700 flex justify-between items-center"
-      >
-        <h2 class="text-xl font-medium text-white m-0">Diary Preview</h2>
-        <button
-          on:click={closePreview}
-          class="bg-transparent border-0 text-gray-400 text-2xl hover:text-white"
-          >&times;</button
-        >
-      </div>
-
-      <div class="p-6 overflow-y-auto flex-1">
-        <h3 class="text-2xl font-bold text-white mb-5">
-          {getMonthName(selectedMonth)}
-          {selectedYear}
-        </h3>
-
-        <p class="text-gray-300 mb-4">Your diary will include:</p>
-
-        <ul class="text-left pl-6 mb-6 space-y-2">
-          <li class="text-gray-300 marker:text-purple-400">
-            A beautiful cover page with a personalized monthly mantra
-          </li>
-          <li class="text-gray-300 marker:text-purple-400">
-            Weekly focus areas to guide your month
-          </li>
-          <li class="text-gray-300 marker:text-purple-400">
-            {DateTime.local(parseInt(selectedYear), parseInt(selectedMonth))
-              .daysInMonth} daily pages with reflection questions
-          </li>
-          <li class="text-gray-300 marker:text-purple-400">
-            Space to write your answers
-          </li>
-          <li class="text-gray-300 marker:text-purple-400">
-            Clean, printable layout
-          </li>
-        </ul>
-
-        <div class="bg-indigo-900/5 p-4 rounded-md mb-6 text-left">
-          <h4 class="text-indigo-300 font-medium mb-2">How it works:</h4>
-          <ol class="pl-6 m-0">
-            <li class="text-gray-300 mb-2">
-              <strong class="text-indigo-300">Generate Content:</strong> AI creates
-              questions, a monthly mantra, and weekly focus areas
-            </li>
-            <li class="text-gray-300 mb-2">
-              <strong class="text-indigo-300">Review & Customize:</strong> Edit any
-              content to match your preferences
-            </li>
-            <li class="text-gray-300">
-              <strong class="text-indigo-300">Generate PDF:</strong> Create your
-              personalized reflection diary
-            </li>
-          </ol>
-        </div>
-
-        <p
-          class="bg-indigo-900/10 border-l-4 border-indigo-600 p-4 rounded text-indigo-300 text-sm text-left"
-        >
-          The interactive PDF generation allows you to customize all content
-          before creating your diary.
-        </p>
-      </div>
-
-      <div class="px-5 py-4 border-t border-gray-700 flex justify-end gap-3">
-        <button
-          on:click={closePreview}
-          class="py-2 px-4 bg-gray-600 hover:bg-gray-500 text-white font-medium rounded-md"
-        >
-          Close
-        </button>
-        <button
-          on:click={startInteractiveFlow}
-          class="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md"
-        >
-          Start Generation
-        </button>
-      </div>
-    </div>
-  </div>
-{/if}
 
 <!-- Review Dialog -->
 {#if showReview && diaryContent}
