@@ -1,6 +1,6 @@
-<div style="width:100%; display:flex; flex-direction:row; justify-items: center;">
+<p align="center">
    <img width="150px" src="https://raw.githubusercontent.com/giacomo-folli/reflectiv/refs/heads/main/static/generated-icon.png" />
-</div>
+</p>
 
 # Monthly Reflection Diary
 
