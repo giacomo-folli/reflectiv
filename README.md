@@ -4,171 +4,69 @@
 
 # Monthly Reflection Diary
 
-Welcome to the Monthly Reflection Diary! This application helps you keep track of insightful conversations and learnings by allowing you to store links, such as those from ChatGPT discussions. With these saved links, you can then generate personalized monthly reflection diaries in PDF format, making it easier to consolidate your thoughts, track personal growth, and revisit past insights.
+**Monthly Reflection Diary** is an open source app to help you collect and organize meaningful conversations and links—like your chats with ChatGPT—and generate monthly PDF reflection diaries from them.
 
-## ✨ Features
+This is my first fullstack project using **Node.js, Docker, and SQLite**, and I'm a **junior developer** learning as I build. It’s a big personal project and I’m excited to share it!
 
-- 🔐 Secure User Accounts: Full authentication with registration, login, and logout.
-- 🔗 Link Management: Easily save and manage links from ChatGPT or other sources.
-- 📄 PDF Diary Generation: Create personalized monthly reflection diaries from your saved links, ready for download.
-- 📱 Responsive Design: Access your diary seamlessly on desktops, tablets, and smartphones.
+---
 
-## 🚀 Getting Started
+## 🙏 How You Can Help
 
-### Prerequisites
+I’d love your support in any of the following ways:
 
-- [Node.js](https://nodejs.org/) (version 18.x or later recommended) for running locally or for some build steps.
-- npm (comes with Node.js)
-- [Docker](https://www.docker.com/get-started) for running with Docker.
-- [Docker Compose](https://docs.docker.com/compose/install/) (usually comes with Docker Desktop) for the recommended Docker setup.
+* 🐛 **Found a bug?** Open an issue!
+* 📚 **Documentation unclear?** Suggest edits!
+* 💡 **Have an idea?** Reach out or create a feature request!
+* ❤️ **Just want to say hi or give feedback?** I’d love to hear from you!
 
-### Method 1: Using Docker (Recommended)
+Whether you’re a dev, a designer, or just curious, your feedback and contributions mean a lot. Don’t hesitate to get involved—every little bit helps!
 
-#### Quick Start: Docker Compose
+---
 
-1. Clone the repository:
+## ⚙️ Getting Started
+
+You can run the app either with **Docker** (recommended) or using **Node.js locally**.
+
+### 1. Clone the repository
 
 ```bash
 git clone <repository-url>
-cd monthly-reflection-diary
+cd reflectiv
 ```
 
-2. Create your environment configuration by copying the example `.env.example` file to a new file named `.env` in the project root:
+### 2. Set up environment variables
+
+Copy the example environment file and customize it:
 
 ```bash
 cp .env.example .env
 ```
 
-3. Edit the `.env` file. For more details on available variables, see the '### Environment Configuration' section below. At a minimum, you should set:
-   - A strong `SESSION_SECRET` (for production)
-   - Your `OPENAI_API_KEY` if using AI features
-   - Set `PUBLIC_BASE_URL` to your domain in production
+At minimum, set:
 
-4. Build and start the Docker container:
+* `SESSION_SECRET` — a strong secret for securing sessions
+* `OPENAI_API_KEY` — optional, if you want AI features
+* `PUBLIC_BASE_URL` — for local use, set to `http://localhost:3000`
+
+### 3. Start the app
+
+#### Option A: With Docker (Recommended)
 
 ```bash
-# Build and start in detached mode
 docker-compose up --build -d
-
-# View logs if needed
-docker-compose logs -f
 ```
 
-The application will be available at `http://localhost:3000`.
-
-#### Advanced: Running with Docker Directly
-
-```bash
-# Build the optimized multi-stage Docker image
-docker build -t reflection-diary .
-
-# Run the container with appropriate environment variables
-docker run -p 3000:3000 \
-  -e NODE_ENV=production \
-  -e SESSION_SECRET=your_secret_here \
-  -e PUBLIC_BASE_URL=http://localhost:3000 \
-  -v reflection_diary_data:/app/data \
-  -d reflection-diary
-```
-
-### Method 2: Using Node.js Locally
-
-#### Clone the repository
-
-```bash
-git clone <repository-url>
-cd monthly-reflection-diary
-```
-
-#### Install dependencies
+#### Option B: Locally with Node.js
 
 ```bash
 npm install
-```
-
-#### Configure Environment Variables
-Before running the application, you'll need to set up your environment variables. Copy the example file by running `cp .env.example .env`. Then, customize the `.env` file with your specific settings. Refer to the main '### Environment Configuration' section below for details on the variables.
-
-#### Start the development server
-
-```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:3000`.
+The app should now be running at: [http://localhost:3000](http://localhost:3000)
 
-#### Build for production
+---
 
-```bash
-npm run build
-```
+## ⚠️ Disclaimer
 
-#### Run the production build locally
-
-```bash
-npm run preview
-```
-
-### Environment Configuration
-
-Regardless of how you run the application, environment variables are key for configuration.
-
-1. Ensure you have a `.env` file in the root of your project. If you haven't created one yet, copy the example environment file:
-
-```bash
-cp .env.example .env
-```
-
-2. Update the `.env` file with your specific configuration:
-   - Set a strong `SESSION_SECRET` for production. This is critical for securing user sessions.
-   - Add your `OPENAI_API_KEY` if you're planning to use features that interact with the OpenAI API.
-   - For Docker, ensure `PUBLIC_BASE_URL` is set, especially for production deployments.
-   - Modify other settings as needed for database paths, ports, etc.
-
-## 🧪 Test Credentials
-
-For local development and testing, you can use these credentials:
-
-- Email: `test@example.com`
-- Password: `password123`
-
-### Data Persistence
-
-The application uses SQLite for data persistence:
-
-1. User data, sessions, and links are stored in a SQLite database.
-2. The database file is located in the `./data` directory by default.
-3. The location can be configured with the `DATA_DIR` environment variable.
-4. When using Docker, the database is persisted using a named Docker volume (see Docker Specifics section).
-
-### PDF Generation
-
-The app uses jsPDF to generate reflection diary PDFs:
-
-- Each PDF includes daily reflection questions.
-- Customize the questions in `src/routes/api/generate-pdf/+server.js`.
-
-#### Health Checks & Monitoring
-
-The Docker setup includes:
-
-- Automatic health checks at `/health` endpoint.
-- Container restart policy for fault tolerance.
-- Resource limits to prevent resource exhaustion.
-- Log rotation to manage disk space.
-
-## 🤝 Contributing
-
-We warmly welcome contributions to the Monthly Reflection Diary! Whether you're looking to fix a bug, propose an exciting new feature, or help improve our documentation, your input is highly valued and appreciated.
-
-Here are some ways you can contribute:
-
--   **🐛 Report Bugs:** If you encounter a bug while using the application, please head over to GitHub Issues and open an issue. Kindly provide as much detail as possible, including steps to reproduce, expected behavior, and actual behavior.
--   **💡 Suggest Enhancements:** Have a great idea for a new feature or an improvement to an existing one? We'd love to hear it! Please open an issue on GitHub to describe your suggestion.
--   **🧑‍💻 Submit Pull Requests:** For direct contributions like bug fixes or implementing new features, feel free to submit a pull request. If you're planning a larger change, we encourage you to open an issue first to discuss the proposed changes and ensure it aligns with the project's direction.
-
-Please use GitHub Issues for tracking all bugs and feature requests. For submitting code changes, please use GitHub Pull Requests. We look forward to collaborating with you and seeing your contributions!
-
-## 📜 License
-
-[MIT](LICENSE)
+This project is a personal reflection tool, **not a substitute for professional help**. If you're struggling, please consider reaching out to a counselor, therapist, or a trusted friend. You're not alone.
