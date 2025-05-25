@@ -4,8 +4,8 @@ export class ClaudeService extends AiService {
   private readonly apiKey: string;
   private static readonly DEFAULT_BASE_URI = 'https://api.anthropic.com/v1';
 
-  constructor(apiKey: string, baseUri: string = ClaudeService.DEFAULT_BASE_URI) {
-    super(baseUri);
+  constructor(apiKey: string) {
+    super();
     this.apiKey = apiKey;
   }
 
