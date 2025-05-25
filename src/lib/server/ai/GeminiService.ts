@@ -12,8 +12,6 @@ export class GeminiService extends AiService {
   ) {
     super(baseUri);
     this.apiKey = apiKey;
-
-    console.log(this.apiKey, this.baseUri);
   }
 
   async sendPrompt(prompt: string): Promise<string> {
