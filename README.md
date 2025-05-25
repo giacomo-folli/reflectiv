@@ -43,7 +43,6 @@ cp .env.example .env
 
 At minimum, set:
 
-- `SESSION_SECRET` — a strong secret for securing sessions
 - `OPENAI_API_KEY` — optional, if you want AI features
 - `PUBLIC_BASE_URL` — for local use, set to `http://localhost:3000`
 

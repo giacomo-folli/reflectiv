@@ -35,7 +35,6 @@ cp .env.example .env
 
 Then customize `.env`. At a minimum, set:
 
-* `SESSION_SECRET`: A strong random string
 * `PUBLIC_BASE_URL`: `http://localhost:3000` for local dev
 * `OPENAI_API_KEY`: Optional, for AI-powered features
 
