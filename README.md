@@ -8,13 +8,9 @@
 
 This is my first fullstack project using **Node.js, Docker, and SQLite**, and I'm a **junior developer** learning as I build. It’s a big personal project and I’m excited to share it!
 
----
-
 ## ⚠️ Disclaimer
 
 This project is a personal reflection tool, **not a substitute for professional help**. If you're struggling, please consider reaching out to a counselor, therapist, or a trusted friend. You're not alone.
-
----
 
 ## ⚙️ Getting Started
 
@@ -57,8 +53,6 @@ npm run dev
 ```
 
 The app should now be running at: [http://localhost:3000](http://localhost:3000)
-
----
 
 ## 🙏 How You Can Help
 
