@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2025-05-25
+
+### 🚀 Features
+
+- Add AiServiceFactory and URI configuration
+- Add AI service abstraction and initial implementations
+
+### 🐛 Bug Fixes
+
+- Docker volume issues
+
+### 💼 Other
+
+- Improve project structure and backend/frontend separation
+- Enhance README with a friendlier introduction and better structure.
+- Resolve CSRF error in Dockerized environment
+
+### 🚜 Refactor
+
+- Fix ai classes and remove tests
+
+### ⚙️ Miscellaneous Tasks
+
+- Remove data dir with sensitive data
+- Favicon
+- Add info log
+- Divide readme and contribuiting
+- Update readme
+- Update readme
+
 ## [0.1.2] - 2025-05-18
 
 ### 🐛 Bug Fixes
