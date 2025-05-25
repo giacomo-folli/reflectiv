@@ -1,11 +1,14 @@
-import { AiService } from './AiService';
+import { AiService } from "./AiService";
 
 export class ClaudeService extends AiService {
   private readonly apiKey: string;
-  private static readonly DEFAULT_BASE_URI = 'https://api.anthropic.com/v1';
+  private static readonly DEFAULT_BASE_URI = "https://api.anthropic.com/v1";
 
-  constructor(apiKey: string) {
-    super();
+  constructor(
+    apiKey: string,
+    baseUri: string = ClaudeService.DEFAULT_BASE_URI
+  ) {
+    super(baseUri);
     this.apiKey = apiKey;
   }
 
