@@ -1,8 +1,9 @@
 import { linkDb } from "$lib/server/db";
-import { mockLinksGetResponse, mockLinksPostResponse, mockLinksDeleteResponse } from "$lib/mock-data";
 import type { RequestHandler } from "./$types";
 
-export const GET: RequestHandler = ({ locals }) => {
+/* List user links */
+export const GET: RequestHandler = ({ locals, params }) => {
+  console.log(params)
   if (!locals.user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
@@ -12,11 +13,10 @@ export const GET: RequestHandler = ({ locals }) => {
     });
   }
 
-  // Get user's links
   const links = linkDb.findByUserId(locals.user.id);
+  const values = links?.map((link) => link.url);
 
-  // Return mock links for development
-  return new Response(JSON.stringify(mockLinksGetResponse), {
+  return new Response(JSON.stringify(values), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -24,6 +24,7 @@ export const GET: RequestHandler = ({ locals }) => {
   });
 };
 
+/* Add link to a user */
 export const POST: RequestHandler = async ({ locals, request }) => {
   if (!locals.user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {

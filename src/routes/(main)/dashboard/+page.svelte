@@ -1,7 +1,7 @@
 <script lang="ts">
   import { DateTime } from "luxon";
   import DiaryReviewDialog from "$lib/components/DiaryReviewDialog.svelte";
-  import { generateMockReflectionContent } from "$lib/mock-diary-content";
+  import { PdfService } from "$lib/client/services/pdf.service";
 
   // Get current date for defaults
   const currentDate = DateTime.now();
@@ -44,19 +44,19 @@
     errorMessage = "";
 
     try {
-      const month = parseInt(selectedMonth);
-      const year = parseInt(selectedYear);
+      // const month = parseInt(selectedMonth);
+      // const year = parseInt(selectedYear);
 
-      // In a real implementation, this would be a fetch call to the API
-      // const response = await fetch(`/api/diary-content?month=${month}&year=${year}`);
-      // if (!response.ok) throw new Error('Failed to generate diary content');
-      // const data = await response.json();
+      const service = new PdfService({ fetch });
+      const links = await service.getUserLinks();
 
-      // Using mock data for now
-      diaryContent = generateMockReflectionContent(month, year);
+      const content = await service.getDiariyContent({ links });
 
-      // Move to the review step
-      showReview = true;
+      await service.generateDiary({
+        questions: content.questions,
+        mantra: content.mantra,
+        themes: content.themes,
+      });
     } catch (error) {
       console.error("Error generating content:", error);
       errorMessage = "Failed to generate diary content. Please try again.";
@@ -65,54 +65,14 @@
     }
   }
 
-  // Interactive flow: Step 2 - Review and customize
   function handleContentConfirm(event: CustomEvent) {
     // Get the customized content from the review dialog
     diaryContent = event.detail;
     showReview = false;
-    generateFinalPDF();
   }
 
   function handleReviewCancel() {
     showReview = false;
-  }
-
-  // Interactive flow: Step 3 - Generate final PDF
-  async function generateFinalPDF() {
-    isLoading = true;
-    errorMessage = "";
-
-    try {
-      const month = parseInt(selectedMonth);
-      const year = parseInt(selectedYear);
-
-      // Send customized content to generate the PDF
-      const response = await fetch("/api/generate-pdf", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          month,
-          year,
-          content: diaryContent,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to generate PDF");
-      }
-
-      // Show confirmation without waiting for the PDF to download
-      showConfirmation = true;
-
-      // The actual download will happen when the user clicks the Download button in the confirmation dialog
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      errorMessage = "Failed to generate PDF. Please try again.";
-    } finally {
-      isLoading = false;
-    }
   }
 
   function generatePDF() {

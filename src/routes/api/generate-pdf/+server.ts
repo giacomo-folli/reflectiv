@@ -1,31 +1,18 @@
 import { DateTime } from "luxon";
 import { jsPDF } from "jspdf";
-import { error, json, redirect } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { mockGeneratePdfResponse } from "$lib/mock-data";
-import { generateMockReflectionContent } from "$lib/mock-diary-content";
+import { redirect } from "@sveltejs/kit";
+import type { User } from "$lib/types/user.types.js";
 
-/**
- * Generate a PDF document with reflection questions for each day of the month
- * @param {number} month - Month (1-12)
- * @param {number} year - Year (e.g., 2025)
- * @param {object} userData - User data for personalization
- * @param {object} diaryContent - Content for the diary (questions, mantra, focus areas)
- * @returns {Uint8Array} - PDF file as a byte array
- */
 function generateDiary(
-  month: number,
-  year: number,
-  userData: any,
-  diaryContent: any
+  user: User,
+  diaryContent: { mantra: string; questions: string[]; themes: string[] }
 ) {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
   // Format month name and determine days in month
-  const monthDate = DateTime.local(year, month);
-  const monthName = monthDate.toFormat("MMMM");
-  let daysInMonth = monthDate.daysInMonth;
-  if (!daysInMonth) daysInMonth = 30;
+  const monthName = "MONTH";
+  const year = 2025;
+  let daysInMonth = 30;
 
   // Set font styles
   doc.setFont("helvetica");
@@ -42,15 +29,15 @@ function generateDiary(
   doc.text(`${monthName} ${year}`, 105, 120, { align: "center" });
 
   // If user is logged in, add their name
-  if (userData?.name) {
+  if (user?.name) {
     doc.setFontSize(16);
-    doc.text(`Created for: ${userData.name}`, 105, 140, { align: "center" });
+    doc.text(`Created for: ${user.name}`, 105, 140, { align: "center" });
   }
 
   // Add monthly mantra
-  if (diaryContent?.monthlyMantra) {
+  if (diaryContent?.mantra) {
     doc.setFontSize(14);
-    const splitMantra = doc.splitTextToSize(diaryContent.monthlyMantra, 150);
+    const splitMantra = doc.splitTextToSize(diaryContent.mantra, 150);
     doc.text(splitMantra, 105, 180, { align: "center" });
   }
 
@@ -63,7 +50,7 @@ function generateDiary(
   );
 
   // Weekly focus page
-  if (diaryContent?.weeklyFocus && diaryContent.weeklyFocus.length > 0) {
+  if (diaryContent?.themes && diaryContent.themes.length > 0) {
     doc.addPage();
 
     // Page background
@@ -83,7 +70,7 @@ function generateDiary(
 
     let yPosition = 70;
 
-    diaryContent.weeklyFocus.forEach((focus: string, index: number) => {
+    diaryContent.themes.forEach((focus: string, index: number) => {
       doc.setFillColor(35, 40, 55); // Slightly lighter background for each section
       doc.roundedRect(25, yPosition - 15, 160, 40, 5, 5, "F");
 
@@ -119,7 +106,7 @@ function generateDiary(
     doc.rect(0, 0, 210, 297, "F");
 
     // Date header
-    const dateStr = DateTime.local(year, month, day).toFormat("MMMM d, yyyy");
+    const dateStr = DateTime.local().toFormat("MMMM d, yyyy");
     doc.setTextColor(20, 20, 20); // Black text
     doc.setFontSize(18);
     doc.text(dateStr, 105, 25, { align: "center" });
@@ -174,101 +161,22 @@ function generateDiary(
   return doc.output("arraybuffer");
 }
 
-// Store the latest user-customized diary content
-let lastGeneratedContent: Map<string, any> = new Map();
-
 // GET endpoint for downloading the generated PDF
-export const GET: RequestHandler = ({ url, locals }) => {
-  // Check if user is logged in
+export async function POST({ request, locals }) {
   if (!locals.user) {
     throw redirect(302, "/login");
   }
 
-  // Get query parameters
-  const monthParam = url.searchParams.get("month");
-  const yearParam = url.searchParams.get("year");
-
-  // If called directly, redirect to dashboard
-  if (!url.searchParams.get("from_review")) {
-    throw redirect(302, "/dashboard");
-  }
-
-  // Validate parameters
-  if (!monthParam || !yearParam) {
-    throw error(400, "Month and year parameters are required");
-  }
-
-  const month = parseInt(monthParam);
-  const year = parseInt(yearParam);
-
-  if (isNaN(month) || month < 1 || month > 12) {
-    throw error(400, "Month must be between 1 and 12");
-  }
-
-  if (isNaN(year) || year < 2000 || year > 2100) {
-    throw error(400, "Year must be between 2000 and 2100");
-  }
-
-  // Try to get user's customized content from the stored data
-  const contentKey = `${locals.user.id}-${year}-${month}`;
-  const userCustomContent = lastGeneratedContent.get(contentKey);
-
-  // If no customized content was found, fall back to generated mock content
-  const diaryContent =
-    userCustomContent || generateMockReflectionContent(month, year);
-
+  const content = await request.json();
   // Generate PDF with the appropriate content
-  const pdfData = generateDiary(month, year, locals.user, diaryContent);
+  const pdf = generateDiary(locals.user, content);
 
   // Return the actual PDF file with appropriate headers
-  return new Response(pdfData, {
+  return new Response(pdf, {
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="reflection-diary-${year}-${month}.pdf"`,
+      "Content-Disposition": `attachment; filename="reflection-diary.pdf"`,
     },
   });
-};
-
-// POST endpoint for the new interactive flow
-export const POST: RequestHandler = async ({ request, locals }) => {
-  // Check if user is logged in
-  if (!locals.user) {
-    throw error(401, "You must be logged in to generate a PDF");
-  }
-
-  try {
-    const data = await request.json();
-
-    // Validate the data
-    if (!data.month || !data.year || !data.content) {
-      throw error(400, "Missing required data for PDF generation");
-    }
-
-    const { month, year, content } = data;
-
-    if (isNaN(month) || month < 1 || month > 12) {
-      throw error(400, "Month must be between 1 and 12");
-    }
-
-    if (isNaN(year) || year < 2000 || year > 2100) {
-      throw error(400, "Year must be between 2000 and 2100");
-    }
-
-    // Store the content for use in GET requests
-    const contentKey = `${locals.user.id}-${year}-${month}`;
-    lastGeneratedContent.set(contentKey, content);
-
-    // Generate PDF with user-customized content
-    const pdfData = generateDiary(month, year, locals.user, content);
-
-    // Return success response
-    return json({
-      success: true,
-      message: "PDF content prepared for download",
-    });
-  } catch (e) {
-    console.error("Error generating PDF:", e);
-    throw error(500, "Failed to generate PDF");
-  }
-};
+}

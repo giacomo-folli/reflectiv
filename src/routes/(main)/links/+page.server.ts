@@ -35,7 +35,7 @@ export const actions: Actions = {
     }
 
     // Validate URL format (basic check)
-    if (!url.startsWith("https://chat.openai.com/share/")) {
+    if (!url.startsWith("https://chat")) {
       return fail(400, { message: "URL must be a valid ChatGPT shared link" });
     }
 
