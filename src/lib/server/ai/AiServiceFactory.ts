@@ -19,6 +19,8 @@ export class AiServiceFactory {
     const geminiBaseUri = getEnvVar("GEMINI_BASE_URI");
     const claudeBaseUri = getEnvVar("CLAUDE_BASE_URI");
 
+    console.info(`Using provider ${provider}`)
+
     switch (provider?.toLowerCase()) {
       case "openai":
         if (!openAiApiKey) {
