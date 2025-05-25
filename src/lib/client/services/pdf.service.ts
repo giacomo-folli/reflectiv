@@ -9,15 +9,23 @@ export class PdfService {
     else this.fetch = params.fetch;
   }
 
+  async thisFetch(params: { method: string; url: string; body?: any }) {
+    return await this.fetch(`/api/${params.url}`, {
+      method: params.method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params?.body),
+    });
+  }
+
   async getDiariyContent(params: { links?: string[] }): Promise<{
     questions: string[];
     themes: string[];
     mantra: string;
   }> {
-    const response = await this.fetch(`/api/diary-content`, {
+    const response = await this.thisFetch({
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ links: params.links }),
+      url: "diary-content",
+      body: { links: params.links },
     }).catch((err: unknown) =>
       console.error(err instanceof Error ? err.message : err)
     );
@@ -32,14 +40,14 @@ export class PdfService {
     themes: string[];
     mantra: string;
   }): Promise<boolean> {
-    const response = await this.fetch(`/api/generate-pdf`, {
+    const response = await this.thisFetch({
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+      url: "generate-pdf",
+      body: {
         questions: params.questions,
         themes: params.themes,
         mantra: params.mantra,
-      }),
+      },
     }).catch((err: unknown) =>
       console.error(err instanceof Error ? err.message : err)
     );
@@ -64,12 +72,12 @@ export class PdfService {
 
   async getUserLinks(): Promise<any[]> {
     try {
-      const response = await this.fetch(`/api/links/`, {
+      const response = await this.thisFetch({
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+        url: "links",
+      }).catch((err: unknown) =>
+        console.error(err instanceof Error ? err.message : err)
+      );
 
       if (!response.ok) {
         throw new Error(`${response.status} - Failed to fetch links`);

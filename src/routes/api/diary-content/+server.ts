@@ -1,3 +1,4 @@
+import { AiServiceFactory } from "$lib/server/ai/AiServiceFactory.js";
 import { error, json } from "@sveltejs/kit";
 
 export async function POST({ locals, request }) {
@@ -7,6 +8,9 @@ export async function POST({ locals, request }) {
 
   const { links } = await request.json();
   // TODO: send links to AIService to generate diary data
+  const aiService = AiServiceFactory.getInstance();
+  const response = await aiService.sendPrompt("Respond only with OK HELLO!");
+  console.log(response); // START FROM HERE (WHAT'S THE RETURN TYPE FROM GEMINI API)
 
   // mock data
   const content = {

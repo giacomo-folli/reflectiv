@@ -5,5 +5,5 @@ export abstract class AiService {
     this.baseUri = baseUri;
   }
 
-  abstract sendPrompt(prompt: string): Promise<string>;
+  abstract sendPrompt(prompt: string): Promise<any>;
 }

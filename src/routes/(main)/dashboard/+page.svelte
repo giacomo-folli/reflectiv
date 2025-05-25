@@ -2,6 +2,7 @@
   import { DateTime } from "luxon";
   import DiaryReviewDialog from "$lib/components/DiaryReviewDialog.svelte";
   import { PdfService } from "$lib/client/services/pdf.service";
+  import Select from "$lib/components/Select.svelte";
 
   // Get current date for defaults
   const currentDate = DateTime.now();
@@ -33,13 +34,11 @@
 
   // States for the interactive flow
   let showReview = false;
-  let showConfirmation = false;
   let isLoading = false;
   let errorMessage = "";
   let diaryContent: any = null;
 
-  // Interactive flow: Step 1 - Generate content
-  async function startInteractiveFlow() {
+  async function generateAndDownloadPdf() {
     isLoading = true;
     errorMessage = "";
 
@@ -49,7 +48,6 @@
 
       const service = new PdfService({ fetch });
       const links = await service.getUserLinks();
-
       const content = await service.getDiariyContent({ links });
 
       await service.generateDiary({
@@ -65,27 +63,10 @@
     }
   }
 
+  // Get the customized content from the review dialog
   function handleContentConfirm(event: CustomEvent) {
-    // Get the customized content from the review dialog
     diaryContent = event.detail;
     showReview = false;
-  }
-
-  function handleReviewCancel() {
-    showReview = false;
-  }
-
-  function generatePDF() {
-    const month = parseInt(selectedMonth);
-    const year = parseInt(selectedYear);
-
-    // Use the customized content to generate and download the PDF
-    // The GET endpoint will receive the data from the POST request we already made
-    window.location.href = `/api/generate-pdf?month=${month}&year=${year}&from_review=true`;
-  }
-
-  function closeConfirmation() {
-    showConfirmation = false;
   }
 
   function getMonthName(month: string) {
@@ -114,37 +95,13 @@
 
   <div class="bg-gray-800 rounded-lg p-8 relative">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-      <div class="text-left">
-        <label for="month" class="block text-gray-300 text-sm mb-2">Month</label
-        >
-        <select
-          id="month"
-          bind:value={selectedMonth}
-          class="w-full p-3 rounded-md border border-gray-600 bg-gray-700 text-white"
-        >
-          {#each months as month}
-            <option value={month.value}>{month.label}</option>
-          {/each}
-        </select>
-      </div>
-
-      <div class="text-left">
-        <label for="year" class="block text-gray-300 text-sm mb-2">Year</label>
-        <select
-          id="year"
-          bind:value={selectedYear}
-          class="w-full p-3 rounded-md border border-gray-600 bg-gray-700 text-white"
-        >
-          {#each years as year}
-            <option value={year.value}>{year.label}</option>
-          {/each}
-        </select>
-      </div>
+      <Select bind:value={selectedMonth} options={months} label="Month" />
+      <Select bind:value={selectedYear} options={years} label="Year" />
     </div>
 
     <div>
       <button
-        on:click={startInteractiveFlow}
+        on:click={generateAndDownloadPdf}
         class="w-full flex items-center justify-center py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition-colors"
       >
         <span class="mr-2">✨</span>
@@ -184,14 +141,14 @@
         year={parseInt(selectedYear)}
         {diaryContent}
         on:confirm={handleContentConfirm}
-        on:cancel={handleReviewCancel}
+        on:cancel={() => (showReview = false)}
       />
     </div>
   </div>
 {/if}
 
 <!-- Confirmation Dialog -->
-{#if showConfirmation}
+<!-- {#if showConfirmation}
   <div
     class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4"
   >
@@ -239,4 +196,4 @@
       </div>
     </div>
   </div>
-{/if}
+{/if} -->
