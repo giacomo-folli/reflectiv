@@ -4,6 +4,16 @@
 
 # Monthly Reflection Diary
 
+<p align="center">
+  <img src="https://img.shields.io/badge/docker-ready-blue?logo=docker" alt="Docker" />
+  <img src="https://img.shields.io/badge/node.js-18.x-brightgreen?logo=node.js" alt="Node.js" />
+  <img src="https://img.shields.io/badge/license-MIT-yellow.svg" alt="License: MIT" />
+  <img src="https://img.shields.io/badge/platform-docker%20%7C%20node.js-lightgrey" alt="Platform" />
+  <img src="https://img.shields.io/badge/status-beta-orange" alt="Status" />
+  <img src="https://img.shields.io/badge/contributions-welcome-brightgreen" alt="Contributions Welcome" />
+</p>
+
+
 **Monthly Reflection Diary** is an open source app to help you collect and organize meaningful conversations and links—like your chats with ChatGPT—and generate monthly PDF reflection diaries from them.
 
 This is my first fullstack project using **Node.js, Docker, and SQLite**, and I'm a **junior developer** learning as I build. It’s a big personal project and I’m excited to share it!
