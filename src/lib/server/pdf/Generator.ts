@@ -1,5 +1,6 @@
 import fs from "fs";
 import Parser from "./Parser";
+import puppeteer from "puppeteer";
 
 export class Generator {
   static async generate_template(
@@ -24,24 +25,23 @@ export class Generator {
     fs.writeFileSync(output_path, parsed_content, { flag: "w+" });
   }
 
-  static generate_pdf(template_path: string) {
-    const options = {
-      pageSize: "A4",
-      pageMargins: [0, 0, 0, 0],
-      content: "This is a basic PDF generated with pdfMake", // Replace with actual content
-    };
-
+  static async generate_pdf(templatePath: string) {
     const pdfDir = "output";
-    const templateName = template_path.split("/")[1].split(".")[0];
-    const outputPath = `${pdfDir}/${templateName}.pdf`;
+    const templateName = templatePath.split("/")[1].split(".")[0];
+    const outputPath = `output/${templateName}.pdf`;
+
+    // Ensure the output directory exists
+    if (!fs.existsSync(pdfDir)) {
+      fs.mkdirSync(pdfDir, { recursive: true });
+    }
 
     try {
-      // Ensure the output directory exists
-      if (!fs.existsSync(pdfDir)) {
-        fs.mkdirSync(pdfDir, { recursive: true });
-      }
-
-      // Actual pdf implementation
+      // Actual pdf generation
+      const browser = await puppeteer.launch();
+      const page = await browser.newPage();
+      await page.goto(`file://${templatePath}`, { waitUntil: "networkidle0" });
+      await page.pdf({ path: outputPath, format: "A4" });
+      await browser.close();
     } catch (e: any) {
       console.error(`Error generating PDF: ${e}`);
       throw e;

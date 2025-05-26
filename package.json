@@ -35,6 +35,8 @@
     "jspdf": "^2.5.2",
     "luxon": "^3.6.1",
     "openai": "^4.98.0",
+    "puppeteer": "^24.9.0",
+    "puppeteer-core": "^24.9.0",
     "svelte-i18n": "^4.0.1"
   }
 }
