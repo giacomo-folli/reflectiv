@@ -1,4 +1,5 @@
-import fs from "fs";
+import fs from "fs/promises";
+import path from "path";
 
 export default class Parser {
   static readonly mantra_templ_str = "%mantra%";
@@ -7,29 +8,32 @@ export default class Parser {
   static readonly free_templ_str = "%free%";
   static readonly num_templ_str = "%num%";
 
-  private content: string;
+  private content: string = "";
   private mantra: string;
   private prompt: string;
   private theme: string;
   private free: string;
   private num: string;
 
-  constructor(
-    template_path: string,
-    mantra: string,
-    prompt: string,
-    theme: string,
-    free: string,
-    num: string
-  ) {
-    // TODO: Handle file reading in a more robust way (e.g., using fs.promises)
-    this.content = fs.readFileSync(template_path, "utf-8");
+  private constructor(params: {
+    templatePath: string;
+    mantra: string;
+    prompt: string;
+    theme: string;
+    free: string;
+    num: string;
+  }) {
+    this.mantra = params.mantra;
+    this.prompt = params.prompt;
+    this.theme = params.theme;
+    this.free = params.free;
+    this.num = params.num;
 
-    this.mantra = mantra;
-    this.prompt = prompt;
-    this.theme = theme;
-    this.free = free;
-    this.num = num;
+    fs.readFile(path.resolve(params.templatePath), "utf-8")
+      .then((res) => (this.content = res))
+      .catch((err) => {
+        throw new Error("Failed to read file: " + err.message);
+      });
   }
 
   setMantra(mantra: string): void {
@@ -52,7 +56,7 @@ export default class Parser {
     this.content = this.content.replace(Parser.num_templ_str, num);
   }
 
-  parse(): string {
+  async parse(): Promise<string> {
     this.setMantra(this.mantra);
     this.setPrompt(this.prompt);
     this.setTheme(this.theme);
