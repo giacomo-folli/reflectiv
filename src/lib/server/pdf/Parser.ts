@@ -15,7 +15,7 @@ export default class Parser {
   private free: string;
   private num: string;
 
-  private constructor(params: {
+  constructor(params: {
     templatePath: string;
     mantra: string;
     prompt: string;
