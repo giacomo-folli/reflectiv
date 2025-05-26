@@ -10,6 +10,7 @@ export async function POST({ locals, request }) {
   const aiService = AiServiceFactory.getInstance();
 
   // GENERATE PROMPT
+
   // PARSE LINKS
 
   const response = await aiService.sendPrompt("Respond only with OK HELLO!");
