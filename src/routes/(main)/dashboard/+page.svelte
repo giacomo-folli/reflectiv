@@ -50,6 +50,8 @@
       const links = await service.getUserLinks();
       const content = await service.getDiariyContent({ links });
 
+      console.log("RESPONES", content);
+
       await service.generateDiary({
         questions: content.questions,
         mantra: content.mantra,

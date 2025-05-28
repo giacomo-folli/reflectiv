@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { AiService } from "./AiService";
 
 export class GeminiService extends AiService {
@@ -21,6 +21,30 @@ export class GeminiService extends AiService {
     const response = await this.ai.models.generateContent({
       model: "gemini-2.0-flash",
       contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            questions: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.STRING,
+              },
+            },
+            mantra: {
+              type: Type.STRING,
+            },
+            themes: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.STRING,
+              },
+            },
+          },
+          propertyOrdering: ["questions", "mantra", "themes"],
+        },
+      },
     });
 
     return response.text || "";
