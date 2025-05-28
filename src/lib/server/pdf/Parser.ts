@@ -1,6 +1,15 @@
 import fs from "fs/promises";
 import path from "path";
 
+export interface ParserProps {
+  templatePath: string;
+  mantra: string;
+  prompt: string;
+  theme: string;
+  free: string;
+  num: string;
+}
+
 export default class Parser {
   static readonly mantra_templ_str = "%mantra%";
   static readonly prompt_templ_str = "%prompt%";
@@ -15,14 +24,7 @@ export default class Parser {
   private free: string;
   private num: string;
 
-  constructor(params: {
-    templatePath: string;
-    mantra: string;
-    prompt: string;
-    theme: string;
-    free: string;
-    num: string;
-  }) {
+  constructor(params: ParserProps) {
     this.mantra = params.mantra;
     this.prompt = params.prompt;
     this.theme = params.theme;

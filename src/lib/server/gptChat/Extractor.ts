@@ -1,5 +1,10 @@
 import { chromium, type Browser } from "playwright";
 
+export interface ExtractedMessage {
+  role: string;
+  content: string;
+}
+
 class Extractor {
   private browser: Browser | undefined;
   private executablePath: string;
@@ -8,9 +13,24 @@ class Extractor {
     this.executablePath = executablePath;
   }
 
-  async extractChatFromShareUrl(
-    url: string
-  ): Promise<{ role: string; content: string }[]> {
+  private async extract(element: any, selector: string): Promise<string> {
+    try {
+      const contentElements = await element.locator(selector).all();
+      if (contentElements.length > 0) {
+        const innerText = await contentElements[0].innerText();
+        return innerText.replaceAll("\n", " ");
+      }
+      return "";
+    } catch (error: any) {
+      console.error(
+        `Failed to extract content using selector ${selector}:`,
+        error
+      );
+      return "";
+    }
+  }
+
+  async extractChatFromShareUrl(url: string): Promise<ExtractedMessage[]> {
     try {
       this.browser = await chromium.launch({
         executablePath: this.executablePath,
@@ -21,7 +41,7 @@ class Extractor {
       await page.goto(url);
       await page.waitForLoadState("networkidle");
 
-      const chat: { role: string; content: string }[] = [];
+      const chat: ExtractedMessage[] = [];
       const messageElements = await page
         .locator("div[data-message-author-role]")
         .all();
@@ -39,12 +59,9 @@ class Extractor {
         if (role) {
           role = role.trim();
           if (role === "assistant") {
-            content = await this.extractContent(element, "div.markdown.prose");
+            content = await this.extract(element, "div.markdown.prose");
           } else if (role === "user") {
-            content = await this.extractContent(
-              element,
-              "div.whitespace-pre-wrap"
-            );
+            content = await this.extract(element, "div.whitespace-pre-wrap");
           }
         }
 
@@ -62,26 +79,7 @@ class Extractor {
     }
   }
 
-  private async extractContent(
-    element: any,
-    selector: string
-  ): Promise<string> {
-    try {
-      const contentElements = await element.locator(selector).all();
-      if (contentElements.length > 0) {
-        return await contentElements[0].innerText();
-      }
-      return "";
-    } catch (error: any) {
-      console.error(
-        `Failed to extract content using selector ${selector}:`,
-        error
-      );
-      return "";
-    }
-  }
-
-  async import_chat(url: string): Promise<string> {
+  async importChat(url: string): Promise<string> {
     const chat = await this.extractChatFromShareUrl(url);
     return JSON.stringify(chat);
   }

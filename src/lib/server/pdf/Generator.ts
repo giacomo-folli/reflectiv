@@ -2,27 +2,29 @@ import fs from "fs";
 import Parser from "./Parser";
 import puppeteer from "puppeteer";
 
+export interface TemplateProps {
+  templatePath: string;
+  mantra: string;
+  theme: string;
+  free: string;
+  prompt: string;
+  num: string;
+  outputPath: string;
+}
+
 export class Generator {
-  static async generate_template(
-    templatePath: string,
-    mantra: string,
-    theme: string,
-    free: string,
-    prompt: string,
-    num: string,
-    output_path: string
-  ): Promise<void> {
+  static async generateTemplate(params: TemplateProps): Promise<void> {
     const parser = new Parser({
-      templatePath,
-      mantra,
-      theme,
-      free,
-      prompt,
-      num,
+      templatePath: params.templatePath,
+      mantra: params.mantra,
+      theme: params.theme,
+      free: params.free,
+      prompt: params.prompt,
+      num: params.num,
     });
     const parsed_content = await parser.parse();
 
-    fs.writeFileSync(output_path, parsed_content, { flag: "w+" });
+    fs.writeFileSync(params.outputPath, parsed_content, { flag: "w+" });
   }
 
   static async generate_pdf(templatePath: string) {
