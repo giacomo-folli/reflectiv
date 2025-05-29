@@ -37,7 +37,10 @@
     <div class="container max-w-6xl mx-auto px-4">
       <Transition transition="fadeIn" delay={400} duration={200}>
         <p class="text-gray-400 text-sm">
-          © 2025 Reflection Diary. All rights reserved.
+          reflectiv - made with ♥️ & ☕ by
+          <a href="https://github.com/giacomo-folli" target="_blank">
+            giacomo folli
+          </a>
         </p>
       </Transition>
     </div>
