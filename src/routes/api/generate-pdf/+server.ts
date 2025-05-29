@@ -176,7 +176,7 @@ export async function POST({ request, locals }) {
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="reflection-diary.pdf"`,
+      "Content-Disposition": `attachment; filename="reflectiv-diary.pdf"`,
     },
   });
 }

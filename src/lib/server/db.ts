@@ -19,7 +19,7 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 
 // Database path
-const DB_PATH = path.join(DATA_DIR, "reflection-diary.sqlite");
+const DB_PATH = path.join(DATA_DIR, "reflective-db.sqlite");
 
 // Create/connect to SQLite database
 const db = new Database(DB_PATH);

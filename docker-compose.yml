@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
       args:
         NODE_IMAGE: node:22.11.0-alpine
-    image: reflection-diary:latest
+    image: reflectiv:latest
     container_name: reflectiv
     ports:
       - "3000:3000"

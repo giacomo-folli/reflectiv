@@ -21,8 +21,8 @@ You can develop using **Docker (recommended)** or **Node.js locally**.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/monthly-reflection-diary.git
-cd monthly-reflection-diary
+git clone https://github.com/giacomo-folli/reflectiv.git
+cd reflectiv
 ```
 
 ### 2. Set up environment variables
@@ -35,8 +35,8 @@ cp .env.example .env
 
 Then customize `.env`. At a minimum, set:
 
-* `PUBLIC_BASE_URL`: `http://localhost:3000` for local dev
-* `OPENAI_API_KEY`: Optional, for AI-powered features
+- `PUBLIC_BASE_URL`: `http://localhost:3000` for local dev
+- `OPENAI_API_KEY`: Optional, for AI-powered features
 
 ---
 
@@ -86,23 +86,23 @@ npm run preview
 
 To simplify testing during development:
 
-* **Email:** `test@example.com`
-* **Password:** `password123`
+- **Email:** `test@example.com`
+- **Password:** `password123`
 
 ---
 
 ## 🗃️ Data Persistence
 
-* Data is stored in a SQLite database in the `./data` folder.
-* You can change the location with the `DATA_DIR` env variable.
-* When using Docker, data is persisted with a named volume.
+- Data is stored in a SQLite database in the `./data` folder.
+- You can change the location with the `DATA_DIR` env variable.
+- When using Docker, data is persisted with a named volume.
 
 ---
 
 ## 📄 PDF Generation
 
-* The app uses `jsPDF` to generate monthly reflection PDFs.
-* To customize questions or structure, edit:
+- The app uses `jsPDF` to generate monthly reflection PDFs.
+- To customize questions or structure, edit:
 
   ```bash
   src/routes/api/generate-pdf/+server.js
@@ -112,18 +112,18 @@ To simplify testing during development:
 
 ## 🔍 Health Checks & Monitoring (Docker)
 
-* Health check endpoint: `http://localhost:3000/health`
-* Automatic container restart policy
-* Resource limits and log rotation are configured
+- Health check endpoint: `http://localhost:3000/health`
+- Automatic container restart policy
+- Resource limits and log rotation are configured
 
 ---
 
 ## 🧼 Before You Submit
 
-* Ensure your code follows project structure and style.
-* Test your changes locally.
-* Open a Pull Request with a clear description of the change.
-* If you're suggesting a big change, please open an issue first to discuss it.
+- Ensure your code follows project structure and style.
+- Test your changes locally.
+- Open a Pull Request with a clear description of the change.
+- If you're suggesting a big change, please open an issue first to discuss it.
 
 ---
 

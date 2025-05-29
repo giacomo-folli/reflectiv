@@ -59,7 +59,7 @@ export class PdfService {
     const link = document.createElement("a");
 
     link.href = url;
-    link.download = `reflection-diary.pdf`;
+    link.download = `reflectiv-diary.pdf`;
 
     document.body.appendChild(link);
 
