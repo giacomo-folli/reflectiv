@@ -28,11 +28,7 @@ export const load: LayoutServerLoad = ({ cookies }) => {
   }
 
   return {
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-    },
+    user: user,
     session: {
       id: dbSession.id,
       expiresAt: dbSession.expiresAt,

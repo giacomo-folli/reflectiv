@@ -2,7 +2,6 @@
   import { DateTime } from "luxon";
   import DiaryReviewDialog from "$lib/components/DiaryReviewDialog.svelte";
   import { PdfService } from "$lib/client/services/pdf.service";
-  import Select from "$lib/components/Select.svelte";
 
   // Get current date for defaults
   const currentDate = DateTime.now();
@@ -76,47 +75,37 @@
   }
 </script>
 
-<div class="max-w-3xl mx-auto px-4 py-4 text-center">
-  <h1 class="text-3xl font-bold mb-3 text-white">
-    Monthly Reflection Diary Generator
-  </h1>
-  <p class="text-gray-400 mb-8">
-    Create a personalized monthly diary with AI-generated reflection questions
-    for each day.
-  </p>
+<div
+  class="h-full max-w-3xl flex flex-col justify-center items-center mx-auto px-4 py-4 text-center"
+>
+  <div class="w-full h-full">
+    <h1 class="text-3xl font-bold mb-3 text-white">
+      Monthly Reflection Diary Generator
+    </h1>
+    <p class="text-gray-400 mb-8">
+      Create a personalized monthly diary with AI-generated reflection questions
+      for each day.
+    </p>
 
-  <div class="mb-8">
-    <a
-      href="/links"
-      class="inline-flex items-center bg-purple-900/20 border border-purple-400/30 text-purple-300 py-3 px-6 rounded-md text-sm hover:bg-purple-900/30 hover:border-purple-400/40 transition-colors"
-    >
-      <span class="mr-2">🔗</span>
-      Add ChatGPT Links for Better Personalization
-    </a>
-  </div>
-
-  <div class="bg-gray-800 rounded-lg p-8 relative">
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-      <Select bind:value={selectedMonth} options={months} label="Month" />
-      <Select bind:value={selectedYear} options={years} label="Year" />
-    </div>
-
-    <div>
-      <button
-        on:click={generateAndDownloadPdf}
-        class="w-full flex items-center justify-center py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition-colors"
+    {#if !isLoading}
+      <div>
+        <button
+          on:click={generateAndDownloadPdf}
+          class="w-full flex items-center justify-center py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition-colors"
+        >
+          <span class="mr-2">✨</span>
+          Generate Content
+        </button>
+      </div>
+    {:else}
+      <div
+        class="flex items-center justify-center text-white bg-indigo-600 py-3 px-4 rounded-md"
       >
-        <span class="mr-2">✨</span>
-        Generate Content
-      </button>
-    </div>
-
-    <!-- Show loading indicator -->
-    {#if isLoading}
-      <div class="mt-6 flex flex-col items-center text-gray-400">
         <div
-          class="w-10 h-10 mb-4 rounded-full border-3 border-indigo-600/30 border-t-indigo-600 animate-spin"
-        ></div>
+          class="w-10 h-8 rounded-full border-3 border-indigo-600/30 animate-spin"
+        >
+          ✨
+        </div>
         <p>Generating your personalized content...</p>
       </div>
     {/if}
@@ -130,24 +119,24 @@
       </div>
     {/if}
   </div>
-</div>
 
-<!-- Review Dialog -->
-{#if showReview && diaryContent}
-  <div
-    class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4"
-  >
-    <div class="bg-gray-800 rounded-lg w-full max-w-3xl shadow-xl">
-      <DiaryReviewDialog
-        month={parseInt(selectedMonth)}
-        year={parseInt(selectedYear)}
-        {diaryContent}
-        on:confirm={handleContentConfirm}
-        on:cancel={() => (showReview = false)}
-      />
+  <!-- Review Dialog -->
+  {#if showReview && diaryContent}
+    <div
+      class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4"
+    >
+      <div class="bg-gray-800 rounded-lg w-full max-w-3xl shadow-xl">
+        <DiaryReviewDialog
+          month={parseInt(selectedMonth)}
+          year={parseInt(selectedYear)}
+          {diaryContent}
+          on:confirm={handleContentConfirm}
+          on:cancel={() => (showReview = false)}
+        />
+      </div>
     </div>
-  </div>
-{/if}
+  {/if}
+</div>
 
 <!-- Confirmation Dialog -->
 <!-- {#if showConfirmation}

@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
   import { _ } from "svelte-i18n";
   import { locale } from "svelte-i18n";
+  import type { PageData } from "./$types";
 
-  export let data;
+  export let data: PageData;
 
   $: user = data?.user;
 
@@ -103,43 +104,51 @@
       {$locale === "en" ? "How It Works" : "Come Funziona"}
     </h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-      <div class="p-6">
-        <div class="text-5xl mb-4">📅</div>
-        <h3 class="text-xl font-medium mb-3 text-gray-100">
-          {$locale === "en" ? "Select a Month" : "Seleziona un Mese"}
-        </h3>
-        <p class="text-gray-400 text-base leading-relaxed">
-          {$locale === "en"
-            ? "Choose which month and year you want to create a reflection diary for."
-            : "Scegli per quale mese e anno desideri creare un diario di riflessione."}
-        </p>
+    <div class="mx-auto grid grid-cols-1 gap-4 text-center">
+      <div class="px-6 flex justify-start items-center gap-4">
+        <div class="text-5xl h-20 flex items-center">🧠</div>
+        <div class="text-left">
+          <h3 class="text-xl font-medium text-gray-100 min-w-fit">
+            {$locale === "en"
+              ? "AI-Generated Questions"
+              : "Domande Generate dall'IA"}
+          </h3>
+          <p class="text-gray-400 text-base leading-relaxed">
+            {$locale === "en"
+              ? "Our system creates thoughtful questions tailored to the month and season."
+              : "Il nostro sistema crea domande significative adattate al mese e alla stagione."}
+          </p>
+        </div>
       </div>
 
-      <div class="p-6">
-        <div class="text-5xl mb-4">🧠</div>
-        <h3 class="text-xl font-medium mb-3 text-gray-100">
-          {$locale === "en"
-            ? "AI-Generated Questions"
-            : "Domande Generate dall'IA"}
-        </h3>
-        <p class="text-gray-400 text-base leading-relaxed">
-          {$locale === "en"
-            ? "Our system creates thoughtful questions tailored to the month and season."
-            : "Il nostro sistema crea domande significative adattate al mese e alla stagione."}
-        </p>
+      <div class="px-6 flex justify-start items-center gap-4">
+        <div class="text-5xl h-20 flex items-center">🔐</div>
+        <div class="text-left">
+          <h3 class="text-xl font-medium text-gray-100 min-w-fit">
+            {$locale === "en"
+              ? "Your Data Is Private and Secure"
+              : "I Tuoi Dati Sono Al Sicuro"}
+          </h3>
+          <p class="text-gray-400 text-base leading-relaxed">
+            {$locale === "en"
+              ? "This app doesn't collect any personal information. You own your data. "
+              : "Questa applicazione non raccoglie nessuna informazione su di te. Tu solo possiedi i tuoi dati."}
+          </p>
+        </div>
       </div>
 
-      <div class="p-6">
-        <div class="text-5xl mb-4">📝</div>
-        <h3 class="text-xl font-medium mb-3 text-gray-100">
-          {$locale === "en" ? "Print & Reflect" : "Stampa e Rifletti"}
-        </h3>
-        <p class="text-gray-400 text-base leading-relaxed">
-          {$locale === "en"
-            ? "Download your PDF, print it, and take time each day to reflect and write."
-            : "Scarica il tuo PDF, stampalo e prenditi del tempo ogni giorno per riflettere e scrivere."}
-        </p>
+      <div class="px-6 flex justify-start items-center gap-4">
+        <div class="text-5xl h-20 flex items-center">📝</div>
+        <div class="text-left">
+          <h3 class="text-xl font-medium text-gray-100 min-w-fit">
+            {$locale === "en" ? "Print & Reflect" : "Stampa e Rifletti"}
+          </h3>
+          <p class="text-gray-400 text-base leading-relaxed">
+            {$locale === "en"
+              ? "Download your PDF, print it, and take time each day to reflect and write."
+              : "Scarica il tuo PDF, stampalo e prenditi del tempo ogni giorno per riflettere e scrivere."}
+          </p>
+        </div>
       </div>
     </div>
   </section>

@@ -1,5 +1,7 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { DateTime } from "luxon";
+  import { slide } from "svelte/transition";
 
   export let data;
 
@@ -7,6 +9,8 @@
   let url: string = "";
   let error: string = "";
   let success: string = "";
+
+  let infoOpen: boolean = false;
 
   // Reset form after submission
   function resetForm() {
@@ -34,7 +38,8 @@
         async ({ result }) => {
           if (result.type === "failure") {
             error =
-              result.data?.message || "Failed to add link. Please try again.";
+              result.data?.message?.toString() ||
+              "Failed to add link. Please try again.";
             success = "";
           } else if (result.type === "success") {
             success = "Link added successfully!";
@@ -101,20 +106,24 @@
     </form>
   </div>
 
-  <div class="bg-indigo-900/10 border border-indigo-500/30 rounded-lg p-5 mb-8">
-    <h3 class="flex items-center text-indigo-300 text-lg font-medium mb-4">
-      <span class="mr-2">ℹ️</span>
-      How to share ChatGPT conversations
+  <button
+    on:click={() => (infoOpen = !infoOpen)}
+    class="w-full bg-indigo-900/10 border border-indigo-500/30 rounded-lg p-4 mb-6 text-sm"
+  >
+    <h3 class="flex items-center text-indigo-300 font-medium">
+      <span class="mr-2">ℹ️</span> How to share ChatGPT conversations
     </h3>
-    <ol class="pl-6 text-gray-300 space-y-2">
-      <li>
-        In ChatGPT, click the "Share" button at the top-right of any
-        conversation
-      </li>
-      <li>Choose "Copy Link" to copy the URL to your clipboard</li>
-      <li>Paste the URL in the form above and add a title (optional)</li>
-    </ol>
-  </div>
+    {#if infoOpen}
+      <ol transition:slide class="pl-6 text-gray-300 space-y-2 mt-4">
+        <li>
+          In ChatGPT, click the "Share" button at the top-right of any
+          conversation
+        </li>
+        <li>Choose "Copy Link" to copy the URL to your clipboard</li>
+        <li>Paste the URL in the form above and add a title (optional)</li>
+      </ol>
+    {/if}
+  </button>
 
   <section class="mb-8">
     <h2 class="text-2xl font-bold text-white mb-4">Your Current Links</h2>
@@ -128,7 +137,7 @@
     {:else}
       <div class="bg-gray-800 rounded-lg overflow-hidden">
         <div
-          class="grid grid-cols-[1.5fr_2fr_1fr_0.5fr] md:grid-cols-[1.5fr_2fr_1fr_0.5fr] p-4 bg-gray-700 font-semibold text-sm border-b border-gray-600"
+          class="grid grid-cols-[1.5fr_2.5fr_0.5fr_0.5fr] md:grid-cols-[1.5fr_2.5fr_0.5fr_0.5fr] p-4 bg-gray-700 font-semibold text-sm border-b border-gray-600"
         >
           <div class="text-white">Title</div>
           <div class="text-white hidden sm:block">URL</div>
@@ -138,7 +147,7 @@
 
         {#each links as link}
           <div
-            class="grid grid-cols-[1.5fr_2fr_1fr_0.5fr] md:grid-cols-[1.5fr_2fr_1fr_0.5fr] p-4 border-b border-gray-700 items-center"
+            class="grid grid-cols-[1.5fr_2.5fr_0.5fr_0.5fr] md:grid-cols-[1.5fr_2.5fr_0.5fr_0.5fr] p-4 border-b border-gray-700 items-center"
           >
             <div class="text-gray-200">{link.title || "Untitled"}</div>
             <div class="hidden sm:block">
@@ -146,14 +155,14 @@
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-indigo-300 hover:underline break-all"
+                class="w-full text-indigo-300 hover:underline break-all line-clamp-1 pr-4"
               >
-                {link.url.length > 40
-                  ? link.url.substring(0, 40) + "..."
-                  : link.url}
+                {link.url}
               </a>
             </div>
-            <div class="text-gray-400 text-sm">{link.createdAt}</div>
+            <div class="text-gray-400 text-sm">
+              {new Date(link.createdAt).toLocaleDateString()}
+            </div>
             <div class="text-center">
               <form
                 method="POST"
@@ -162,7 +171,7 @@
                   async ({ result }) => {
                     if (result.type === "failure") {
                       error =
-                        result.data?.message ||
+                        result.data?.message?.toString() ||
                         "Failed to delete link. Please try again.";
                       success = "";
                     }
