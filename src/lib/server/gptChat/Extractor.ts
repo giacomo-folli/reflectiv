@@ -9,7 +9,7 @@ class Extractor {
   private browser: Browser | undefined;
   private executablePath: string;
 
-  constructor(executablePath: string = "/usr/bin/chromium") {
+  constructor(executablePath: string = "/usr/bin/chromium-browser") {
     this.executablePath = executablePath;
   }
 
