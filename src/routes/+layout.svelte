@@ -33,10 +33,10 @@
     </PageTransition>
   </main>
 
-  <footer class="bg-gray-800 py-6 text-center border-t border-gray-700">
+  <footer class="bg-gray-800 py-3 text-center border-t border-gray-700">
     <div class="container max-w-6xl mx-auto px-4">
       <Transition transition="fadeIn" delay={400} duration={200}>
-        <p class="text-gray-400 text-sm">
+        <p class="text-gray-400 text-[12px] tracking-wider">
           reflectiv - made with ♥️ & ☕ by
           <a href="https://github.com/giacomo-folli" target="_blank">
             giacomo folli
