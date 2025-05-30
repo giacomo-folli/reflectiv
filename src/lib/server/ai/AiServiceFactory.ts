@@ -2,6 +2,7 @@ import { AiService } from "./AiService";
 import { OpenAiService } from "./OpenAiService";
 import { GeminiService } from "./GeminiService";
 import { ClaudeService } from "./ClaudeService";
+import { LocalLlmService } from "./LocalLlmService";
 
 // Helper to read process.env
 const getEnvVar = (
@@ -30,6 +31,8 @@ export class AiServiceFactory {
     const openAiApiKey = getEnvVar("OPENAI_API_KEY");
     const geminiApiKey = getEnvVar("GEMINI_API_KEY");
     const claudeApiKey = getEnvVar("CLAUDE_API_KEY");
+    // No API key needed for local LLM, but it needs a base URI
+    const localLlmBaseUri = getEnvVar("LOCAL_LLM_BASE_URI");
 
     const openAiBaseUri = getEnvVar("OPENAI_BASE_URI");
     const geminiBaseUri = getEnvVar("GEMINI_BASE_URI");
@@ -63,14 +66,20 @@ export class AiServiceFactory {
             claudeApiKey,
             claudeBaseUri as string | undefined
           ); // baseUri is optional
+        case "local":
+        case "localllm": // Adding an alias
+          if (typeof localLlmBaseUri !== "string") {
+            throw new Error("Missing LOCAL_LLM_BASE_URI for local provider.");
+          }
+          return new LocalLlmService(localLlmBaseUri);
         default:
           throw new Error(
-            "Invalid or missing AI_SERVICE_PROVIDER environment variable. Supported values: openai, gemini, claude."
+            "Invalid or missing AI_SERVICE_PROVIDER environment variable. Supported values: openai, gemini, claude, local."
           );
       }
     } else {
       throw new Error(
-        "Invalid or missing AI_SERVICE_PROVIDER environment variable. Supported values: openai, gemini, claude."
+        "Invalid or missing AI_SERVICE_PROVIDER environment variable. Supported values: openai, gemini, claude, local."
       );
     }
   }
