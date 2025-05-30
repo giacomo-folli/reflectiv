@@ -45,7 +45,7 @@ cp .env.example .env
 
 - `PUBLIC_BASE_URL`: The base URL where your application is accessible. For local use, set this to `http://localhost:3000`.
 
-**Optional AI Features:**
+**AI Features:**
 
 The application can leverage AI services for enhanced functionality. If you wish to use these features, you'll need to configure the following:
 
@@ -57,8 +57,6 @@ The application can leverage AI services for enhanced functionality. If you wish
     - If `AI_SERVICE_PROVIDER="openai"`, set `OPENAI_API_KEY="your_openai_api_key_here"`
     - If `AI_SERVICE_PROVIDER="gemini"`, set `GEMINI_API_KEY="your_gemini_api_key_here"`
     - If `AI_SERVICE_PROVIDER="claude"`, set `CLAUDE_API_KEY="your_claude_api_key_here"`
-
-If you do not want to use AI features, you can leave `AI_SERVICE_PROVIDER` and the API key variables unset. The application will run without AI capabilities.
 
 ### 3. Start the app
 
@@ -97,7 +95,7 @@ This project is continuously evolving, and we're excited about the future! We ar
 Our roadmap includes:
 
 -   **Broader LLM Support:** We plan to integrate a wider range of Large Language Models to give you more choices. This includes upcoming support for:
-    -   Google's Gemini
+    -   OpenAI's GPT models
     -   Anthropic's Claude
 -   **Self-Hosted LLMs:** We understand the importance of data privacy and control. A key future goal is to enable support for self-hosted LLMs, allowing you to use models running on your own infrastructure.
 
