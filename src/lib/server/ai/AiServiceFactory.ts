@@ -31,14 +31,14 @@ export class AiServiceFactory {
     const openAiApiKey = getEnvVar("OPENAI_API_KEY");
     const geminiApiKey = getEnvVar("GEMINI_API_KEY");
     const claudeApiKey = getEnvVar("CLAUDE_API_KEY");
-    // No API key needed for local LLM, but it needs a base URI
-    const localLlmBaseUri = getEnvVar("LOCAL_LLM_BASE_URI");
 
     const openAiBaseUri = getEnvVar("OPENAI_BASE_URI");
     const geminiBaseUri = getEnvVar("GEMINI_BASE_URI");
     const claudeBaseUri = getEnvVar("CLAUDE_BASE_URI");
 
-    console.info(`Using provider ${provider}`);
+    // No API key needed for local LLM, but it needs a base URI
+    const localLlmBaseUri = getEnvVar("LOCAL_LLM_BASE_URI");
+    const localLlmModel = getEnvVar("LOCAL_LLM_MODEL");
 
     if (typeof provider === "string") {
       switch (provider.toLowerCase()) {
@@ -71,7 +71,10 @@ export class AiServiceFactory {
           if (typeof localLlmBaseUri !== "string") {
             throw new Error("Missing LOCAL_LLM_BASE_URI for local provider.");
           }
-          return new LocalLlmService(localLlmBaseUri);
+          if (typeof localLlmModel !== "string") {
+            throw new Error("Missing LOCAL_LLM_MODEL for local model.");
+          }
+          return new LocalLlmService(localLlmBaseUri, localLlmModel);
         default:
           throw new Error(
             "Invalid or missing AI_SERVICE_PROVIDER environment variable. Supported values: openai, gemini, claude, local."

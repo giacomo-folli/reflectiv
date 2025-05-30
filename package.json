@@ -38,8 +38,8 @@
     "dotenv": "^16.5.0",
     "jspdf": "^2.5.2",
     "luxon": "^3.6.1",
-    "openai": "^4.98.0",
-    "svelte-i18n": "^4.0.1",
-    "puppeteer": "^19.11.1"
+    "openai": "^4.104.0",
+    "puppeteer": "^19.11.1",
+    "svelte-i18n": "^4.0.1"
   }
 }
