@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2025-05-30
+
+### 🚀 Features
+
+- Add gemini service and fix server functions
+- Add google genai module for gemini use
+- Add the parser class
+- Add inital generator class
+- Added extractor and template
+- Implemented ai prompt and query for gemini service
+- Complete implementation of gemini service
+- Add build and push workflow
+- Add support for local LLM services
+- Added openai llm support
+
+### 🐛 Bug Fixes
+
+- Dockerfile and package dependencies
+- Footer padding
+
+### 🚜 Refactor
+
+- Update project structure and routes
+- Simplify pdf generation process
+- Use fs/promises for reading template file
+- Generator class
+- Ui style across pages and simplify app
+- Simplify github workflow
+- Update old references with new name
+- Footer info
+- Update local llm support system
+
+### 📚 Documentation
+
+- Update README to reflect current project state
+
+### ⚙️ Miscellaneous Tasks
+
+- Update readme
+- Update readme
+- Remove unused vars and scripts
+- Remove unused vars
+- Remove sensitive logs
+- Update readme
+- Update readme
+
 ## [0.2.0] - 2025-05-25
 
 ### 🚀 Features
