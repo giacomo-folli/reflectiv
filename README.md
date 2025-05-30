@@ -50,31 +50,28 @@ cp .env.example .env
 The application can leverage AI services for enhanced functionality. If you wish to use these features, you'll need to configure the following:
 
 - `AI_SERVICE_PROVIDER`: Specify the AI service you want to use. Options are:
-    - `"openai"`
-    - `"gemini"`
-    - `"claude"`
-    - `"local"` (or `"localllm"`)
-- Corresponding API Key / Configuration:
-    - If `AI_SERVICE_PROVIDER="openai"`, set `OPENAI_API_KEY="your_openai_api_key_here"`. You can also optionally set `OPENAI_BASE_URI` if you're using a proxy or a compatible API.
-    - If `AI_SERVICE_PROVIDER="gemini"`, set `GEMINI_API_KEY="your_gemini_api_key_here"`. Optionally set `GEMINI_BASE_URI`.
-    - If `AI_SERVICE_PROVIDER="claude"`, set `CLAUDE_API_KEY="your_claude_api_key_here"`. Optionally set `CLAUDE_BASE_URI`.
-    - If `AI_SERVICE_PROVIDER="local"` or `"localllm"`, set `LOCAL_LLM_BASE_URI`. This is the full base endpoint of your local LLM.
-        - **`LOCAL_LLM_BASE_URI`**: This variable specifies the HTTP endpoint of your locally running Large Language Model.
-            - Example for Ollama (direct API): `LOCAL_LLM_BASE_URI="http://localhost:11434/api/generate"`
-            - Example for an OpenAI-compatible API (like LM Studio, LocalAI, or Ollama's OpenAI endpoint): `LOCAL_LLM_BASE_URI="http://localhost:1234/v1/chat/completions"` (adjust port and path as needed).
-        - **Expected API Behavior for Local LLM:**
-            - The endpoint specified by `LOCAL_LLM_BASE_URI` should be a POST endpoint.
-            - It must accept a JSON request body with the following structure: `{"prompt": "your prompt here", "stream": false}`.
-            - It should return a JSON response. The service supports two common formats:
-                1.  Standard format: `{"response": "The LLM's answer"}`
-                2.  OpenAI-compatible format: `{"choices": [{"message": {"content": "The LLM's answer"}}]}`
+    - `"gemini"` *(RECOMMENDED)*
+    - `"openai"` *(in testing)*
+    - `"local"` *(in testing)*
+    <!-- - `"claude"` -->
+
+- If `AI_SERVICE_PROVIDER="local"`, set:
+    - **`LOCAL_LLM_BASE_URI`**: The HTTP endpoint of your locally running llm.
+    - **`LOCAL_LLM_MODEL`**: The local model to use.
+
+**Expected API Behavior for Local LLM:**
+- The endpoint specified by `LOCAL_LLM_BASE_URI` should be a POST endpoint.
+- It must accept a JSON request body with the following structure: `{"prompt": "your prompt here", "stream": false}`.
+- It should return a JSON response. The service supports two common formats:
+    1.  Standard format: `{"response": "The LLM's answer"}`
+    2.  OpenAI-compatible format: `{"choices": [{"message": {"content": "The LLM's answer"}}]}`
 
 ### 3. Start the app
 
 #### Option A: With Docker (Recommended)
 
 ```bash
-docker-compose up --build -d
+docker compose up -d
 ```
 
 #### Option B: Locally with Node.js
@@ -101,13 +98,13 @@ Whether you’re a developer, a designer, or simply someone curious about the pr
 
 ## 🚀 Next Steps & Future Plans
 
-This project is continuously evolving, and we're excited about the future! We are actively working on expanding its capabilities and making it even more versatile for our users.
+This project is continuously evolving, and we're excited about the future! We are actively working on expanding its capabilities and making it even more versatile for our users. Check out the full roadmap at [openchangelog.com](https://reflectiv.openchangelog.com)
 
-Our roadmap includes:
+Some major next steps are:
 
--   **Broader LLM Support:** We plan to integrate a wider range of Large Language Models to give you more choices. This includes upcoming support for:
-    -   Integration with more models from OpenAI (GPT series) and Anthropic (Claude series).
-    -   Enhanced configuration options for different models and providers.
--   **Self-Hosted LLMs:** Basic support for self-hosted LLMs via a generic API endpoint is now available (see `LOCAL_LLM_BASE_URI` in the configuration section). Future enhancements may include more specific integrations or auto-discovery for popular local LLM servers.
+-   **Broader LLM Support:** support wider range of LLMs to give you more choices. This includes upcoming support for:
+    -   Integration with more models from OpenAI and Anthropic.
+    -   more flexible configuration options for different models and providers.
+-   **Self-Hosted LLMs:** Basic support for self-hosted LLMs via a generic API endpoint.
 
 We believe in community-driven development. If you're interested in contributing to these features, or if you have other ideas and suggestions, please don't hesitate to reach out or open an issue. Your input is highly valued!
