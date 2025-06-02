@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2025-06-02
+
+### 🚀 Features
+
+- Ollama local llms support
+
 ## [0.2.1] - 2025-05-30
 
 ### 🚀 Features
