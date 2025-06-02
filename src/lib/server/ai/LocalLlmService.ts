@@ -1,11 +1,11 @@
 import { AiService } from "./AiService";
 
 export class LocalLlmService extends AiService {
-  private LOCAL_MODEL: string;
+  private localModel: string;
 
   constructor(baseUri: string, model: string) {
     super(baseUri);
-    this.LOCAL_MODEL = model;
+    this.localModel = model;
   }
 
   async sendPrompt(prompt: string): Promise<any> {
@@ -16,13 +16,14 @@ export class LocalLlmService extends AiService {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: this.LOCAL_MODEL,
+          model: this.localModel,
           prompt: prompt,
+          format: "json",
           stream: false, // Assuming non-streaming for simplicity first
-          // format: "json" Ideally, but need to confirm it can be used in every provider
         }),
       });
 
+      
       if (!response.ok) {
         const errorBody = await response.text();
         console.error(
@@ -32,7 +33,7 @@ export class LocalLlmService extends AiService {
           `Local LLM API request failed with status ${response.status}`
         );
       }
-
+      
       const data = await response.json();
 
       // Assuming the local LLM API returns a JSON object

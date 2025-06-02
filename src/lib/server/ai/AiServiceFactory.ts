@@ -67,7 +67,7 @@ export class AiServiceFactory {
             claudeBaseUri as string | undefined
           ); // baseUri is optional
         case "local":
-        case "localllm": // Adding an alias
+        case "localllm":
           if (typeof localLlmBaseUri !== "string") {
             throw new Error("Missing LOCAL_LLM_BASE_URI for local provider.");
           }
