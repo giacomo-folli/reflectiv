@@ -1,7 +1,5 @@
-export type Link = {
-  id: string;
-  userId: string;
-  url: string;
-  title: string;
-  createdAt: string;
-};
+import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
+import type { links } from '../../lib/server/schema';
+
+export type Link = InferSelectModel<typeof links>;
+export type InsertLink = InferInsertModel<typeof links>;

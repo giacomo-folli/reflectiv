@@ -23,7 +23,7 @@ export async function updateUserName(
     }
 
     const updatedUser = userDb.updateUser(userId, { name: name.trim() });
-    return updatedUser;
+    return updatedUser === undefined ? null : updatedUser;
   } catch (error) {
     console.error("updateUserName: Error updating name.", error);
     return null;
@@ -61,7 +61,7 @@ export async function updateUserEmail(
     }
 
     const updatedUser = userDb.updateUser(userId, { email });
-    return updatedUser;
+    return updatedUser === undefined ? null : updatedUser;
   } catch (error) {
     console.error("updateUserEmail: Error updating email.", error);
     return null;
@@ -94,7 +94,7 @@ export async function updateUserPassword(
 
     const passwordHash = await hashPassword(password);
     const updatedUser = userDb.updateUser(userId, { passwordHash });
-    return updatedUser;
+    return updatedUser === undefined ? null : updatedUser;
   } catch (error) {
     console.error("Error updating password.", error);
     return null;

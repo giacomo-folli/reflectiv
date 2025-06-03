@@ -6,6 +6,9 @@ import { fileURLToPath } from "url";
 import type { Link } from "$lib/types/link.types";
 import type { Session } from "$lib/types/session.types";
 import type { User } from "$lib/types/user.types";
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { eq, and, desc } from 'drizzle-orm';
+import * as schema from './schema';
 
 // Get the current directory
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -22,278 +25,186 @@ if (!fs.existsSync(DATA_DIR)) {
 const DB_PATH = path.join(DATA_DIR, "reflective-db.sqlite");
 
 // Create/connect to SQLite database
-const db = new Database(DB_PATH);
+const sqliteInstance = new Database(DB_PATH);
 
 // Enable foreign keys
-db.pragma("foreign_keys = ON");
+sqliteInstance.pragma("foreign_keys = ON");
 
-// Set up tables if they don't exist
-const initDb = () => {
-  // Users table
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
-      email TEXT UNIQUE NOT NULL,
-      name TEXT NOT NULL,
-      passwordHash TEXT NOT NULL,
-      createdAt TEXT NOT NULL
-    )
-  `);
+// Initialize Drizzle
+export const drizzleDb = drizzle(sqliteInstance, { schema });
 
-  // Sessions table
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS sessions (
-      id TEXT PRIMARY KEY,
-      userId TEXT NOT NULL,
-      createdAt TEXT NOT NULL,
-      expiresAt TEXT NOT NULL,
-      FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
-    )
-  `);
+// Seed initial data if in development and no users exist
+if (dev) {
+  const existingUsers = await drizzleDb.select().from(schema.users).limit(1);
+  if (existingUsers.length === 0) {
+    await drizzleDb.insert(schema.users).values({
+      id: "1",
+      email: "test@example.com",
+      name: "Test User",
+      passwordHash: "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", // 'password123' with SHA-256
+      createdAt: new Date("2025-05-01").toISOString(),
+    });
 
-  // Links table
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS links (
-      id TEXT PRIMARY KEY,
-      userId TEXT NOT NULL,
-      title TEXT,
-      url TEXT NOT NULL,
-      createdAt TEXT NOT NULL,
-      FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
-    )
-  `);
-
-  // Add a test user if in development mode and no users exist
-  if (dev) {
-    const userCount = db
-      .prepare("SELECT COUNT(*) as count FROM users")
-      .get() as any;
-
-    if (userCount.count === 0) {
-      db.prepare(
-        `
-        INSERT INTO users (id, email, name, passwordHash, createdAt) 
-        VALUES (?, ?, ?, ?, ?)
-      `
-      ).run(
-        "1",
-        "test@example.com",
-        "Test User",
-        "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", // 'password123' with SHA-256
-        new Date("2025-05-01").toISOString()
-      );
-
-      // Add a sample link for the test user
-      db.prepare(
-        `
-        INSERT INTO links (id, userId, title, url, createdAt)
-        VALUES (?, ?, ?, ?, ?)
-      `
-      ).run(
-        "1",
-        "1",
-        "Sample ChatGPT Conversation",
-        "https://chat.openai.com/share/abc123",
-        new Date("2025-05-10").toISOString()
-      );
-    }
+    await drizzleDb.insert(schema.links).values({
+      id: "1",
+      userId: "1",
+      title: "Sample ChatGPT Conversation",
+      url: "https://chat.openai.com/share/abc123",
+      createdAt: new Date("2025-05-10").toISOString(),
+    });
   }
-};
-
-// Run database initialization
-initDb();
+}
 
 // User repository
 export const userDb = {
-  findByEmail(email: string): User | null {
-    return db
-      .prepare("SELECT * FROM users WHERE email = ?")
-      .get(email) as User | null;
+  findByEmail(email: string): User | undefined {
+    return drizzleDb.select().from(schema.users).where(eq(schema.users.email, email)).get();
   },
 
-  findById(id: string | number): User | null {
-    return db
-      .prepare("SELECT * FROM users WHERE id = ?")
-      .get(id) as User | null;
+  findById(id: string): User | undefined {
+    return drizzleDb.select().from(schema.users).where(eq(schema.users.id, id)).get();
   },
 
-  createUser(userData: any): User | null {
-    const { id, email, passwordHash, name, createdAt } = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      ...userData,
+  createUser(userData: Partial<User>): User | undefined {
+    const id = userData.id || crypto.randomUUID();
+    const createdAt = userData.createdAt || new Date().toISOString();
+
+    const newUser: typeof schema.users.$inferInsert = {
+      id,
+      email: userData.email!,
+      name: userData.name!,
+      passwordHash: userData.passwordHash!,
+      createdAt,
     };
 
-    db.prepare(
-      `
-      INSERT INTO users (id, email, name, passwordHash, createdAt)
-      VALUES (?, ?, ?, ?, ?)
-    `
-    ).run(id, email, name, passwordHash, createdAt);
-
+    drizzleDb.insert(schema.users).values(newUser).run();
     return this.findById(id);
   },
 
-  updateUser(id: string | number, userData: any): User | null {
+  updateUser(id: string, userData: Partial<Omit<User, 'id' | 'createdAt'>>): User | undefined {
     const user = this.findById(id);
-    if (!user) return null;
+    if (!user) return undefined;
 
-    const updates = [];
-    const values = [];
+    // Ensure only valid fields are passed to set
+    const { email, name, passwordHash } = userData;
+    const updateData: Record<string, any> = {};
+    if (email !== undefined) updateData.email = email;
+    if (name !== undefined) updateData.name = name;
+    if (passwordHash !== undefined) updateData.passwordHash = passwordHash;
 
-    for (const [key, value] of Object.entries(userData)) {
-      if (key !== "id" && key !== "createdAt") {
-        updates.push(`${key} = ?`);
-        values.push(value);
-      }
-    }
+    if (Object.keys(updateData).length === 0) return user;
 
-    if (updates.length === 0) return user;
-
-    values.push(id); // for the WHERE clause
-
-    db.prepare(
-      `
-      UPDATE users 
-      SET ${updates.join(", ")}
-      WHERE id = ?
-    `
-    ).run(...values);
-
+    drizzleDb.update(schema.users).set(updateData).where(eq(schema.users.id, id)).run();
     return this.findById(id);
   },
 
-  deleteUser(id: string | number) {
-    const result = db.prepare("DELETE FROM users WHERE id = ?").run(id);
+  deleteUser(id: string) {
+    const result = drizzleDb.delete(schema.users).where(eq(schema.users.id, id)).run();
     return result.changes > 0;
   },
 
   debug() {
     if (dev) {
-      return db.prepare("SELECT * FROM users").all();
+      return drizzleDb.select().from(schema.users).all();
     }
-    return null;
+    return [];
   },
 };
 
 // Session repository
 export const sessionDb = {
-  createSession(userId: string | number): Session | null {
+  createSession(userId: string): Session | undefined {
     const id = crypto.randomUUID();
     const createdAt = new Date().toISOString();
     const expiresAt = new Date(
-      Date.now() + 7 * 24 * 60 * 60 * 1000
-    ).toISOString(); // 7 days
+      Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
+    ).toISOString();
 
-    db.prepare(
-      `
-      INSERT INTO sessions (id, userId, createdAt, expiresAt)
-      VALUES (?, ?, ?, ?)
-    `
-    ).run(id, userId, createdAt, expiresAt);
+    const newSession: typeof schema.sessions.$inferInsert = {
+      id,
+      userId,
+      createdAt,
+      expiresAt,
+    };
 
+    drizzleDb.insert(schema.sessions).values(newSession).run();
     return this.findById(id);
   },
 
-  findById(sessionId: string | number) {
-    return db
-      .prepare("SELECT * FROM sessions WHERE id = ?")
-      .get(sessionId) as Session | null;
+  findById(sessionId: string): Session | undefined {
+    return drizzleDb.select().from(schema.sessions).where(eq(schema.sessions.id, sessionId)).get();
   },
 
-  deleteSession(sessionId: string | number) {
-    const result = db
-      .prepare("DELETE FROM sessions WHERE id = ?")
-      .run(sessionId);
+  deleteSession(sessionId: string) {
+    const result = drizzleDb.delete(schema.sessions).where(eq(schema.sessions.id, sessionId)).run();
     return result.changes > 0;
   },
 
-  deleteAllUserSessions(userId: string | number) {
-    const result = db
-      .prepare("DELETE FROM sessions WHERE userId = ?")
-      .run(userId);
+  deleteAllUserSessions(userId: string) {
+    const result = drizzleDb.delete(schema.sessions).where(eq(schema.sessions.userId, userId)).run();
     return result.changes > 0;
   },
 
   debug() {
     if (dev) {
-      return db.prepare("SELECT * FROM sessions").all();
+      return drizzleDb.select().from(schema.sessions).all();
     }
-    return null;
+    return [];
   },
 };
 
 // Link repository
 export const linkDb = {
-  createLink(linkData: any): Link | null {
-    const { id, userId, title, url, createdAt } = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      ...linkData,
+  createLink(linkData: Partial<Link>): Link | undefined {
+    const id = linkData.id || crypto.randomUUID();
+    const createdAt = linkData.createdAt || new Date().toISOString();
+    const title = linkData.title || "";
+
+    const newLink: typeof schema.links.$inferInsert = {
+      id,
+      userId: linkData.userId!,
+      title,
+      url: linkData.url!,
+      createdAt,
     };
-
-    db.prepare(
-      `
-      INSERT INTO links (id, userId, title, url, createdAt)
-      VALUES (?, ?, ?, ?, ?)
-    `
-    ).run(id, userId, title || "", url, createdAt);
-
+    drizzleDb.insert(schema.links).values(newLink).run();
     return this.findById(id);
   },
 
-  findByUserId(userId: string | number) {
-    return db
-      .prepare("SELECT * FROM links WHERE userId = ? ORDER BY createdAt DESC")
-      .all(userId) as Link[] | null;
+  findByUserId(userId: string): Link[] {
+    return drizzleDb.select().from(schema.links).where(eq(schema.links.userId, userId)).orderBy(desc(schema.links.createdAt)).all();
   },
 
-  findById(id: string | number) {
-    return db
-      .prepare("SELECT * FROM links WHERE id = ?")
-      .get(id) as Link | null;
+  findById(id: string): Link | undefined {
+    return drizzleDb.select().from(schema.links).where(eq(schema.links.id, id)).get();
   },
 
-  updateLink(id: string | number, linkData: any): Link | null {
+  updateLink(id: string, linkData: Partial<Omit<Link, 'id' | 'userId' | 'createdAt'>>): Link | undefined {
     const link = this.findById(id);
-    if (!link) return null;
+    if (!link) return undefined;
 
-    const updates = [];
-    const values = [];
+    const { title, url } = linkData;
+    const updateData: Record<string, any> = {};
+    if (title !== undefined) updateData.title = title;
+    if (url !== undefined) updateData.url = url;
 
-    // Build dynamic update query
-    for (const [key, value] of Object.entries(linkData)) {
-      if (key !== "id" && key !== "userId" && key !== "createdAt") {
-        updates.push(`${key} = ?`);
-        values.push(value);
-      }
-    }
 
-    if (updates.length === 0) return link;
+    if (Object.keys(updateData).length === 0) return link;
 
-    values.push(id); // for the WHERE clause
-
-    db.prepare(
-      `
-      UPDATE links
-      SET ${updates.join(", ")}
-      WHERE id = ?
-    `
-    ).run(...values);
-
+    drizzleDb.update(schema.links).set(updateData).where(eq(schema.links.id, id)).run();
     return this.findById(id);
   },
 
-  deleteLink(id: string | number) {
-    const result = db.prepare("DELETE FROM links WHERE id = ?").run(id);
+  deleteLink(id: string) {
+    const result = drizzleDb.delete(schema.links).where(eq(schema.links.id, id)).run();
     return result.changes > 0;
   },
 
   // For debugging in development mode only
   debug() {
     if (dev) {
-      return db.prepare("SELECT * FROM links").all();
+      return drizzleDb.select().from(schema.links).all();
     }
-    return null;
+    return [];
   },
 };
