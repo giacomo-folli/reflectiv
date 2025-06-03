@@ -10,7 +10,7 @@ import { getDaysInMonth, getMonthOptions } from "./dateUtils";
 function generateQuestions(month: number, year: number) {
   const daysInMonth = getDaysInMonth(month, year);
   const monthName =
-    getMonthOptions().find((m) => m.value === month)?.label || "";
+    getMonthOptions().find((m: { value: number; label: string }) => m.value === month)?.label || "";
 
   const questions = [
     "What was the most important thing you accomplished today?",
@@ -85,7 +85,7 @@ export function generateDiaryPDF(
   const contentWidth = pageWidth - margin * 2;
 
   const monthName =
-    getMonthOptions().find((m) => m.value === month)?.label || "";
+    getMonthOptions().find((m: { value: number; label: string }) => m.value === month)?.label || "";
   const userName = userData.name || "Your";
 
   // Title
