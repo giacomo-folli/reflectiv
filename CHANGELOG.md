@@ -2,16 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.3.0] - 2025-06-02
+## [0.1.3] - 2025-06-03
 
 ### 🚀 Features
 
-- Ollama local llms support
-
-## [0.2.1] - 2025-05-30
-
-### 🚀 Features
-
+- Add AiServiceFactory and URI configuration
+- Add AI service abstraction and initial implementations
 - Add gemini service and fix server functions
 - Add google genai module for gemini use
 - Add the parser class
@@ -22,14 +18,23 @@ All notable changes to this project will be documented in this file.
 - Add build and push workflow
 - Add support for local LLM services
 - Added openai llm support
+- Ollama local llms support
 
 ### 🐛 Bug Fixes
 
+- Docker volume issues
 - Dockerfile and package dependencies
 - Footer padding
 
+### 💼 Other
+
+- Improve project structure and backend/frontend separation
+- Enhance README with a friendlier introduction and better structure.
+- Resolve CSRF error in Dockerized environment
+
 ### 🚜 Refactor
 
+- Fix ai classes and remove tests
 - Update project structure and routes
 - Simplify pdf generation process
 - Use fs/promises for reading template file
@@ -46,6 +51,12 @@ All notable changes to this project will be documented in this file.
 
 ### ⚙️ Miscellaneous Tasks
 
+- Remove data dir with sensitive data
+- Favicon
+- Add info log
+- Divide readme and contribuiting
+- Update readme
+- Update readme
 - Update readme
 - Update readme
 - Remove unused vars and scripts
@@ -53,36 +64,7 @@ All notable changes to this project will be documented in this file.
 - Remove sensitive logs
 - Update readme
 - Update readme
-
-## [0.2.0] - 2025-05-25
-
-### 🚀 Features
-
-- Add AiServiceFactory and URI configuration
-- Add AI service abstraction and initial implementations
-
-### 🐛 Bug Fixes
-
-- Docker volume issues
-
-### 💼 Other
-
-- Improve project structure and backend/frontend separation
-- Enhance README with a friendlier introduction and better structure.
-- Resolve CSRF error in Dockerized environment
-
-### 🚜 Refactor
-
-- Fix ai classes and remove tests
-
-### ⚙️ Miscellaneous Tasks
-
-- Remove data dir with sensitive data
-- Favicon
-- Add info log
-- Divide readme and contribuiting
-- Update readme
-- Update readme
+- Add code of conduct
 
 ## [0.1.2] - 2025-05-18
 
