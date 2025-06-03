@@ -1,11 +1,7 @@
 import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
-import {
-  validateSession,
-  updateUserName,
-  updateUserEmail,
-  updateUserPassword,
-} from "$lib/server/auth";
+import { validateSession } from "$lib/server/auth";
+import { updateUserEmail, updateUserName, updateUserPassword } from "$lib/server/user/user";
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
