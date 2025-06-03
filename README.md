@@ -13,10 +13,7 @@
   <img src="https://img.shields.io/badge/contributions-welcome-brightgreen" alt="Contributions Welcome" />
 </p>
 
-
-**Monthly Reflection Diary** is an open source app to help you collect and organize meaningful conversations and links—like your chats with ChatGPT—and generate monthly PDF reflection diaries from them.
-
-This is my first fullstack project using **Node.js, Docker, and SQLite**, and I'm a **junior developer** learning as I build. It’s a big personal project and I’m excited to share it!
+**Monthly Reflection Diary** is an open source app to help you collect and organize meaningful conversations and links—like your chats with ChatGPT—and generate monthly PDF reflection diaries with AI.
 
 ## ⚠️ Disclaimer
 
