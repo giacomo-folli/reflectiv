@@ -1,25 +1,64 @@
 <script lang="ts">
-  let name = "John Doe"; // Placeholder name
-  let email = "john.doe@example.com"; // Placeholder email
-  let newPassword = "";
+  import { UserService } from "$lib/client/services/user.service";
+  import type { PageData } from "./$types";
 
-  function saveChanges() {
-    // Handle saving changes here
-    console.log("Name:", name);
-    console.log("Email:", email);
-    console.log("New Password:", newPassword);
-    // In a real application, you would send this data to a backend server
+  export let data: PageData;
+
+  let email = data.user?.email || "";
+  let name = data.user?.name || "";
+  let newPassword = "";
+  let confirmNewPassword = "";
+
+  async function saveChanges() {
+    if (email == data.user?.email && name == data.user?.name) return;
+    if (newPassword != confirmNewPassword) {
+      alert("The passwords don't match");
+    }
+
+    const service = new UserService({ fetch });
+    const user = await service.updateUser({
+      name: name,
+      email: email,
+      newPassword: newPassword || undefined,
+    });
+
+    email = user.email;
+    name = user.name;
   }
 </script>
+
+<div class="settings-form">
+  <h1>Settings</h1>
+  <form on:submit|preventDefault={saveChanges}>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" bind:value={name} />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" bind:value={email} />
+    </div>
+
+    <div class="form-group">
+      <label for="newPassword">New Password</label>
+      <input type="password" id="newPassword" bind:value={newPassword} />
+    </div>
+
+    <div class="form-group">
+      <label for="newPassword">Confirm Password</label>
+      <input type="password" id="newPassword" bind:value={confirmNewPassword} />
+    </div>
+
+    <button type="submit">Save changes</button>
+  </form>
+</div>
 
 <style>
   .settings-form {
     max-width: 500px;
     margin: 2rem auto;
     padding: 2rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
   }
 
   .form-group {
@@ -61,25 +100,3 @@
     margin-bottom: 1.5rem;
   }
 </style>
-
-<div class="settings-form">
-  <h1>Settings</h1>
-  <form on:submit|preventDefault={saveChanges}>
-    <div class="form-group">
-      <label for="name">Name</label>
-      <input type="text" id="name" bind:value={name} />
-    </div>
-
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" bind:value={email} />
-    </div>
-
-    <div class="form-group">
-      <label for="newPassword">New Password</label>
-      <input type="password" id="newPassword" bind:value={newPassword} />
-    </div>
-
-    <button type="submit">Save changes</button>
-  </form>
-</div>

@@ -38,6 +38,9 @@
             <a href="/links" class="text-gray-300 hover:text-white">Links</a>
           </li>
           <li>
+            <a href="/settings" class="text-gray-300 hover:text-white">Settings</a>
+          </li>
+          <li>
             <form action="/logout" method="POST">
               <button type="submit" class="text-gray-300 hover:text-white"
                 >Logout</button
