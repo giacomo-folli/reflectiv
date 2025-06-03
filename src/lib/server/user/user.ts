@@ -1,6 +1,6 @@
-import type { User } from "$lib/types/user.types";
 import { hashPassword } from "../auth";
 import { userDb } from "../db";
+import type { User } from "../schema";
 
 export async function updateUserName(
   userId: string,

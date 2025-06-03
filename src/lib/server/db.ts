@@ -3,12 +3,10 @@ import { dev } from "$app/environment";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import type { Link } from "$lib/types/link.types";
-import type { Session } from "$lib/types/session.types";
-import type { User } from "$lib/types/user.types";
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { eq, and, desc } from 'drizzle-orm';
-import * as schema from './schema';
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import { eq, desc } from "drizzle-orm";
+import * as schema from "./schema";
+import type { Link, Session, User } from "./schema";
 
 // Get the current directory
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -41,7 +39,8 @@ if (dev) {
       id: "1",
       email: "test@example.com",
       name: "Test User",
-      passwordHash: "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", // 'password123' with SHA-256
+      passwordHash:
+        "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", // 'password123' with SHA-256
       createdAt: new Date("2025-05-01").toISOString(),
     });
 
@@ -58,11 +57,19 @@ if (dev) {
 // User repository
 export const userDb = {
   findByEmail(email: string): User | undefined {
-    return drizzleDb.select().from(schema.users).where(eq(schema.users.email, email)).get();
+    return drizzleDb
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.email, email))
+      .get();
   },
 
   findById(id: string): User | undefined {
-    return drizzleDb.select().from(schema.users).where(eq(schema.users.id, id)).get();
+    return drizzleDb
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.id, id))
+      .get();
   },
 
   createUser(userData: Partial<User>): User | undefined {
@@ -81,7 +88,10 @@ export const userDb = {
     return this.findById(id);
   },
 
-  updateUser(id: string, userData: Partial<Omit<User, 'id' | 'createdAt'>>): User | undefined {
+  updateUser(
+    id: string,
+    userData: Partial<Omit<User, "id" | "createdAt">>
+  ): User | undefined {
     const user = this.findById(id);
     if (!user) return undefined;
 
@@ -94,12 +104,19 @@ export const userDb = {
 
     if (Object.keys(updateData).length === 0) return user;
 
-    drizzleDb.update(schema.users).set(updateData).where(eq(schema.users.id, id)).run();
+    drizzleDb
+      .update(schema.users)
+      .set(updateData)
+      .where(eq(schema.users.id, id))
+      .run();
     return this.findById(id);
   },
 
   deleteUser(id: string) {
-    const result = drizzleDb.delete(schema.users).where(eq(schema.users.id, id)).run();
+    const result = drizzleDb
+      .delete(schema.users)
+      .where(eq(schema.users.id, id))
+      .run();
     return result.changes > 0;
   },
 
@@ -132,16 +149,26 @@ export const sessionDb = {
   },
 
   findById(sessionId: string): Session | undefined {
-    return drizzleDb.select().from(schema.sessions).where(eq(schema.sessions.id, sessionId)).get();
+    return drizzleDb
+      .select()
+      .from(schema.sessions)
+      .where(eq(schema.sessions.id, sessionId))
+      .get();
   },
 
   deleteSession(sessionId: string) {
-    const result = drizzleDb.delete(schema.sessions).where(eq(schema.sessions.id, sessionId)).run();
+    const result = drizzleDb
+      .delete(schema.sessions)
+      .where(eq(schema.sessions.id, sessionId))
+      .run();
     return result.changes > 0;
   },
 
   deleteAllUserSessions(userId: string) {
-    const result = drizzleDb.delete(schema.sessions).where(eq(schema.sessions.userId, userId)).run();
+    const result = drizzleDb
+      .delete(schema.sessions)
+      .where(eq(schema.sessions.userId, userId))
+      .run();
     return result.changes > 0;
   },
 
@@ -172,14 +199,26 @@ export const linkDb = {
   },
 
   findByUserId(userId: string): Link[] {
-    return drizzleDb.select().from(schema.links).where(eq(schema.links.userId, userId)).orderBy(desc(schema.links.createdAt)).all();
+    return drizzleDb
+      .select()
+      .from(schema.links)
+      .where(eq(schema.links.userId, userId))
+      .orderBy(desc(schema.links.createdAt))
+      .all();
   },
 
   findById(id: string): Link | undefined {
-    return drizzleDb.select().from(schema.links).where(eq(schema.links.id, id)).get();
+    return drizzleDb
+      .select()
+      .from(schema.links)
+      .where(eq(schema.links.id, id))
+      .get();
   },
 
-  updateLink(id: string, linkData: Partial<Omit<Link, 'id' | 'userId' | 'createdAt'>>): Link | undefined {
+  updateLink(
+    id: string,
+    linkData: Partial<Omit<Link, "id" | "userId" | "createdAt">>
+  ): Link | undefined {
     const link = this.findById(id);
     if (!link) return undefined;
 
@@ -188,15 +227,21 @@ export const linkDb = {
     if (title !== undefined) updateData.title = title;
     if (url !== undefined) updateData.url = url;
 
-
     if (Object.keys(updateData).length === 0) return link;
 
-    drizzleDb.update(schema.links).set(updateData).where(eq(schema.links.id, id)).run();
+    drizzleDb
+      .update(schema.links)
+      .set(updateData)
+      .where(eq(schema.links.id, id))
+      .run();
     return this.findById(id);
   },
 
   deleteLink(id: string) {
-    const result = drizzleDb.delete(schema.links).where(eq(schema.links.id, id)).run();
+    const result = drizzleDb
+      .delete(schema.links)
+      .where(eq(schema.links.id, id))
+      .run();
     return result.changes > 0;
   },
 
