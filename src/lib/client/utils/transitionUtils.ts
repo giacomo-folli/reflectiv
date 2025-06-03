@@ -272,4 +272,4 @@ export const scaleIn = (node: HTMLElement, params: TransitionParams) =>
   scale(node, { start: 0.95, duration: 200, ...params });
 
 export const scaleOut = (node: HTMLElement, params: TransitionParams) =>
-  scale(node, { start: 1, end: 0.95, duration: 150, ...params });
+  scale(node, { start: 1, duration: 150, ...params });

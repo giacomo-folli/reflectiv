@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { jsPDF } from "jspdf";
 import { redirect } from "@sveltejs/kit";
-import type { User } from "$lib/types/user.types.js";
+import type { User } from "$lib/server/schema";
 
 function generateDiary(
   user: User,
