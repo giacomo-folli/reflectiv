@@ -7,7 +7,10 @@ export async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, saltRounds);
 }
 
-export async function validatePassword(password: string, hashedPassword: string): Promise<boolean> {
+export async function validatePassword(
+  password: string,
+  hashedPassword: string
+): Promise<boolean> {
   return await bcrypt.compare(password, hashedPassword);
 }
 
@@ -15,7 +18,7 @@ export async function registerUser(
   email: string,
   password: string,
   name: string
-): Promise<Omit<User, 'passwordHash'> | undefined> {
+): Promise<Omit<User, "passwordHash"> | undefined> {
   if (!email || !password || !name) {
     throw new Error("Email, password, and name are required");
   }
@@ -40,7 +43,10 @@ export async function registerUser(
   return userWithoutPassword;
 }
 
-export async function loginUser(email: string, password: string): Promise<{ sessionId: string; user: Omit<User, 'passwordHash'> }> {
+export async function loginUser(
+  email: string,
+  password: string
+): Promise<{ sessionId: string; user: Omit<User, "passwordHash"> }> {
   const user = userDb.findByEmail(email) as User;
   if (!user) {
     throw new Error("This user doesn't exists");
@@ -53,7 +59,7 @@ export async function loginUser(email: string, password: string): Promise<{ sess
   if (!session) {
     throw new Error("Failed to create session");
   }
-  
+
   const { passwordHash: _, ...userWithoutPassword } = user;
   return {
     sessionId: session.id,
@@ -92,103 +98,101 @@ export function logoutAllSessions(userId: string) {
   return sessionDb.deleteAllUserSessions(userId);
 }
 
-// Placeholder for userDb.updateUser if not already defined in db.ts
-// This is a simplified mock for the purpose of this subtask.
-// In a real application, userDb.updateUser would interact with a database.
-if (userDb && typeof userDb.updateUser !== 'function') {
-  (userDb as any).updateUser = (userId: string, dataToUpdate: Partial<User>): User | undefined => {
-    const userIndex = (userDb as any)._users.findIndex((u: User) => u.id === userId);
-    if (userIndex === -1) {
-      return undefined;
-    }
-    const updatedUser = { ...(userDb as any)._users[userIndex], ...dataToUpdate };
-    (userDb as any)._users[userIndex] = updatedUser;
-    return updatedUser;
-  };
-}
-// Ensure findById and findByEmail are available for the functions below,
-// assuming they exist on userDb as per existing code patterns.
-
-export async function updateUserName(userId: string, name: string): Promise<boolean> {
+export async function updateUserName(
+  userId: string,
+  name: string
+): Promise<User | null> {
   if (!userId) {
     console.error("updateUserName: userId is required.");
-    return false;
+    return null;
   }
   if (!name || name.trim() === "") {
     console.error("updateUserName: Name cannot be empty.");
-    return false;
+    return null;
   }
 
   try {
     const user = userDb.findById(userId) as User | undefined;
     if (!user) {
       console.error(`updateUserName: User with ID "${userId}" not found.`);
-      return false;
+      return null;
     }
 
     const updatedUser = userDb.updateUser(userId, { name: name.trim() });
-    return !!updatedUser;
+    return updatedUser;
   } catch (error) {
     console.error("updateUserName: Error updating name.", error);
-    return false;
+    return null;
   }
 }
 
-export async function updateUserEmail(userId: string, email: string): Promise<boolean> {
+export async function updateUserEmail(
+  userId: string,
+  email: string
+): Promise<User | null> {
   if (!userId) {
     console.error("updateUserEmail: userId is required.");
-    return false;
+    return null;
   }
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     console.error("updateUserEmail: Invalid email format.");
-    return false;
+    return null;
   }
 
   try {
     const user = userDb.findById(userId) as User | undefined;
     if (!user) {
       console.error(`updateUserEmail: User with ID "${userId}" not found.`);
-      return false;
+      return null;
     }
 
-    const existingUserWithNewEmail = userDb.findByEmail(email) as User | undefined;
+    const existingUserWithNewEmail = userDb.findByEmail(email) as
+      | User
+      | undefined;
     if (existingUserWithNewEmail && existingUserWithNewEmail.id !== userId) {
-      console.error(`updateUserEmail: Email "${email}" is already in use by another account.`);
-      return false;
+      console.error(
+        `updateUserEmail: Email "${email}" is already in use by another account.`
+      );
+      return null;
     }
 
     const updatedUser = userDb.updateUser(userId, { email });
-    return !!updatedUser;
+    return updatedUser;
   } catch (error) {
     console.error("updateUserEmail: Error updating email.", error);
-    return false;
+    return null;
   }
 }
 
-export async function updateUserPassword(userId: string, password: string): Promise<boolean> {
+export async function updateUserPassword(
+  userId: string,
+  password: string
+): Promise<User | null> {
   if (!userId) {
-    console.error("updateUserPassword: userId is required.");
-    return false;
+    console.error(" userId is required.");
+    return null;
   }
   // Example: Minimum 8 characters, at least one letter and one number
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   if (!password || !passwordRegex.test(password)) {
-    console.error("updateUserPassword: Password does not meet security requirements (minimum 8 characters, including one letter and one number).");
-    return false;
+    console.error(
+      "Password does not meet security requirements (minimum 8 characters, including one letter and one number)."
+    );
+    return null;
   }
 
   try {
     const user = userDb.findById(userId) as User | undefined;
     if (!user) {
-      console.error(`updateUserPassword: User with ID "${userId}" not found.`);
-      return false;
+      console.error(`User not found.`);
+      return null;
     }
 
     const passwordHash = await hashPassword(password);
     const updatedUser = userDb.updateUser(userId, { passwordHash });
-    return !!updatedUser;
+    return updatedUser;
   } catch (error) {
-    console.error("updateUserPassword: Error updating password.", error);
-    return false;
+    console.error("Error updating password.", error);
+    return null;
   }
 }

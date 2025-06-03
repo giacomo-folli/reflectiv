@@ -28,6 +28,13 @@
           >Links</a
         >
       </Transition>
+      <Transition transition="fadeIn" delay={250} duration={200}>
+        <a
+          href="/settings"
+          class="text-gray-400 hover:text-white text-sm transition-colors relative after:absolute after:w-0 after:h-0.5 after:bg-indigo-500 after:bottom-[-2px] after:left-0 after:transition-all hover:after:w-full"
+          >Settings</a
+        >
+      </Transition>
       <Transition transition="fadeIn" delay={300} duration={200}>
         <form action="/logout" method="POST">
           <button
