@@ -91,3 +91,104 @@ export function logoutAllSessions(userId: string) {
   if (!userId) return false;
   return sessionDb.deleteAllUserSessions(userId);
 }
+
+// Placeholder for userDb.updateUser if not already defined in db.ts
+// This is a simplified mock for the purpose of this subtask.
+// In a real application, userDb.updateUser would interact with a database.
+if (userDb && typeof userDb.updateUser !== 'function') {
+  (userDb as any).updateUser = (userId: string, dataToUpdate: Partial<User>): User | undefined => {
+    const userIndex = (userDb as any)._users.findIndex((u: User) => u.id === userId);
+    if (userIndex === -1) {
+      return undefined;
+    }
+    const updatedUser = { ...(userDb as any)._users[userIndex], ...dataToUpdate };
+    (userDb as any)._users[userIndex] = updatedUser;
+    return updatedUser;
+  };
+}
+// Ensure findById and findByEmail are available for the functions below,
+// assuming they exist on userDb as per existing code patterns.
+
+export async function updateUserName(userId: string, name: string): Promise<boolean> {
+  if (!userId) {
+    console.error("updateUserName: userId is required.");
+    return false;
+  }
+  if (!name || name.trim() === "") {
+    console.error("updateUserName: Name cannot be empty.");
+    return false;
+  }
+
+  try {
+    const user = userDb.findById(userId) as User | undefined;
+    if (!user) {
+      console.error(`updateUserName: User with ID "${userId}" not found.`);
+      return false;
+    }
+
+    const updatedUser = userDb.updateUser(userId, { name: name.trim() });
+    return !!updatedUser;
+  } catch (error) {
+    console.error("updateUserName: Error updating name.", error);
+    return false;
+  }
+}
+
+export async function updateUserEmail(userId: string, email: string): Promise<boolean> {
+  if (!userId) {
+    console.error("updateUserEmail: userId is required.");
+    return false;
+  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    console.error("updateUserEmail: Invalid email format.");
+    return false;
+  }
+
+  try {
+    const user = userDb.findById(userId) as User | undefined;
+    if (!user) {
+      console.error(`updateUserEmail: User with ID "${userId}" not found.`);
+      return false;
+    }
+
+    const existingUserWithNewEmail = userDb.findByEmail(email) as User | undefined;
+    if (existingUserWithNewEmail && existingUserWithNewEmail.id !== userId) {
+      console.error(`updateUserEmail: Email "${email}" is already in use by another account.`);
+      return false;
+    }
+
+    const updatedUser = userDb.updateUser(userId, { email });
+    return !!updatedUser;
+  } catch (error) {
+    console.error("updateUserEmail: Error updating email.", error);
+    return false;
+  }
+}
+
+export async function updateUserPassword(userId: string, password: string): Promise<boolean> {
+  if (!userId) {
+    console.error("updateUserPassword: userId is required.");
+    return false;
+  }
+  // Example: Minimum 8 characters, at least one letter and one number
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  if (!password || !passwordRegex.test(password)) {
+    console.error("updateUserPassword: Password does not meet security requirements (minimum 8 characters, including one letter and one number).");
+    return false;
+  }
+
+  try {
+    const user = userDb.findById(userId) as User | undefined;
+    if (!user) {
+      console.error(`updateUserPassword: User with ID "${userId}" not found.`);
+      return false;
+    }
+
+    const passwordHash = await hashPassword(password);
+    const updatedUser = userDb.updateUser(userId, { passwordHash });
+    return !!updatedUser;
+  } catch (error) {
+    console.error("updateUserPassword: Error updating password.", error);
+    return false;
+  }
+}
