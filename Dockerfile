@@ -5,7 +5,7 @@ ARG ADAPTER=node
 FROM $NODE_IMAGE AS base
 RUN apk update && apk add --no-cache sqlite curl chromium
 RUN mkdir -p /home/node/app && chown -R node:node /home/node/app
-RUN mkdir -p /home/node/data && chown -R node:node /home/node/data
+RUN mkdir -p /home/node/app/data && chown -R node:node /home/node/app/data
 WORKDIR /home/node/app
 USER node
 
@@ -16,6 +16,7 @@ RUN npm ci --silent
 COPY --chown=node:node svelte.config.js vite.config.js tsconfig.json postcss.config.js tailwind.config.js ./
 COPY --chown=node:node src/ ./src/
 COPY --chown=node:node static/ ./static/
+COPY --chown=node:node migrations/ ./migrations/
 
 RUN ADAPTER=$ADAPTER npm run build
 
@@ -30,6 +31,7 @@ RUN npm ci --omit=dev --silent
 
 # Copy the built application from the build stage
 COPY --from=build --chown=node:node /home/node/app/build ./build
+COPY --from=build --chown=node:node /home/node/app/migrations ./migrations
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD curl -f http://localhost:3000/health || exit 1
 CMD ["node", "build/index.js"]

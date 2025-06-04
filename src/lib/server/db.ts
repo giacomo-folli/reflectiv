@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { eq, desc } from "drizzle-orm";
+import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import * as schema from "./schema";
 import type { Link, Session, User } from "./schema";
 
@@ -13,8 +14,20 @@ import type { Link, Session, User } from "./schema";
 const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), "data");
 
 // Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(DATA_DIR)) {
+    console.log(`Creating data directory: ${DATA_DIR}`);
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+  
+  // Test write permissions
+  const testFile = path.join(DATA_DIR, '.write_test');
+  fs.writeFileSync(testFile, 'test');
+  fs.unlinkSync(testFile);
+  console.log(`Data directory is writable: ${DATA_DIR}`);
+} catch (error) {
+  console.error(`Failed to create or access data directory ${DATA_DIR}:`, error);
+  throw error;
 }
 
 // Database path
@@ -23,10 +36,27 @@ const DB_PATH = path.join(DATA_DIR, "reflective-db.sqlite");
 // Create/connect to SQLite database
 const sqlite = new Database(DB_PATH);
 
-// // Enable foreign keys
-// sqliteInstance.pragma("foreign_keys = ON");
+// Enable foreign keys
+sqlite.pragma("foreign_keys = ON");
 
 export const drizzleDb = drizzle({ client: sqlite, schema });
+
+// Run migrations only if database is empty
+try {
+  // Check if any tables exist
+  const tables = sqlite.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").all();
+  
+  if (tables.length === 0) {
+    console.log("Database is empty, running migrations...");
+    migrate(drizzleDb, { migrationsFolder: "./migrations" });
+    console.log("Database migrations completed successfully");
+  } else {
+    console.log("Database already has tables, skipping migrations");
+  }
+} catch (error) {
+  console.error("Failed to run database migrations:", error);
+  throw error;
+}
 
 // Initialize Drizzle
 // export const drizzleDb = drizzle(sqliteInstance, { schema });
