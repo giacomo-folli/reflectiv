@@ -33,8 +33,5 @@ RUN npm ci --omit=dev --silent
 COPY --from=build --chown=node:node /home/node/app/build ./build
 COPY --from=build --chown=node:node /home/node/app/migrations ./migrations
 
-# Ensure data directory has correct permissions
-RUN mkdir -p /home/node/app/data && chown -R node:node /home/node/app/data && chmod 755 /home/node/app/data
-
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD curl -f http://localhost:3000/health || exit 1
 CMD ["node", "build/index.js"]
