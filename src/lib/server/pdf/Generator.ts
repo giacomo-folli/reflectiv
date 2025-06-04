@@ -1,6 +1,39 @@
 import fs from "fs";
 import Parser from "./Parser";
-import puppeteer from "puppeteer";
+import puppeteer, { Browser } from "puppeteer";
+
+let browserInstance: Browser | null = null;
+
+async function getBrowserInstance(): Promise<Browser> {
+  if (!browserInstance || !browserInstance.isConnected()) {
+    try {
+      console.log("Launching new browser instance...");
+      browserInstance = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
+      browserInstance.on('disconnected', () => {
+        console.log('Browser instance disconnected.');
+        browserInstance = null;
+      });
+    } catch (error) {
+      console.error("Failed to launch browser:", error);
+      throw error; // Rethrow or handle more gracefully
+    }
+  }
+  if (!browserInstance) {
+    // This should ideally not happen if launch is successful
+    throw new Error("Failed to get browser instance after attempting to launch.");
+  }
+  return browserInstance;
+}
+
+export async function cleanupBrowser(): Promise<void> {
+  if (browserInstance && browserInstance.isConnected()) {
+    console.log("Closing browser instance...");
+    await browserInstance.close();
+    browserInstance = null;
+  }
+}
 
 export interface TemplateProps {
   templatePath: string;
@@ -38,15 +71,35 @@ export class Generator {
     }
 
     try {
-      // Actual pdf generation
-      const browser = await puppeteer.launch();
+      const browserAcquisitionStartTime = Date.now();
+      const browser = await getBrowserInstance();
+      console.log(`Browser instance acquired in: ${Date.now() - browserAcquisitionStartTime}ms`);
+
+      if (!browser) {
+        throw new Error("Failed to get browser instance for PDF generation.");
+      }
+
+      const totalPdfGenerationStartTime = Date.now();
       const page = await browser.newPage();
-      await page.goto(`file://${templatePath}`, { waitUntil: "networkidle0" });
-      await page.pdf({ path: outputPath, format: "A4" });
-      await browser.close();
+      try {
+        const gotoStartTime = Date.now();
+        await page.goto(`file://${templatePath}`, { waitUntil: "load" });
+        console.log(`page.goto() took: ${Date.now() - gotoStartTime}ms`);
+
+        const pdfRenderStartTime = Date.now();
+        await page.pdf({ path: outputPath, format: "A4" });
+        console.log(`page.pdf() took: ${Date.now() - pdfRenderStartTime}ms`);
+      } finally {
+        await page.close();
+        console.log(`Total PDF processing (newPage, goto, pdf, close) took: ${Date.now() - totalPdfGenerationStartTime}ms`);
+      }
     } catch (e: any) {
       console.error(`Error generating PDF: ${e}`);
       throw e;
     }
+  }
+
+  static isBrowserHealthy(): boolean {
+    return browserInstance !== null && browserInstance.isConnected();
   }
 }
