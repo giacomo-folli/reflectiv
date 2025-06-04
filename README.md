@@ -78,12 +78,19 @@ services:
   app:
     image: ghcr.io/giacomo-folli/reflectiv:latest
     container_name: reflectiv
-    restart: unless-stopped
-    volumes:
-      - ./data:/home/node/app/data
-    env_file: ./.env
     ports:
       - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DATA_DIR=/home/node/app/data
+    volumes:
+      - reflectiv_data:/home/node/app/data
+    restart: unless-stopped
+
+volumes:
+  reflectiv_data:
 ```
 
 ### .env
