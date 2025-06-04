@@ -12,12 +12,11 @@ services:
     ports:
       - "3000:3000"
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
-      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-http://localhost:3000}
-      - ORIGIN=${PUBLIC_BASE_URL:-http://localhost:3000}
       - DATA_DIR=/home/node/app/data
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     volumes:
       - ./data:/home/node/app/data
     healthcheck:

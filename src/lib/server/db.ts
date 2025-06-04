@@ -34,29 +34,6 @@ sqliteInstance.pragma("foreign_keys = ON");
 // Initialize Drizzle
 export const drizzleDb = drizzle(sqliteInstance, { schema });
 
-// Seed initial data if in development and no users exist
-if (dev) {
-  const existingUsers = await drizzleDb.select().from(schema.users).limit(1);
-  if (existingUsers.length === 0) {
-    await drizzleDb.insert(schema.users).values({
-      id: "1",
-      email: "test@example.com",
-      name: "Test User",
-      passwordHash:
-        "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", // 'password123' with SHA-256
-      createdAt: new Date("2025-05-01").toISOString(),
-    });
-
-    await drizzleDb.insert(schema.links).values({
-      id: "1",
-      userId: "1",
-      title: "Sample ChatGPT Conversation",
-      url: "https://chat.openai.com/share/abc123",
-      createdAt: new Date("2025-05-10").toISOString(),
-    });
-  }
-}
-
 // User repository
 export const userDb = {
   findByEmail(email: string): User | undefined {
