@@ -113,9 +113,6 @@ To run the application run the following command:
 
 The docker container is now running; navigate to `http://localhost:3000/` to access the app.
 
-> [!IMPORTANT]
-> Make sure to edit the `.env` file to include your `Strava client ID` and `Strava client Secret`
-
 ## 🗺️ Locales and translations
 
 Currently, the app is translated to:
@@ -131,8 +128,8 @@ Only do this if you are willing to help on the actual translation 🙃.
 
 ## 💡 Feature request?
 
-For any feedback, help or feature requests, please [open a new issue](https://github.com/robiningelbrecht/statistics-for-strava/issues/new/choose).
-Before you do, please read [the wiki](https://github.com/robiningelbrecht/statistics-for-strava/wiki). The question you have might be answered over there.
+For any feedback, help or feature requests, please [open a new issue](https://github.com/giacomo-folli/reflectiv/issues/new/).
+<!-- Before you do, please read [the wiki](https://github.com/robiningelbrecht/statistics-for-strava/wiki). The question you have might be answered over there. -->
 
 ## 🛠️ Local setup
 
