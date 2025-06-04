@@ -1,6 +1,5 @@
 import Database from "better-sqlite3";
 import { dev } from "$app/environment";
-import fs from "fs";
 import path from "path";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { eq, desc } from "drizzle-orm";
@@ -9,29 +8,7 @@ import * as schema from "./schema";
 import type { Link, Session, User } from "./schema";
 
 // Define data directory
-// Use process.env.DATA_DIR if available (especially for production/Docker)
-// Fallback to a path relative to the project root for local development
 const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), "data");
-
-// Ensure data directory exists
-try {
-  if (!fs.existsSync(DATA_DIR)) {
-    console.log(`Creating data directory: ${DATA_DIR}`);
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-
-  // Test write permissions
-  const testFile = path.join(DATA_DIR, ".write_test");
-  fs.writeFileSync(testFile, "test");
-  fs.unlinkSync(testFile);
-  console.log(`Data directory is writable: ${DATA_DIR}`);
-} catch (error) {
-  console.error(
-    `Failed to create or access data directory ${DATA_DIR}:`,
-    error
-  );
-  throw error;
-}
 
 // Database path
 const DB_PATH = path.join(DATA_DIR, "reflective-db.sqlite");
@@ -51,13 +28,8 @@ try {
   console.log("Database migrations completed successfully.");
 } catch (error) {
   console.error("Failed to run database migrations:", error);
-  // It's important to decide if the application should throw here or if it can continue.
-  // For now, let's re-throw the error as it's a critical part of startup.
   throw error;
 }
-
-// Initialize Drizzle
-// export const drizzleDb = drizzle(sqliteInstance, { schema });
 
 // User repository
 export const userDb = {
