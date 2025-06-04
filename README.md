@@ -1,107 +1,140 @@
 <p align="center">
-   <img width="150px" src="https://raw.githubusercontent.com/giacomo-folli/reflectiv/refs/heads/main/static/generated-icon.png" />
+   <img alt="Logo" width="150px" src="https://raw.githubusercontent.com/giacomo-folli/reflectiv/refs/heads/main/static/generated-icon.png" />
 </p>
 
-# Monthly Reflection Diary
+<h1 align="center">reflectiv</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/docker-ready-blue?logo=docker" alt="Docker" />
-  <img src="https://img.shields.io/badge/node.js-18.x-brightgreen?logo=node.js" alt="Node.js" />
-  <img src="https://img.shields.io/badge/license-MIT-yellow.svg" alt="License: MIT" />
-  <img src="https://img.shields.io/badge/platform-docker%20%7C%20node.js-lightgrey" alt="Platform" />
-  <img src="https://img.shields.io/badge/status-beta-orange" alt="Status" />
-  <img src="https://img.shields.io/badge/contributions-welcome-brightgreen" alt="Contributions Welcome" />
+<a href="https://github.com/giacomo-folli/reflectiv/actions/workflows/build-and-push.yml">
+  <img src="https://github.com/giacomo-folli/reflectiv/actions/workflows/build-and-push.yml/badge.svg" alt="CI">
+</a>
+<a href="https://raw.githubusercontent.com/giacomo-folli/reflectiv/refs/heads/master/LICENSE"><img src="https://img.shields.io/github/license/giacomo-folli/reflectiv?color=428f7e&logo=open%20source%20initiative&logoColor=white" alt="License"></a>
+<a href="https://hub.docker.com/r/giacomofolli/reflectiv"><img src="https://img.shields.io/docker/image-size/giacomofolli/reflectiv" alt="Docker Image Size"></a>
+<a href="https://hub.docker.com/r/giacomofolli/reflectiv"><img src="https://img.shields.io/docker/pulls/giacomofolli/reflectiv" alt="Docker pulls"></a>
+<a href="https://hub.docker.com/r/giacomofolli/reflectiv"><img src="https://img.shields.io/docker/v/giacomofolli/reflectiv?sort=semver" alt="Docker version"></a>
 </p>
 
-**Monthly Reflection Diary** is an open source app to help you collect and organize meaningful conversations and links—like your chats with ChatGPT—and generate monthly PDF reflection diaries with AI.
+---
+
+<h4 align="center">reflectiv is an open source app to help you generate monthly PDF reflection diaries with AI from chatGPT chats.</h4>
+
+<p align="center">
+  <a href="#%EF%B8%8F-disclaimer">Disclaimer</a> •
+  <a href="#-wiki">Wiki</a> •
+  <a href="#-prerequisites">Prerequisites</a> •
+  <a href="#%EF%B8%8F-installation">Installation</a> •
+  <a href="#%EF%B8%8F-sponsors">Sponsors</a>
+</p>
+
+<!-- <p align="center">
+  <a href="https://www.buymeacoffee.com/ingelbrecht" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;" ></a>
+</p> -->
+
+### Key Features
+
+- TODO
 
 ## ⚠️ Disclaimer
 
 This project is a personal reflection tool, **not a substitute for professional help**. If you're struggling, please consider reaching out to a counselor, therapist, or a trusted friend. You're not alone.
 
-## ⚙️ Getting Started
+## 📚 Wiki
 
-You can run the app either with **Docker** (recommended) or using **Node.js locally**.
+Read [the wiki](https://github.com/giacomo-folli/reflectiv/wiki) before opening new issues. The question you have might be answered over there.
 
-### 1. Clone the repository
+## 🪄 Prerequisites
 
-```bash
-git clone https://github.com/giacomo-folli/reflectiv.git
-cd reflectiv
-```
+You'll need a `Strava client ID` and `Strava client Secret`
 
-### 2. Set up environment variables
+- Navigate to your [Strava API settings page](https://www.strava.com/settings/api).
+- Copy the `client ID` and `client secret`, you'll need these during the [installation](#%EF%B8%8F-installation)
+- Make sure the `Authorization App Domain` is set to the url you will host your app on. By default this should be `http://localhost:8080`
 
-Copy the example environment file and customize it:
+## 🛠️ Installation
 
-```bash
-cp .env.example .env
-```
+> [!NOTE]
+> To run this application, you'll need [Docker](https://docs.docker.com/engine/install/) with [docker-compose](https://docs.docker.com/compose/install/).
 
-**Required:**
-
-- `PUBLIC_BASE_URL`: The base URL where your application is accessible. For local use, set this to `http://localhost:3000`.
-
-**AI Features:**
-
-The application can leverage AI services for enhanced functionality. If you wish to use these features, you'll need to configure the following:
-
-- `AI_SERVICE_PROVIDER`: Specify the AI service you want to use. Options are:
-    - `"gemini"` *(RECOMMENDED)*
-    - `"openai"` *(in testing)*
-    - `"local"` *(in testing)*
-    <!-- - `"claude"` -->
-
-- If `AI_SERVICE_PROVIDER="local"`, set:
-    - **`LOCAL_LLM_BASE_URI`**: The HTTP endpoint of your locally running llm.
-    - **`LOCAL_LLM_MODEL`**: The local model to use.
-
-**Expected API Behavior for Local LLM:**
-- The endpoint specified by `LOCAL_LLM_BASE_URI` should be a POST endpoint.
-- It must accept a JSON request body with the following structure: `{"prompt": "your prompt here", "stream": false}`.
-- It should return a JSON response. The service supports two common formats:
-    1.  Standard format: `{"response": "The LLM's answer"}`
-    2.  OpenAI-compatible format: `{"choices": [{"message": {"content": "The LLM's answer"}}]}`
-
-### 3. Start the app
-
-#### Option A: With Docker (Recommended)
+Start off by showing some ❤️ and give this repo a star. Then from your command line:
 
 ```bash
-docker compose up -d
+# Create a new directory
+> mkdir reflectiv
+> cd reflectiv
+
+# Create docker-compose.yml and copy the example contents into it
+> touch docker-compose.yml
+> nano docker-compose.yml
+
+# Create .env and copy the example contents into it. Configure as you see fit
+> touch .env
+> nano .env
 ```
 
-#### Option B: Locally with Node.js
+### docker-compose.yml
+
+```yml
+services:
+  app:
+    image: ghcr.io/giacomo-folli/reflectiv:latest
+    container_name: reflectiv
+    restart: unless-stopped
+    volumes:
+      - ./data:/home/node/app/data
+    env_file: ./.env
+    ports:
+      - "3000:3000"
+```
+
+### .env
+
+> [!IMPORTANT]
+> Every time you change the .env file, you need to restart your container for the changes to take effect.
 
 ```bash
-npm install
-npm run dev
+> curl -o .env https://raw.githubusercontent.com/giacomo-folli/reflectiv/main/.env.example
+> nano .env
 ```
 
-The app should now be running at: [http://localhost:3000](http://localhost:3000)
+### Running the Application
 
-## 🙏 How You Can Help
+To run the application run the following command:
 
-We're excited to have you involved! Your support and contributions are invaluable to us. For detailed information on how to contribute, including setting up your development environment and understanding the project structure, please check out our [CONTRIBUTING.md](CONTRIBUTING.md) file.
+```bash
+> docker compose up -d
+```
 
-Here are some ways you can help:
-- 🐛 **Found a bug?** Please open an issue!
-- 📚 **Documentation unclear?** We appreciate suggestions for edits!
-- 💡 **Have an idea for a feature?** Reach out or create a feature request!
-- ❤️ **Just want to say hi or give feedback?** We’d love to hear from you!
-- 🗣️ **Share the project:** Know someone who might find this reflection diary useful? Please spread the word!
+The docker container is now running; navigate to `http://localhost:3000/` to access the app.
 
-Whether you’re a developer, a designer, or simply someone curious about the project, your feedback and contributions mean a lot. Every little bit helps, and we’re grateful for your involvement!
+> [!IMPORTANT]
+> Make sure to edit the `.env` file to include your `Strava client ID` and `Strava client Secret`
 
-## 🚀 Next Steps & Future Plans
+## 🗺️ Locales and translations
 
-This project is continuously evolving, and we're excited about the future! We are actively working on expanding its capabilities and making it even more versatile for our users. Check out the full roadmap at [openchangelog.com](https://reflectiv.openchangelog.com)
+Currently, the app is translated to:
 
-Some major next steps are:
+- 🇬🇧 English
+- 🇮🇹 Italian
 
--   **Broader LLM Support:** support wider range of LLMs to give you more choices. This includes upcoming support for:
-    -   Integration with more models from OpenAI and Anthropic.
-    -   more flexible configuration options for different models and providers.
--   **Self-Hosted LLMs:** Basic support for self-hosted LLMs via a generic API endpoint.
+If you want to see a new locale added, please open an issue
 
-We believe in community-driven development. If you're interested in contributing to these features, or if you have other ideas and suggestions, please don't hesitate to reach out or open an issue. Your input is highly valued!
+<!-- [open a new issue](https://github.com/robiningelbrecht/statistics-for-strava/issues/new?template=translations-and-localisation.md).  -->
+
+Only do this if you are willing to help on the actual translation 🙃.
+
+## 💡 Feature request?
+
+For any feedback, help or feature requests, please [open a new issue](https://github.com/robiningelbrecht/statistics-for-strava/issues/new/choose).
+Before you do, please read [the wiki](https://github.com/robiningelbrecht/statistics-for-strava/wiki). The question you have might be answered over there.
+
+## 🛠️ Local setup
+
+Run the following commands to setup the project on your local machine
+
+```bash
+> git clone git@github.com:your-name/your-fork.git
+> npm i
+> npm run dev
+```
+
+<!-- ## ❤️ Sponsors -->
