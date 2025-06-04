@@ -2,37 +2,34 @@ import Database from "better-sqlite3";
 import { dev } from "$app/environment";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { eq, desc } from "drizzle-orm";
 import * as schema from "./schema";
 import type { Link, Session, User } from "./schema";
 
-// Get the current directory
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-console.log("dirname:", __dirname);
 // Define data directory
-const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "../../../data");
+// Use process.env.DATA_DIR if available (especially for production/Docker)
+// Fallback to a path relative to the project root for local development
+const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), "data");
 
-console.log("DATA DIR:", __dirname);
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-console.log("DATA DIR:", __dirname);
 // Database path
 const DB_PATH = path.join(DATA_DIR, "reflective-db.sqlite");
 
 // Create/connect to SQLite database
-const sqliteInstance = new Database(DB_PATH);
+const sqlite = new Database(DB_PATH);
 
-// Enable foreign keys
-sqliteInstance.pragma("foreign_keys = ON");
+// // Enable foreign keys
+// sqliteInstance.pragma("foreign_keys = ON");
+
+export const drizzleDb = drizzle({ client: sqlite, schema });
 
 // Initialize Drizzle
-export const drizzleDb = drizzle(sqliteInstance, { schema });
+// export const drizzleDb = drizzle(sqliteInstance, { schema });
 
 // User repository
 export const userDb = {
