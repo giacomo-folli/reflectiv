@@ -1,4 +1,4 @@
-name: Build and Push
+name: Build and Push to GHCR & Docker Hub
 
 on:
   push:
@@ -7,15 +7,20 @@ on:
 
 permissions:
   contents: read
-  packages: write
+  packages: write  # Needed to push to GHCR
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
+    env:
+      IMAGE_NAME: my-app  # 🔁 Customize this if needed
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Log in to GitHub Container Registry
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -23,14 +28,32 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Build the Docker image with both tags
       - name: Build Docker image
         run: |
-          IMAGE_NAME="ghcr.io/${GITHUB_REPOSITORY,,}:latest"
-          echo "Building $IMAGE_NAME"
-          docker build -t $IMAGE_NAME .
+          GHCR_TAG=ghcr.io/${{ github.repository_owner }}/${IMAGE_NAME}:latest
+          DOCKERHUB_TAG=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME}:latest
 
-      - name: Push Docker image
+          echo "Building image with tags:"
+          echo "  - $GHCR_TAG"
+          echo "  - $DOCKERHUB_TAG"
+
+          docker build -t $GHCR_TAG -t $DOCKERHUB_TAG .
+
+      # Push to GHCR
+      - name: Push to GHCR
         run: |
-          IMAGE_NAME="ghcr.io/${GITHUB_REPOSITORY,,}:latest"
-          echo "Pushing $IMAGE_NAME"
-          docker push $IMAGE_NAME
+          docker push ghcr.io/${{ github.repository_owner }}/${IMAGE_NAME}:latest
+
+      # Push to Docker Hub
+      - name: Push to Docker Hub
+        run: |
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME}:latest
