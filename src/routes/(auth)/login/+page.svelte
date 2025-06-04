@@ -48,12 +48,16 @@
   // @ts-ignore
   $: t = translations[$locale || "en"];
 
+  let loading = false;
   function handleLogin() {
+    loading = true;
     return async ({ result }: any) => {
       if (result.type == "success") {
+        loading = false;
         await goto("/dashboard", { invalidateAll: true });
       }
 
+      loading = false;
       error = result.data?.message || t.errorDefault;
     };
   }
@@ -67,14 +71,18 @@
       <p class="text-gray-400 mb-6">{t.subtitle}</p>
 
       {#if error}
-        <div class="bg-red-900/20 border border-red-500/50 text-red-400 p-3 rounded-md mb-4">
+        <div
+          class="bg-red-900/20 border border-red-500/50 text-red-400 p-3 rounded-md mb-4"
+        >
           {error}
         </div>
       {/if}
 
       <form method="POST" use:enhance={handleLogin} class="mb-6">
         <div class="mb-5">
-          <label for="email" class="block text-gray-300 text-sm mb-2">{t.email}</label>
+          <label for="email" class="block text-gray-300 text-sm mb-2"
+            >{t.email}</label
+          >
           <input
             type="email"
             id="email"
@@ -87,7 +95,9 @@
         </div>
 
         <div class="mb-5">
-          <label for="password" class="block text-gray-300 text-sm mb-2">{t.password}</label>
+          <label for="password" class="block text-gray-300 text-sm mb-2"
+            >{t.password}</label
+          >
           <input
             type="password"
             id="password"
@@ -99,29 +109,44 @@
           />
         </div>
 
-        <button 
-          type="submit" 
-          class="w-full py-3 px-6 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors"
+        <button
+          type="submit"
+          class="w-full py-3 px-6 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors {loading
+            ? 'pointer-events-none'
+            : ''}"
         >
-          {t.signIn}
+          {#if loading}
+            Loading...
+          {:else}
+            {t.signIn}
+          {/if}
         </button>
       </form>
 
       <p class="text-center text-gray-400 text-sm">
-        {t.noAccount} <a href="/register" class="text-purple-400 hover:text-purple-300 underline">{t.register}</a>
+        {t.noAccount}
+        <a
+          href="/register"
+          class="text-purple-400 hover:text-purple-300 underline"
+          >{t.register}</a
+        >
       </p>
 
       <div class="flex justify-center gap-2 mt-6">
         <button
-          class={"bg-gray-700 text-gray-400 border border-gray-600 rounded-md px-3 py-2 cursor-pointer text-xs transition-all " + 
-                ($locale === 'en' ? 'bg-indigo-600 text-white border-indigo-500' : '')}
+          class={"bg-gray-700 text-gray-400 border border-gray-600 rounded-md px-3 py-2 cursor-pointer text-xs transition-all " +
+            ($locale === "en"
+              ? "bg-indigo-600 text-white border-indigo-500"
+              : "")}
           on:click={() => locale.set("en")}
         >
           🇬🇧 English
         </button>
         <button
-          class={"bg-gray-700 text-gray-400 border border-gray-600 rounded-md px-3 py-2 cursor-pointer text-xs transition-all " + 
-                ($locale === 'it' ? 'bg-indigo-600 text-white border-indigo-500' : '')}
+          class={"bg-gray-700 text-gray-400 border border-gray-600 rounded-md px-3 py-2 cursor-pointer text-xs transition-all " +
+            ($locale === "it"
+              ? "bg-indigo-600 text-white border-indigo-500"
+              : "")}
           on:click={() => locale.set("it")}
         >
           🇮🇹 Italiano
@@ -130,7 +155,9 @@
     </div>
 
     <!-- Hero Section -->
-    <div class="hidden md:flex rounded-lg bg-purple-900 items-center justify-center overflow-hidden">
+    <div
+      class="hidden md:flex rounded-lg bg-purple-900 items-center justify-center overflow-hidden"
+    >
       <div class="p-10 text-white">
         <h2 class="text-2xl font-bold mb-4">{t.heroTitle}</h2>
         <p class="text-purple-200 mb-6 leading-relaxed">{t.heroText}</p>
