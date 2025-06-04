@@ -11,14 +11,17 @@ import type { Link, Session, User } from "./schema";
 // Get the current directory
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+console.log("dirname:", __dirname);
 // Define data directory
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "../../../data");
 
+console.log("DATA DIR:", __dirname);
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
+console.log("DATA DIR:", __dirname);
 // Database path
 const DB_PATH = path.join(DATA_DIR, "reflective-db.sqlite");
 
