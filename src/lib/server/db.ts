@@ -19,14 +19,17 @@ try {
     console.log(`Creating data directory: ${DATA_DIR}`);
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
-  
+
   // Test write permissions
-  const testFile = path.join(DATA_DIR, '.write_test');
-  fs.writeFileSync(testFile, 'test');
+  const testFile = path.join(DATA_DIR, ".write_test");
+  fs.writeFileSync(testFile, "test");
   fs.unlinkSync(testFile);
   console.log(`Data directory is writable: ${DATA_DIR}`);
 } catch (error) {
-  console.error(`Failed to create or access data directory ${DATA_DIR}:`, error);
+  console.error(
+    `Failed to create or access data directory ${DATA_DIR}:`,
+    error
+  );
   throw error;
 }
 
@@ -41,20 +44,15 @@ sqlite.pragma("foreign_keys = ON");
 
 export const drizzleDb = drizzle({ client: sqlite, schema });
 
-// Run migrations only if database is empty
+// Run migrations
 try {
-  // Check if any tables exist
-  const tables = sqlite.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").all();
-  
-  if (tables.length === 0) {
-    console.log("Database is empty, running migrations...");
-    migrate(drizzleDb, { migrationsFolder: "./migrations" });
-    console.log("Database migrations completed successfully");
-  } else {
-    console.log("Database already has tables, skipping migrations");
-  }
+  console.log("Running database migrations...");
+  migrate(drizzleDb, { migrationsFolder: "./migrations" });
+  console.log("Database migrations completed successfully.");
 } catch (error) {
   console.error("Failed to run database migrations:", error);
+  // It's important to decide if the application should throw here or if it can continue.
+  // For now, let's re-throw the error as it's a critical part of startup.
   throw error;
 }
 

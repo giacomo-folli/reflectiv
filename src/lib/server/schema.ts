@@ -36,3 +36,8 @@ export const links = sqliteTable("links", {
 
 export type Link = InferSelectModel<typeof links>;
 export type InsertLink = InferInsertModel<typeof links>;
+
+export const testTable = sqliteTable("test_table", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+});
