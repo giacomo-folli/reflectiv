@@ -21,7 +21,7 @@
 <p align="center">
   <a href="#%EF%B8%8F-disclaimer">Disclaimer</a> •
   <a href="#-wiki">Wiki</a> •
-  <a href="#-prerequisites">Prerequisites</a> •
+  <!-- <a href="#-prerequisites">Prerequisites</a> • -->
   <a href="#%EF%B8%8F-installation">Installation</a> •
   <a href="#%EF%B8%8F-sponsors">Sponsors</a>
 </p>
@@ -32,7 +32,10 @@
 
 ### Key Features
 
-- TODO
+- AI-Powered journaling prompts generation
+- Support for both cloud-based APIs and local LLMs via Ollama
+- Self-Hosted by design
+- Simple PDF export
 
 ## ⚠️ Disclaimer
 
@@ -42,13 +45,13 @@ This project is a personal reflection tool, **not a substitute for professional 
 
 Read [the wiki](https://github.com/giacomo-folli/reflectiv/wiki) before opening new issues. The question you have might be answered over there.
 
-## 🪄 Prerequisites
+<!-- ## 🪄 Prerequisites
 
 You'll need a `Strava client ID` and `Strava client Secret`
 
 - Navigate to your [Strava API settings page](https://www.strava.com/settings/api).
 - Copy the `client ID` and `client secret`, you'll need these during the [installation](#%EF%B8%8F-installation)
-- Make sure the `Authorization App Domain` is set to the url you will host your app on. By default this should be `http://localhost:8080`
+- Make sure the `Authorization App Domain` is set to the url you will host your app on. By default this should be `http://localhost:8080` -->
 
 ## 🛠️ Installation
 
