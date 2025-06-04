@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      IMAGE_NAME: my-app  # 🔁 Customize this if needed
+      IMAGE_NAME: reflectiv
 
     steps:
       - name: Checkout code
