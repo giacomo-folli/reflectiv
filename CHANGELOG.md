@@ -2,7 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.3] - 2025-06-03
+## [0.1.4] - 2025-06-04
+
+### 🚀 Features
+
+- Add user settings page and update functionality
+- Add user settings page and update functionality
+- Update readme
+
+### 🐛 Bug Fixes
+
+- Missing methods and wrong uses
+- Server imports
+- Update logs
+- Change bcrypt module
+- Docker compose and db.ts
+- Update db connection config
+- Issue with drizzle migraitons
+- Update image name
+- New migration handling
+- Docker permissions issues
+- Server listening port and unused db configs
+
+### 💼 Other
+
+- Migrate project to Drizzle ORM
+
+### 🚜 Refactor
+
+- Move user related functions to dedicated file
+- Drizzlekit migration updates
+
+### ⚙️ Miscellaneous Tasks
+
+- Add dockerhub to deploy ci
+
+## [0.1.3-alpha] - 2025-06-03
 
 ### 🚀 Features
 
