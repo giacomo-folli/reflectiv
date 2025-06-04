@@ -1,5 +1,5 @@
 import { userDb, sessionDb } from "./db";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import type { User } from "./schema";
 
 export async function hashPassword(password: string): Promise<string> {
