@@ -6,165 +6,86 @@
   import { browser } from "$app/environment";
   import { onMount } from "svelte";
 
-  let isOpen: boolean = false;
-  const languages = [
+  interface Language {
+    code: string;
+    name: string;
+    flag: string;
+  }
+
+  export let currentLanguage: Language = {
+    code: "en",
+    name: "English",
+    flag: "🇬🇧",
+  };
+  export let onLanguageChange: (code: string) => void;
+
+  const languages: Language[] = [
     { code: "en", name: "English", flag: "🇬🇧" },
     { code: "it", name: "Italiano", flag: "🇮🇹" },
   ];
 
-  $: currentLanguage = $locale || "en";
+  let isOpen = false;
 
   function changeLanguage(langCode: string) {
     setLocale(langCode);
   }
 
-  function handleClickOutside(e: MouseEvent) {
-    if (!isOpen) return;
-
-    const switcher = e.target as HTMLElement;
-    if (switcher.closest(".language-switcher")) return;
-    isOpen = false;
+  function handleClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest(".language-switcher")) {
+      isOpen = false;
+    }
   }
 
   onMount(() => {
-    if (browser) document.addEventListener("click", handleClickOutside);
-
-    return () => document.removeEventListener("click", handleClickOutside);
+    if (browser) {
+      document.addEventListener("click", handleClickOutside);
+      return () => {
+        document.removeEventListener("click", handleClickOutside);
+      };
+    }
   });
 </script>
 
 <!-- <svelte:window> tag must be placed at the top level, not inside a block -->
 <svelte:window on:click|capture={browser ? handleClickOutside : null} />
 
-<div class="language-switcher">
+<div class="relative inline-block language-switcher">
   <button
-    class="language-toggle"
-    aria-label="Change language"
+    class="flex items-center gap-2 px-2 py-2 text-gray-400 hover:text-gray-100 hover:bg-white/10 rounded-md text-sm transition-colors"
     on:click={() => (isOpen = !isOpen)}
+    on:blur={() => setTimeout(() => (isOpen = false), 200)}
   >
-    {languages.find((lang) => lang.code === currentLanguage)?.flag || "🌐"}
-    <span class="language-name"
-      >{languages.find((lang) => lang.code === currentLanguage)?.name ||
-        "Language"}</span
+    <span class="text-lg">{currentLanguage.flag}</span>
+    <span class="hidden sm:inline">{currentLanguage.name}</span>
+    <span class="text-xs transition-transform {isOpen ? 'rotate-180' : ''}"
+      >▼</span
     >
-    <span class="arrow" class:open={isOpen}>▼</span>
   </button>
 
   {#if isOpen}
-    <div class="language-dropdown" transition:fade={{ duration: 150 }}>
+    <div
+      class="absolute top-full right-0 mt-1 bg-gray-800 rounded-md shadow-lg border border-gray-700 min-w-[12rem] z-50"
+    >
       {#each languages as language}
         <button
-          class="language-option"
-          class:active={currentLanguage === language.code}
+          class="flex items-center w-full px-4 py-3 text-left text-gray-400 hover:bg-white/5 hover:text-gray-100 transition-colors gap-3 {language.code ===
+          currentLanguage.code
+            ? 'bg-indigo-600/10 text-indigo-500'
+            : ''}"
           on:click={() => {
-            changeLanguage(language.code);
+            currentLanguage = language;
             isOpen = false;
+            onLanguageChange(language.code);
           }}
         >
-          <span class="flag">{language.flag}</span>
-          <span class="name">{language.name}</span>
-
-          {#if currentLanguage === language.code}
-            <Transition transition="fadeIn">
-              <span class="check">✓</span>
-            </Transition>
+          <span class="text-lg">{language.flag}</span>
+          <span class="flex-1">{language.name}</span>
+          {#if language.code === currentLanguage.code}
+            <span class="text-indigo-500">✓</span>
           {/if}
         </button>
       {/each}
     </div>
   {/if}
 </div>
-
-<style>
-  .language-switcher {
-    position: relative;
-    display: inline-block;
-  }
-
-  .language-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: transparent;
-    color: #a1a1aa;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 0.375rem;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-  }
-
-  .language-toggle:hover {
-    color: #f3f4f6;
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .arrow {
-    font-size: 0.6rem;
-    margin-left: 0.25rem;
-    transition: transform 0.2s ease;
-  }
-
-  .arrow.open {
-    transform: rotate(180deg);
-  }
-
-  .language-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 0.25rem;
-    background-color: #1a202c;
-    border-radius: 0.375rem;
-    overflow: hidden;
-    box-shadow:
-      0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    z-index: 50;
-    border: 1px solid #2d3748;
-    min-width: 12rem;
-  }
-
-  .language-option {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    text-align: left;
-    padding: 0.75rem 1rem;
-    background: none;
-    border: none;
-    color: #a1a1aa;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    gap: 0.75rem;
-  }
-
-  .language-option:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    color: #f3f4f6;
-  }
-
-  .language-option.active {
-    background-color: rgba(99, 102, 241, 0.1);
-    color: #6366f1;
-  }
-
-  .flag {
-    font-size: 1.1rem;
-  }
-
-  .name {
-    flex: 1;
-  }
-
-  .check {
-    color: #6366f1;
-  }
-
-  @media (max-width: 640px) {
-    .language-name {
-      display: none;
-    }
-  }
-</style>

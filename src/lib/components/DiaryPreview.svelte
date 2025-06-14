@@ -3,9 +3,9 @@
     staggerChildren,
     fadeIn,
     textReveal,
-} from "$lib/client/utils/transitionUtils";
+  } from "$lib/client/utils/transitionUtils";
   import { onMount } from "svelte";
-import { getDiaryPreview } from "$lib/client/utils/pdfGenerator";
+  import { getDiaryPreview } from "$lib/client/utils/pdfGenerator";
 
   export let month;
   export let year;
@@ -22,50 +22,44 @@ import { getDiaryPreview } from "$lib/client/utils/pdfGenerator";
   });
 </script>
 
-<div class="diary-preview">
-  <div class="diary-cover">
-    <div class="diary-title">
-      <h3>
-        {new Date(year, month - 1).toLocaleString("default", { month: "long" })}
-        {year}
-      </h3>
-      <p class="subtitle">Reflection Journal</p>
-    </div>
+<div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+  <div class="p-6">
+    <h2 class="text-2xl font-bold mb-2">{title}</h2>
+    <p class="text-base text-gray-600 dark:text-gray-400 mb-0">{subtitle}</p>
   </div>
 
-  {#if visible}
-    <div
-      class="diary-pages"
-      use:staggerChildren={{
-        staggerTime: 100,
-        transition: fadeIn,
-        duration: 300,
-      }}
-    >
-      {#each previewItems as item, i}
-        <div class="diary-page">
-          <div class="day-header">
-            <span class="day-number">{item.day}</span>
-            <span class="day-name">
-              {new Date(year, month - 1, item.day).toLocaleString("default", {
-                weekday: "long",
-              })}
-            </span>
+  <div class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    {#each previewItems as item, i}
+      <div
+        class="p-6 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+      >
+        <div class="flex items-center mb-4">
+          <div
+            class="w-10 h-10 flex items-center justify-center bg-indigo-600 text-white rounded-full text-xl font-bold mr-3"
+          >
+            {item.day}
           </div>
-
-          <div class="question" use:textReveal={{ delay: 150 * (i + 1) }}>
-            {item.question}
-          </div>
-
-          <div class="answer-lines">
-            <div class="line"></div>
-            <div class="line"></div>
-            <div class="line"></div>
+          <div class="text-lg font-medium text-gray-700 dark:text-gray-300">
+            {new Date(year, month - 1, item.day).toLocaleString("default", {
+              weekday: "long",
+            })}
           </div>
         </div>
-      {/each}
-    </div>
-  {/if}
+
+        <div
+          class="text-base leading-relaxed text-gray-700 dark:text-gray-300 mb-4"
+        >
+          {item.question}
+        </div>
+
+        <div class="space-y-3">
+          {#each Array(item.lines) as _, i}
+            <div class="h-px bg-gray-200 dark:bg-gray-700"></div>
+          {/each}
+        </div>
+      </div>
+    {/each}
+  </div>
 </div>
 
 <style>
