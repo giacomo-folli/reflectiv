@@ -14,6 +14,12 @@
     ];
 </script>
 
+<div class="flex justify-center items-start min-h-screen bg-[#f7f8fa] p-6">
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow p-10">
+        <slot />
+    </div>
+</div>
+
 <!-- Active Diary Section -->
 <div class="mb-8">
     <div class="bg-white rounded-xl p-6 shadow-sm">

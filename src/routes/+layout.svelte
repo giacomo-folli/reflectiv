@@ -36,16 +36,21 @@
         goto(item.url);
     }
 
-    $: user = data?.user || undefined;
+    $: user = data?.user || {
+        name: "POMO store 2",
+        email: "amoore1999@hotmail.com",
+    };
 </script>
 
-<div class="flex h-screen">
+<div class="flex min-h-screen bg-[#f7f8fa]">
     <!-- Sidebar -->
-    <aside class="w-[280px] bg-white border-r border-gray-200 flex flex-col">
-        <div class="p-5 border-b border-gray-200">
+    <aside
+        class="w-[270px] bg-white border-r border-gray-200 flex flex-col rounded-2xl m-3 ml-0 shadow-sm"
+    >
+        <div class="p-6 pb-4 border-b border-gray-100">
             <div class="flex items-center gap-2">
                 <span class="text-xl">
-                    <img src="/favicon.svg" alt="logo" />
+                    <img src="/favicon.svg" alt="logo" class="w-6 h-6" />
                 </span>
                 <span class="text-lg font-semibold text-gray-800"
                     >reflectiv</span
@@ -56,7 +61,7 @@
         <nav class="flex-1 py-6">
             <div class="mb-8">
                 <h3
-                    class="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-6 mb-3"
+                    class="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-6 mb-3"
                 >
                     Management
                 </h3>
@@ -64,9 +69,9 @@
                     {#each navigationItems as item}
                         <li>
                             <button
-                                class="flex items-center gap-3 w-full px-6 py-3 text-left text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-800 transition-colors {item.active
-                                    ? 'bg-indigo-600 text-white rounded-lg mx-3'
-                                    : ''}"
+                                class="flex items-center gap-3 w-full px-6 py-3 text-left text-sm font-medium transition-colors rounded-lg {item.active
+                                    ? 'bg-indigo-600 text-white shadow-md'
+                                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}"
                                 on:click={() => handleNavigation(item)}
                                 on:mouseover={() => preloadData(item.url)}
                                 on:focus={() => preloadData(item.url)}
@@ -81,7 +86,7 @@
 
             <div class="mb-8">
                 <h3
-                    class="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-6 mb-3"
+                    class="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-6 mb-3"
                 >
                     Personal
                 </h3>
@@ -89,7 +94,7 @@
                     {#each personalItems as item}
                         <li>
                             <button
-                                class="flex items-center gap-3 w-full px-6 py-3 text-left text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-800 transition-colors"
+                                class="flex items-center gap-3 w-full px-6 py-3 text-left text-sm font-medium transition-colors rounded-lg text-gray-500 hover:bg-gray-50 hover:text-gray-800"
                                 on:click={() => handleNavigation(item)}
                                 on:mouseover={() => preloadData(item.url)}
                                 on:focus={() => preloadData(item.url)}
@@ -98,8 +103,8 @@
                                 <span class="flex-1">{item.label}</span>
                                 {#if item.label == "Messages"}
                                     <span
-                                        class="bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full min-w-[20px] text-center"
-                                        >+99</span
+                                        class="bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full min-w-[24px] text-center ml-2"
+                                        >99+</span
                                     >
                                 {/if}
                             </button>
@@ -109,15 +114,13 @@
             </div>
         </nav>
 
-        <div class="p-6 border-t border-gray-200">
-            <div class="flex items-center gap-3 mb-4">
-                <div>
-                    <img
-                        src="/icons/user.png"
-                        alt="User"
-                        class="w-10 h-10 rounded-full"
-                    />
-                </div>
+        <div class="p-6 border-t border-gray-100 mt-auto">
+            <div class="flex items-center gap-3">
+                <img
+                    src="https://i.pravatar.cc/40?img=1"
+                    alt="User"
+                    class="w-10 h-10 rounded-full border border-gray-200"
+                />
                 <div class="flex-1">
                     <div class="text-sm font-semibold text-gray-800">
                         {user?.name}
@@ -129,8 +132,8 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto">
-        <div class="p-8">
+    <main class="flex-1 flex flex-col p-6 md:p-10">
+        <div class="flex-1">
             <slot />
         </div>
     </main>
