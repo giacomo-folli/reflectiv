@@ -28,8 +28,8 @@ export const actions: Actions = {
     }
 
     try {
-      linkDb.createLink({ userId: locals.user.id, title: title, url: url });
-      return { success: true };
+      const newLink = linkDb.createLink({ userId: locals.user.id, title: title, url: url });
+      return { success: true, link: newLink };
     } catch (error) {
       console.error("Error creating link:", error);
       return fail(500, { message: "Failed to add link. Please try again." });
