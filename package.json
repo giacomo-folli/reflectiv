@@ -1,50 +1,21 @@
 {
-  "name": "reflectiv",
-  "version": "0.0.1",
+  "name": "reflectiv-monorepo",
+  "version": "1.0.0",
   "private": true,
-  "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "start": "node build/index.js",
-    "test": "vitest",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "mkdir -p ./data && drizzle-kit migrate"
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "build": "npm run build --workspaces",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:backend": "npm run build --workspace=backend",
+    "install:all": "npm install && npm install --workspace=frontend && npm install --workspace=backend"
   },
   "devDependencies": {
-    "@sveltejs/adapter-node": "^4.0.1",
-    "@sveltejs/kit": "^2.0.0",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/luxon": "^3.2.0",
-    "@vitest/ui": "^3.2.0",
-    "autoprefixer": "^10.4.21",
-    "drizzle-kit": "^0.31.1",
-    "jsonc-parser": "^3.3.1",
-    "playwright": "^1.52.0",
-    "postcss": "^8.5.3",
-    "svelte": "^4.2.9",
-    "svelte-check": "^4.1.7",
-    "tailwindcss": "^3.3.2",
-    "tslib": "^2.4.1",
-    "typescript": "^5.0.0",
-    "vite": "^5.0.0",
-    "vitest": "^3.2.0"
-  },
-  "dependencies": {
-    "@google/genai": "^1.0.1",
-    "@sveltejs/vite-plugin-svelte": "^3.0.2",
-    "@tailwindcss/typography": "^0.5.10",
-    "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^11.10.0",
-    "dotenv": "^16.5.0",
-    "drizzle-orm": "^0.44.2",
-    "jspdf": "^2.5.2",
-    "luxon": "^3.6.1",
-    "openai": "^4.104.0",
-    "puppeteer": "^19.11.1",
-    "svelte-i18n": "^4.0.1"
+    "concurrently": "^8.2.2"
   }
-}
+} 

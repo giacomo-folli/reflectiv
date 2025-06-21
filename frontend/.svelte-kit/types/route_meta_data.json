@@ -1,0 +1,49 @@
+{
+	"/": [
+		"src/routes/+page.ts",
+		"src/routes/+page.server.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/api/diary-content": [
+		"src/routes/api/diary-content/+server.ts"
+	],
+	"/api/generate-pdf": [
+		"src/routes/api/generate-pdf/+server.ts"
+	],
+	"/api/links": [
+		"src/routes/api/links/+server.ts"
+	],
+	"/api/user/update": [
+		"src/routes/api/user/update/+server.ts"
+	],
+	"/(main)/dashboard": [
+		"src/routes/(main)/dashboard/+page.server.ts",
+		"src/routes/(main)/dashboard/+layout.server.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/(main)/dashboard/+layout.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/health": [
+		"src/routes/health/+server.ts"
+	],
+	"/(main)/links": [
+		"src/routes/(main)/links/+page.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/(auth)/login": [
+		"src/routes/(auth)/login/+page.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/(auth)/logout": [
+		"src/routes/(auth)/logout/+page.server.js",
+		"src/routes/+layout.server.ts"
+	],
+	"/(auth)/register": [
+		"src/routes/(auth)/register/+page.server.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/(main)/settings": [
+		"src/routes/+layout.server.ts"
+	]
+}
