@@ -33,8 +33,8 @@ export const actions: Actions = {
         path: "/",
         httpOnly: true,
         sameSite: "lax",
-        secure: false, // for now but should fix
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        secure: true,
+        maxAge: 60 * 60 * 24 * 7,
       });
 
       return { success: true };

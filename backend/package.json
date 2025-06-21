@@ -27,8 +27,11 @@
     "youch-terminal": "^2.2.3"
   },
   "dependencies": {
+    "@adonisjs/auth": "^5.1.1",
     "@adonisjs/core": "^5.9.0",
+    "@adonisjs/lucid": "^10.0.0",
     "@adonisjs/repl": "^3.1.11",
+    "@adonisjs/session": "^4.0.6",
     "@google/genai": "^1.0.1",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^11.10.0",

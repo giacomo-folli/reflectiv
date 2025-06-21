@@ -1,18 +1,18 @@
 # Environment variables
-.env
-.env.*
+**/.env
+**/.env.*
 !.env.example
 
 # Node modules
-node_modules/
+**/node_modules/
 .windsurf/
 
 # Data dir with db
-data/
+**/data/
 
 # Build output
-/build
-/.svelte-kit
+**/build
+**/.svelte-kit/
 /package
 
 # Logs

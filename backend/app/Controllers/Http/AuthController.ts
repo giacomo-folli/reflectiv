@@ -1,4 +1,4 @@
-import { loginUser, registerUser, logoutUser, validateSession } from '../Services/AuthService'
+import { loginUser, registerUser, logoutUser, validateSession } from '../../Services/AuthService'
 
 export default class AuthController {
   async login({ request, response }: any) {
@@ -15,7 +15,7 @@ export default class AuthController {
         path: '/',
         httpOnly: true,
         sameSite: 'lax',
-        secure: false, // For now, but should fix
+        secure: true,
         maxAge: 60 * 60 * 24 * 7, // 7 days
       })
 
@@ -53,7 +53,12 @@ export default class AuthController {
       const sessionId = request.cookie('sessionId')
       if (sessionId) {
         logoutUser(sessionId)
-        response.clearCookie('sessionId', { path: '/' })
+        response.clearCookie('sessionId', { 
+          path: '/',
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: true,
+        })
       }
       return response.ok({ success: true })
     } catch (error: any) {
@@ -71,7 +76,12 @@ export default class AuthController {
 
       const user = validateSession(sessionId)
       if (!user) {
-        response.clearCookie('sessionId', { path: '/' })
+        response.clearCookie('sessionId', { 
+          path: '/',
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: true,
+        })
         return response.unauthorized({ message: 'Invalid session' })
       }
 

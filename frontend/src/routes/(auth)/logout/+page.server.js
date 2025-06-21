@@ -6,11 +6,16 @@ export const actions = {
   default: async ({ locals, cookies }) => {
     // Log out user if session exists
     if (locals.sessionId) {
-      logoutUser(locals.sessionId);
+      await logoutUser(locals.sessionId);
     }
     
     // Remove the session cookie
-    cookies.delete('sessionId', { path: '/' });
+    cookies.delete('sessionId', { 
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: true,
+    });
     
     // Redirect to the home page
     throw redirect(302, '/');

@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       );
     }
 
-    let user = validateSession(sessionId);
+    let user = await validateSession();
     if (!user) {
       return json(
         {

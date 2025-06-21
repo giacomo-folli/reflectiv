@@ -18,7 +18,7 @@ const handleAuth = async ({ event, resolve }: any) => {
   const sessionId = event.cookies.get("sessionId");
 
   if (sessionId) {
-    const user = validateSession(sessionId);
+    const user = await validateSession();
 
     if (user) {
       event.locals.user = user;

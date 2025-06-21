@@ -10,7 +10,12 @@ export default class AuthMiddleware {
 
     const user = validateSession(sessionId)
     if (!user) {
-      response.clearCookie('sessionId', { path: '/' })
+      response.clearCookie('sessionId', { 
+        path: '/',
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: true,
+      })
       return response.unauthorized({ message: 'Invalid session' })
     }
 
