@@ -1,69 +1,38 @@
+import { assert } from '@japa/assert'
+import { apiClient } from '@japa/api-client'
+import app from '@adonisjs/core/services/app'
+import type { Config } from '@japa/runner/types'
+import { pluginAdonisJS } from '@japa/plugin-adonisjs'
+import testUtils from '@adonisjs/core/services/test_utils'
+
 /**
- * File source: https://bit.ly/3ukaHTz
- *
- * Feel free to let us know via PR, if you find something broken in this contract
- * file.
+ * This file is imported by the "bin/test.ts" entrypoint file
  */
 
-import type { Config } from '@japa/runner'
-import TestUtils from '@ioc:Adonis/Core/TestUtils'
-import { assert, runFailedTests, specReporter, apiClient } from '@japa/preset-adonis'
+/**
+ * Configure Japa plugins in the plugins array.
+ * Learn more - https://japa.dev/docs/runner-config#plugins-optional
+ */
+export const plugins: Config['plugins'] = [assert(), apiClient(), pluginAdonisJS(app)]
 
-/*
-|--------------------------------------------------------------------------
-| Japa Plugins
-|--------------------------------------------------------------------------
-|
-| Japa plugins allows you to add additional features to Japa. By default
-| we register the assertion plugin.
-|
-| Feel free to remove existing plugins or add more.
-|
-*/
-export const plugins: Required<Config>['plugins'] = [assert(), runFailedTests(), apiClient()]
-
-/*
-|--------------------------------------------------------------------------
-| Japa Reporters
-|--------------------------------------------------------------------------
-|
-| Japa reporters displays/saves the progress of tests as they are executed.
-| By default, we register the spec reporter to show a detailed report
-| of tests on the terminal.
-|
-*/
-export const reporters: Required<Config>['reporters'] = [specReporter()]
-
-/*
-|--------------------------------------------------------------------------
-| Runner hooks
-|--------------------------------------------------------------------------
-|
-| Runner hooks are executed after booting the AdonisJS app and
-| before the test files are imported.
-|
-| You can perform actions like starting the HTTP server or running migrations
-| within the runner hooks
-|
-*/
-export const runnerHooks: Pick<Required<Config>, 'setup' | 'teardown'> = {
-  setup: [() => TestUtils.ace().loadCommands()],
+/**
+ * Configure lifecycle function to run before and after all the
+ * tests.
+ *
+ * The setup functions are executed before all the tests
+ * The teardown functions are executed after all the tests
+ */
+export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
+  setup: [],
   teardown: [],
 }
 
-/*
-|--------------------------------------------------------------------------
-| Configure individual suites
-|--------------------------------------------------------------------------
-|
-| The configureSuite method gets called for every test suite registered
-| within ".adonisrc.json" file.
-|
-| You can use this method to configure suites. For example: Only start
-| the HTTP server when it is a functional suite.
-*/
-export const configureSuite: Required<Config>['configureSuite'] = (suite) => {
-  if (suite.name === 'functional') {
-    suite.setup(() => TestUtils.httpServer().start())
+/**
+ * Configure suites by tapping into the test suite instance.
+ * Learn more - https://japa.dev/docs/test-suites#lifecycle-hooks
+ */
+export const configureSuite: Config['configureSuite'] = (suite) => {
+  if (['browser', 'functional', 'e2e'].includes(suite.name)) {
+    return suite.setup(() => testUtils.httpServer().start())
   }
 }
