@@ -35,4 +35,10 @@ export default Env.rules({
 	CLAUDE_BASE_URI: Env.schema.string.optional(),
 	LOCAL_LLM_BASE_URI: Env.schema.string.optional(),
 	LOCAL_LLM_MODEL: Env.schema.string.optional(),
+	
+	PG_HOST: Env.schema.string({ format: 'host' }),
+    PG_PORT: Env.schema.number(),
+    PG_USER: Env.schema.string(),
+    PG_PASSWORD: Env.schema.string.optional(),
+    PG_DB_NAME: Env.schema.string(),
 })

@@ -1,3 +1,6 @@
+// Drizzle and SQLite logic removed for Lucid ORM migration
+// TODO: Implement DatabaseService using Lucid ORM
+
 import Database from "better-sqlite3";
 import path from "path";
 import { drizzle } from "drizzle-orm/better-sqlite3";

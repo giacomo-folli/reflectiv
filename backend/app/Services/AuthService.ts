@@ -1,6 +1,6 @@
+import User from "App/Models/User";
 import { userDb, sessionDb } from "./DatabaseService";
 import bcrypt from "bcryptjs";
-import type { User } from "../Models/schema";
 
 export async function hashPassword(password: string): Promise<string> {
   const saltRounds = 12;

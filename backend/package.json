@@ -6,16 +6,13 @@
     "dev": "node ace serve --watch",
     "build": "node ace build --production",
     "start": "node server.js",
-    "test": "node ace test",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "mkdir -p ./data && drizzle-kit migrate"
+    "test": "node ace test"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.9.6",
     "@japa/preset-adonis": "^1.2.0",
     "@japa/runner": "^2.5.1",
     "@types/bcryptjs": "^2.4.6",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/luxon": "^3.2.0",
     "@types/proxy-addr": "^2.0.3",
     "@types/source-map-support": "^0.5.10",
@@ -36,9 +33,9 @@
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^11.10.0",
     "dotenv": "^16.5.0",
-    "drizzle-orm": "^0.44.2",
     "luxon": "^3.6.1",
     "openai": "^4.104.0",
+    "pg": "^8.16.2",
     "proxy-addr": "^2.0.7",
     "puppeteer": "^19.11.1",
     "reflect-metadata": "^0.2.2",
