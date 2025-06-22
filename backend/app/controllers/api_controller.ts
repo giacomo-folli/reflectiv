@@ -2,7 +2,6 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { Extractor } from '../managers/gptChat/Extractor.js'
 import { AiServiceFactory } from '../managers/ai/AiServiceFactory.js'
 import Link from '#models/link';
-import auth from '@adonisjs/auth/services/main';
 
 export default class ApiController {
     async diaryContent({ request, response }: HttpContext) {

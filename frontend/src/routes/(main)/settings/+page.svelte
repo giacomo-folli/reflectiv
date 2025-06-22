@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { UserService } from "$lib/client/services/user.service";
+  import { UserService } from "$lib/services/user.service";
   import type { PageData } from "./$types";
 
   export let data: PageData;

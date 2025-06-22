@@ -1,7 +1,7 @@
 <script lang="ts">
   import { DateTime } from "luxon";
   import DiaryReviewDialog from "$lib/components/DiaryReviewDialog.svelte";
-  import { PdfService } from "$lib/client/services/pdf.service";
+  import { PdfService } from "$lib/services/pdf.service";
 
   // Get current date for defaults
   const currentDate = DateTime.now();

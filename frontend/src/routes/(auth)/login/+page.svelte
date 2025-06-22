@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { AuthService } from "$lib/services/auth.service";
   import { locale } from "svelte-i18n";
-  import { authStore } from "$lib/client/stores/auth.store";
 
   let email: string = "";
   let password: string = "";
@@ -49,9 +49,6 @@
   // @ts-ignore
   $: t = translations[$locale || "en"];
 
-  // Subscribe to auth store for loading and error states
-  $: ({ loading: authLoading, error: authError } = $authStore);
-
   async function handleLogin(event: Event) {
     event.preventDefault();
 
@@ -59,13 +56,15 @@
       error = "Email and password are required";
       return;
     }
+    loading = true;
 
-    try {
-      await authStore.login(email, password);
-      await goto("/dashboard", { invalidateAll: true });
-    } catch (err: any) {
-      error = err.message || t.errorDefault;
-    }
+    const service = new AuthService({ fetch });
+    await service
+      .login(email, password)
+      .then(() => goto("/dashboard", { invalidateAll: true }))
+      .catch((err) => (error = err?.message));
+
+    loading = false;
   }
 </script>
 
@@ -76,11 +75,11 @@
       <h1 class="text-2xl font-bold text-white mb-2">{t.title}</h1>
       <p class="text-gray-400 mb-6">{t.subtitle}</p>
 
-      {#if error || authError}
+      {#if error}
         <div
           class="bg-red-900/20 border border-red-500/50 text-red-400 p-3 rounded-md mb-4"
         >
-          {error || authError}
+          {error}
         </div>
       {/if}
 
@@ -117,11 +116,11 @@
 
         <button
           type="submit"
-          class="w-full py-3 px-6 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors {authLoading
+          class="w-full py-3 px-6 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors {loading
             ? 'pointer-events-none'
             : ''}"
         >
-          {#if authLoading}
+          {#if loading}
             Loading...
           {:else}
             {t.signIn}

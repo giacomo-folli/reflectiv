@@ -15,7 +15,6 @@ export default class AuthController {
             const user = await User.verifyCredentials(email, password)
             if (!user) return response.notFound({ message: "This user doesn't exists" })
 
-            /* const { sessionId, user } = await loginUser(email, password) */
             await auth.use('web').login(user)
             return response.ok({ success: true, user })
         } catch (error: any) {
@@ -32,9 +31,7 @@ export default class AuthController {
         }
 
         try {
-
-
-            const user = await User.create({email, name, password})
+            const user = await User.create({ email, name, password })
             if (!user) {
                 return response.internalServerError({ message: 'Failed to create user' })
             }
@@ -49,13 +46,12 @@ export default class AuthController {
 
     async logout({ response, auth }: HttpContext) {
         await auth.use('web').logout()
-        return response.redirect('/login')    
+        return response.redirect('/login')
     }
 
     async me({ response, auth }: HttpContext) {
         try {
-            await auth.use('web').check()
-            const user = auth.use('web').user
+            const user = auth.getUserOrFail()
             if (!user) {
                 return response.unauthorized({ message: 'Not authenticated' })
             }

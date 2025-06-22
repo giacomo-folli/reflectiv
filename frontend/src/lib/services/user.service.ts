@@ -1,6 +1,12 @@
 import { browser } from "$app/environment";
-import type { User } from "$lib/types/user.types";
 import { error } from "@sveltejs/kit";
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+}
 
 export class UserService {
   protected fetch: any;
@@ -10,12 +16,17 @@ export class UserService {
     else this.fetch = params.fetch;
   }
 
-  async thisFetch(params: { method: string; url: string; body?: any }) {
-    return await this.fetch(`/api/${params.url}`, {
-      method: params.method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(params?.body),
-    });
+  async thisFetch(params: { method: string; url: string; options: RequestInit }) {
+    const defaultOptions: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...params.options.headers,
+      },
+      credentials: 'include', // Include cookies for session management
+      ...params.options,
+    }
+
+    return await this.fetch(`/api/${params.url}`, defaultOptions);
   }
 
   async updateUser(params: {
@@ -26,11 +37,13 @@ export class UserService {
     const response = await this.thisFetch({
       method: "POST",
       url: "user/update",
-      body: {
-        name: params.name,
-        email: params.email,
-        password: params.newPassword,
-      },
+      options: {
+        body: JSON.stringify({
+          name: params.name,
+          email: params.email,
+          password: params.newPassword,
+        }),
+      }
     }).catch((err: unknown) =>
       console.error(err instanceof Error ? err.message : err)
     );

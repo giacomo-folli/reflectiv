@@ -3,9 +3,9 @@
     staggerChildren,
     fadeIn,
     textReveal,
-} from "$lib/client/utils/transitionUtils";
+  } from "$lib/utils/transitionUtils";
+  import { getDiaryPreview } from "$lib/utils/pdfGenerator";
   import { onMount } from "svelte";
-import { getDiaryPreview } from "$lib/client/utils/pdfGenerator";
 
   export let month;
   export let year;
@@ -38,8 +38,6 @@ import { getDiaryPreview } from "$lib/client/utils/pdfGenerator";
       class="diary-pages"
       use:staggerChildren={{
         staggerTime: 100,
-        transition: fadeIn,
-        duration: 300,
       }}
     >
       {#each previewItems as item, i}
@@ -53,7 +51,7 @@ import { getDiaryPreview } from "$lib/client/utils/pdfGenerator";
             </span>
           </div>
 
-          <div class="question" use:textReveal={{ delay: 150 * (i + 1) }}>
+          <div class="question">
             {item.question}
           </div>
 

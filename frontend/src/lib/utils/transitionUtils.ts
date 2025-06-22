@@ -1,6 +1,6 @@
 import { cubicOut, elasticOut, backOut, quintOut } from "svelte/easing";
 import { crossfade, fly, fade, slide, scale } from "svelte/transition";
-import type { TransitionParams } from "$lib/client/types/transitions.types";
+import type { TransitionParams } from "$lib/types/transitions.types";
 
 /**
  * Custom fly transition that can be used for page transitions

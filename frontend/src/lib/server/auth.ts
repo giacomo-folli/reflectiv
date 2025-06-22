@@ -1,4 +1,4 @@
-import { apiService } from '$lib/client/services/api.service';
+import { apiService } from '$lib/services/api.service';
 
 /**
  * Validates a session by making a request to the backend
