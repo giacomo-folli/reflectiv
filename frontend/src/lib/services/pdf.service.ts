@@ -1,31 +1,18 @@
-import { browser } from "$app/environment";
 import { error } from "@sveltejs/kit";
+import { BaseService } from "./base.service";
 
-export class PdfService {
-  protected fetch: any;
-
-  constructor(params: { fetch: any }) {
-    if (browser) this.fetch = params.fetch.bind(window);
-    else this.fetch = params.fetch;
-  }
-
-  async thisFetch(params: { method: string; url: string; body?: any }) {
-    return await this.fetch(`/api/${params.url}`, {
-      method: params.method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(params?.body),
-    });
-  }
-
+export class PdfService extends BaseService {
   async getDiariyContent(params: { links?: string[] }): Promise<{
     questions: string[];
     themes: string[];
     mantra: string;
   }> {
     const response = await this.thisFetch({
-      method: "POST",
       url: "diary-content",
-      body: { links: params.links },
+      options: {
+        method: "POST",
+        body: JSON.stringify({ links: params.links }),
+      }
     }).catch((err: unknown) =>
       console.error(err instanceof Error ? err.message : err)
     );
@@ -41,12 +28,14 @@ export class PdfService {
     mantra: string;
   }): Promise<boolean> {
     const response = await this.thisFetch({
-      method: "POST",
       url: "generate-pdf",
-      body: {
-        questions: params.questions,
-        themes: params.themes,
-        mantra: params.mantra,
+      options: {
+        method: "POST",
+        body: JSON.stringify({
+          questions: params.questions,
+          themes: params.themes,
+          mantra: params.mantra,
+        })
       },
     }).catch((err: unknown) =>
       console.error(err instanceof Error ? err.message : err)
@@ -73,8 +62,10 @@ export class PdfService {
   async getUserLinks(): Promise<any[]> {
     try {
       const response = await this.thisFetch({
-        method: "GET",
         url: "links",
+        options: {
+          method: "GET",
+        }
       }).catch((err: unknown) =>
         console.error(err instanceof Error ? err.message : err)
       );
