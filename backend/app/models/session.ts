@@ -1,9 +1,11 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, CamelCaseNamingStrategy, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
 
 export default class Session extends BaseModel {
+  public static namingStrategy = new CamelCaseNamingStrategy()
+  
   @column({ isPrimary: true })
   declare id: number
 

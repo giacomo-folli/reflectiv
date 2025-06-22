@@ -34,7 +34,7 @@ export default class AuthController {
         try {
 
 
-            const user = await registerUser(email, password, name)
+            const user = await User.create({email, name, password})
             if (!user) {
                 return response.internalServerError({ message: 'Failed to create user' })
             }
@@ -52,24 +52,13 @@ export default class AuthController {
         return response.redirect('/login')    
     }
 
-    async me({ request, response }: HttpContext) {
-        const sessionId = request.cookie('sessionId')
-        if (!sessionId) {
-            return response.unauthorized({ message: 'Not authenticated' })
-        }
-
+    async me({ response, auth }: HttpContext) {
         try {
-            const user = validateSession(sessionId)
+            await auth.use('web').check()
+            const user = auth.use('web').user
             if (!user) {
-                response.clearCookie('sessionId', {
-                    path: '/',
-                    httpOnly: true,
-                    sameSite: 'lax',
-                    secure: true,
-                })
-                return response.unauthorized({ message: 'Invalid session' })
+                return response.unauthorized({ message: 'Not authenticated' })
             }
-
             return response.ok({ user })
         } catch (error: any) {
             console.error(error)

@@ -8,7 +8,7 @@ export default class Users extends BaseSchema {
       table.increments('id')
       table.string('email').unique().notNullable()
       table.string('name')
-      table.string('passwordHash').notNullable()
+      table.string('password').notNullable()
       table.timestamps(true)
     })
   }
