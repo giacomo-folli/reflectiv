@@ -1,7 +1,13 @@
-// Layout server load function - authentication will be handled client-side
-export const load = () => {
+import { AuthService } from "$lib/services/auth.service";
+
+export const load = async ({ fetch }) => {
+  const service = new AuthService({ fetch })
+  const res = await service.getCurrentUser()
+  const data = await res.json()
+
+
   return {
-    user: null,
+    user: data.user,
     session: null,
   };
 };

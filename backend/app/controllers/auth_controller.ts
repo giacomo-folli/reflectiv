@@ -51,7 +51,7 @@ export default class AuthController {
 
     async me({ response, auth }: HttpContext) {
         try {
-            const user = auth.getUserOrFail()
+            const user = await auth.authenticate()
             if (!user) {
                 return response.unauthorized({ message: 'Not authenticated' })
             }

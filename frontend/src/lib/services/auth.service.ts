@@ -35,7 +35,7 @@ export class AuthService extends BaseService {
         return this.thisFetch({
             url: '/auth/me',
             options: {
-                method: 'POST',
+                method: 'GET',
             }
         })
     }

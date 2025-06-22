@@ -1,13 +1,14 @@
 import { redirect, fail } from "@sveltejs/kit";
-import { linkDb } from "$lib/server/db";
 import type { Actions, PageServerLoad } from "./$types";
+import { ApiService } from "$lib/services/api.service";
 
-export const load: PageServerLoad = ({ locals }) => {
-  if (!locals.user) throw redirect(302, "/login");
+export const load: PageServerLoad = async ({ parent }) => {
+  const { user } = await parent()
 
-  const links = linkDb.findByUserId(locals.user.id);
+  const service = new ApiService({ fetch })
+  const links = await service.getLinks()
 
-  return { user: locals.user, session: locals.sessionId, links };
+  return { user, links };
 };
 
 export const actions: Actions = {
