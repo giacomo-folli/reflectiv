@@ -1,24 +1,25 @@
-import { AiService } from "./AiService";
-import { OpenAiService } from "./OpenAiService";
-import { GeminiService } from "./GeminiService";
-import { ClaudeService } from "./ClaudeService";
-import { LocalLlmService } from "./LocalLlmService";
-import Env from '@ioc:Adonis/Core/Env';
+import { AiService } from "./AiService.js";
+import { OpenAiService } from "./OpenAiService.js";
+import { GeminiService } from "./GeminiService.js";
+import { ClaudeService } from "./ClaudeService.js";
+import { LocalLlmService } from "./LocalLlmService.js";
+import env from "#start/env";
+
 
 export class AiServiceFactory {
   public static getInstance(): AiService {
-    const provider = Env.get("AI_SERVICE_PROVIDER");
-    const openAiApiKey = Env.get("OPENAI_API_KEY");
-    const geminiApiKey = Env.get("GEMINI_API_KEY");
-    const claudeApiKey = Env.get("CLAUDE_API_KEY");
+    const provider = env.get("AI_SERVICE_PROVIDER");
+    const openAiApiKey = env.get("OPENAI_API_KEY");
+    const geminiApiKey = env.get("GEMINI_API_KEY");
+    const claudeApiKey = env.get("CLAUDE_API_KEY");
 
-    const openAiBaseUri = Env.get("OPENAI_BASE_URI");
-    const geminiBaseUri = Env.get("GEMINI_BASE_URI");
-    const claudeBaseUri = Env.get("CLAUDE_BASE_URI");
+    const openAiBaseUri = env.get("OPENAI_BASE_URI");
+    const geminiBaseUri = env.get("GEMINI_BASE_URI");
+    const claudeBaseUri = env.get("CLAUDE_BASE_URI");
 
     // No API key needed for local LLM, but it needs a base URI
-    const localLlmBaseUri = Env.get("LOCAL_LLM_BASE_URI");
-    const localLlmModel = Env.get("LOCAL_LLM_MODEL");
+    const localLlmBaseUri = env.get("LOCAL_LLM_BASE_URI");
+    const localLlmModel = env.get("LOCAL_LLM_MODEL");
 
     if (typeof provider === "string") {
       switch (provider.toLowerCase()) {

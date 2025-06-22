@@ -10,7 +10,7 @@ export interface ParserProps {
   num: string;
 }
 
-export default class Parser {
+export default class ParserManager {
   static readonly mantra_templ_str = "%mantra%";
   static readonly prompt_templ_str = "%prompt%";
   static readonly theme_templ_str = "%theme%";
@@ -39,23 +39,23 @@ export default class Parser {
   }
 
   setMantra(mantra: string): void {
-    this.content = this.content.replace(Parser.mantra_templ_str, mantra);
+    this.content = this.content.replace(ParserManager.mantra_templ_str, mantra);
   }
 
   setFree(free: string): void {
-    this.content = this.content.replace(Parser.free_templ_str, free);
+    this.content = this.content.replace(ParserManager.free_templ_str, free);
   }
 
   setPrompt(prompt: string): void {
-    this.content = this.content.replace(Parser.prompt_templ_str, prompt);
+    this.content = this.content.replace(ParserManager.prompt_templ_str, prompt);
   }
 
   setTheme(theme: string): void {
-    this.content = this.content.replace(Parser.theme_templ_str, theme);
+    this.content = this.content.replace(ParserManager.theme_templ_str, theme);
   }
 
   setNum(num: string): void {
-    this.content = this.content.replace(Parser.num_templ_str, num);
+    this.content = this.content.replace(ParserManager.num_templ_str, num);
   }
 
   async parse(): Promise<string> {

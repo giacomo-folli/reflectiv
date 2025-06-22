@@ -1,6 +1,6 @@
 import fs from "fs";
-import Parser from "./Parser";
 import puppeteer from "puppeteer";
+import ParserManager from "./Parser.js";
 
 export interface TemplateProps {
   templatePath: string;
@@ -14,7 +14,7 @@ export interface TemplateProps {
 
 export class Generator {
   static async generateTemplate(params: TemplateProps): Promise<void> {
-    const parser = new Parser({
+    const parser = new ParserManager({
       templatePath: params.templatePath,
       mantra: params.mantra,
       theme: params.theme,
