@@ -12,7 +12,7 @@ export class ApiService extends BaseService {
   }
 
   async getLinks() {
-    return this.thisFetch({ url: '/api/links' })
+    return this.thisFetch({ url: '/links' })
   }
 
   async createLink(url: string, title?: string) {

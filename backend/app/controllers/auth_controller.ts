@@ -11,17 +11,17 @@ export default class AuthController {
             return response.badRequest({ message: 'Email and password are required' })
         }
 
-        try {
-            const user = await User.verifyCredentials(email, password)
-            if (!user) return response.notFound({ message: "This user doesn't exists" })
+        let user = await User.query()
+            .where('email', request.input('email'))
+            .firstOrFail()
 
-            await auth.use('web').login(user)
-            return response.ok({ success: true, user })
-        } catch (error: any) {
-            console.error(error)
-            const err = error instanceof Error ? error.message : 'Invalid email or password'
-            return response.unauthorized({ message: err })
-        }
+        user = await User.verifyCredentials(user.email, request.input('password'))
+
+        const token = User.accessTokens.create(user, ['*'], {
+            expiresIn: '7 days',
+        })
+
+        return token
     }
 
     async register({ request, response }: HttpContext) {
@@ -44,21 +44,21 @@ export default class AuthController {
         }
     }
 
-    async logout({ response, auth }: HttpContext) {
-        await auth.use('web').logout()
-        return response.redirect('/login')
+    async logout({ auth }: HttpContext) {
+        let user = auth.use('api').user
+        if (!user) return { revoked: false }
+
+        await User.accessTokens.delete(user, user.currentAccessToken.identifier)
+
+        return {
+            revoked: true,
+        }
     }
 
-    async me({ response, auth }: HttpContext) {
-        try {
-            const user = await auth.authenticate()
-            if (!user) {
-                return response.unauthorized({ message: 'Not authenticated' })
-            }
-            return response.ok({ user })
-        } catch (error: any) {
-            console.error(error)
-            return response.internalServerError({ message: 'Authentication check failed' })
-        }
+    async me({ auth }: HttpContext) {
+        if (!auth.user) return
+
+        let user = auth.user
+        return user
     }
 } 

@@ -39,4 +39,8 @@ export class AuthService extends BaseService {
             }
         })
     }
+
+    async deleteTokenCookie(): Promise<void> {
+        this.cookies?.delete(this.cookieName, { path: '/' })
+    }
 }

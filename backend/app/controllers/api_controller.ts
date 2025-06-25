@@ -58,42 +58,6 @@ export default class ApiController {
         }
     }
 
-    async links({ request, response, auth }: HttpContext) {
-        const user = auth.getUserOrFail()
-
-        try {
-            if (request.method() === 'GET') {
-                const links = await Link.query().where('user_id', user.id)
-                return response.ok(links);
-            }
-
-            if (request.method() === 'POST') {
-                const { url, title } = request.only(['url', 'title']);
-
-                if (!url) {
-                    return response.badRequest({ message: 'URL is required' });
-                }
-
-                const link = await Link.create({
-                    url,
-                    userId: user.id,
-                    title: title || '',
-                });
-
-                if (!link) {
-                    return response.internalServerError({ message: 'Failed to create link' });
-                }
-
-                return response.created(link);
-            }
-
-            return response.methodNotAllowed();
-        } catch (error: any) {
-            console.error('Error handling links:', error);
-            return response.internalServerError({ message: 'Failed to process request' });
-        }
-    }
-
     async generatePdf({ request, response }: HttpContext) {
         try {
             const { mantra, theme, free, prompt, num } = request.only(['mantra', 'theme', 'free', 'prompt', 'num']);

@@ -8,6 +8,8 @@ export const load: PageServerLoad = async ({ parent }) => {
   const service = new ApiService({ fetch })
   const links = await service.getLinks()
 
+  console.log(links)
+
   return { user, links };
 };
 

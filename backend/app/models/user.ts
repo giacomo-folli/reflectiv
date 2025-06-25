@@ -5,6 +5,7 @@ import { BaseModel, CamelCaseNamingStrategy, column, hasMany } from '@adonisjs/l
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import Link from '#models/link'
+import { AccessToken, DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -33,5 +34,23 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare updatedAt: DateTime | null
 
   @hasMany(() => Link)
-  declare links: HasMany<typeof Link>  
+  declare links: HasMany<typeof Link>
+
+  currentAccessToken?: AccessToken
+
+  static accessTokens = DbAccessTokensProvider.forModel(User, {
+    expiresIn: '24 hours',
+    tokenSecretLength: 64,
+    prefix: 'oat_',
+    table: 'auth_access_tokens',
+    type: 'api'
+  })
+
+  static resetPasswordTokens = DbAccessTokensProvider.forModel(User, {
+    expiresIn: '10 minutes',
+    tokenSecretLength: 64,
+    prefix: 'rpt_',
+    table: 'auth_access_tokens',
+    type: 'resetPassword'
+  })
 }
