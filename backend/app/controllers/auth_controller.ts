@@ -1,64 +1,62 @@
 // import type { HttpContext } from '@adonisjs/core/http'
 
-import User from "#models/user"
-import { HttpContext } from "@adonisjs/core/http"
+import User from '#models/user'
+import { HttpContext } from '@adonisjs/core/http'
 
 export default class AuthController {
-    async login({ request, response, auth }: HttpContext) {
-        const { email, password } = request.only(['email', 'password'])
+  async login({ request, response }: HttpContext) {
+    const { email, password } = request.only(['email', 'password'])
 
-        if (!email || !password) {
-            return response.badRequest({ message: 'Email and password are required' })
-        }
-
-        let user = await User.query()
-            .where('email', request.input('email'))
-            .firstOrFail()
-
-        user = await User.verifyCredentials(user.email, request.input('password'))
-
-        const token = User.accessTokens.create(user, ['*'], {
-            expiresIn: '7 days',
-        })
-
-        return token
+    if (!email || !password) {
+      return response.badRequest({ message: 'Email and password are required' })
     }
 
-    async register({ request, response }: HttpContext) {
-        const { email, password, name } = request.only(['email', 'password', 'name'])
-        if (!email || !password || !name) {
-            return response.badRequest({ message: 'Email, password, and name are required' })
-        }
+    let user = await User.query().where('email', request.input('email')).firstOrFail()
 
-        try {
-            const user = await User.create({ email, name, password })
-            if (!user) {
-                return response.internalServerError({ message: 'Failed to create user' })
-            }
+    user = await User.verifyCredentials(user.email, request.input('password'))
 
-            return response.created({ success: true, user })
-        } catch (error: any) {
-            console.error(error)
-            const err = error instanceof Error ? error.message : 'Registration failed'
-            return response.badRequest({ message: err })
-        }
+    const token = User.accessTokens.create(user, ['*'], {
+      expiresIn: '7 days',
+    })
+
+    return token
+  }
+
+  async register({ request, response }: HttpContext) {
+    const { email, password, name } = request.only(['email', 'password', 'name'])
+    if (!email || !password || !name) {
+      return response.badRequest({ message: 'Email, password, and name are required' })
     }
 
-    async logout({ auth }: HttpContext) {
-        let user = auth.use('api').user
-        if (!user) return { revoked: false }
+    try {
+      const user = await User.create({ email, name, password })
+      if (!user) {
+        return response.internalServerError({ message: 'Failed to create user' })
+      }
 
-        await User.accessTokens.delete(user, user.currentAccessToken.identifier)
-
-        return {
-            revoked: true,
-        }
+      return response.created({ success: true, user })
+    } catch (error: any) {
+      console.error(error)
+      const err = error instanceof Error ? error.message : 'Registration failed'
+      return response.badRequest({ message: err })
     }
+  }
 
-    async me({ auth }: HttpContext) {
-        if (!auth.user) return
+  async logout({ auth }: HttpContext) {
+    let user = auth.use('api').user
+    if (!user) return { revoked: false }
 
-        let user = auth.user
-        return user
+    await User.accessTokens.delete(user, user.currentAccessToken.identifier)
+
+    return {
+      revoked: true,
     }
-} 
+  }
+
+  async me({ auth }: HttpContext) {
+    if (!auth.user) return
+
+    let user = auth.user
+    return user
+  }
+}

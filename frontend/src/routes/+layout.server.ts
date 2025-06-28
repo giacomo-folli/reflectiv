@@ -7,7 +7,7 @@ export const load = async ({ fetch, cookies, url }) => {
   let fetchedUser
   if (url.pathname != '/login') {
     try {
-      fetchedUser = await service.getCurrentUser()
+      fetchedUser = await service.me()
     } catch (error) {
       await service.deleteTokenCookie()
       throw redirect(302, '/login')
