@@ -11,11 +11,9 @@ export default class AuthController {
       return response.badRequest({ message: 'Email and password are required' })
     }
 
-    let user = await User.query().where('email', request.input('email')).firstOrFail()
+    const user = await User.verifyCredentials(email, password)
 
-    user = await User.verifyCredentials(user.email, request.input('password'))
-
-    const token = User.accessTokens.create(user, ['*'], {
+    const token = await User.accessTokens.create(user, ['*'], {
       expiresIn: '7 days',
     })
 

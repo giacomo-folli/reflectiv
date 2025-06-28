@@ -1,5 +1,4 @@
-<script>
-  import { page } from "$app/stores";
+<script lang="ts">
   import PageTransition from "$lib/components/PageTransition.svelte";
   import Transition from "$lib/components/Transition.svelte";
   import Toast from "$lib/components/Toast.svelte";
@@ -8,6 +7,7 @@
 
   import "../app.css";
   import Navbar from "$lib/components/Navbar.svelte";
+  import { page } from "$app/state";
 
   export let data;
 
@@ -28,7 +28,7 @@
   </header>
 
   <main class="h-full flex-1 py-8 relative z-10">
-    <PageTransition url={$page.url.pathname} immediate={initialLoad}>
+    <PageTransition url={page.url.pathname} immediate={initialLoad}>
       <slot />
     </PageTransition>
   </main>
@@ -55,8 +55,9 @@
 
   /* Global base styles that can't be handled by Tailwind */
   :global(body) {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+      Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     background-color: #111827;
     color: #f3f4f6;
     margin: 0;

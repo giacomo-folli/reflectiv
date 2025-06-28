@@ -1,9 +1,17 @@
 <script lang="ts">
-  import type { User } from "$lib/types/user.types";
+  import { invalidateAll } from "$app/navigation";
+  import { AuthService } from "$lib/services/auth.service";
+  import type { User } from "$lib/services/user.service";
   import LanguageSwitcher from "./LanguageSwitcher.svelte";
   import Transition from "./Transition.svelte";
 
   export let user: User | undefined = undefined;
+
+  async function handleLogout() {
+    const service = new AuthService({ fetch });
+    await service.logout();
+    await invalidateAll()
+  }
 </script>
 
 <div class="container max-w-6xl mx-auto px-4 flex justify-between items-center">
@@ -36,13 +44,13 @@
         >
       </Transition>
       <Transition transition="fadeIn" delay={300} duration={200}>
-        <form action="/logout" method="POST">
+        <button on:click={handleLogout}>
           <button
             type="submit"
             class="text-gray-400 hover:text-white text-sm transition-colors bg-transparent border-0 p-0 cursor-pointer relative after:absolute after:w-0 after:h-0.5 after:bg-indigo-500 after:bottom-[-2px] after:left-0 after:transition-all hover:after:w-full"
             >Logout</button
           >
-        </form>
+        </button>
       </Transition>
       <Transition transition="fadeIn" delay={350} duration={200}>
         <LanguageSwitcher />
