@@ -1,0 +1,25 @@
+# Environment variables
+**/.env
+**/.env.*
+!.env.example
+
+# Node modules
+**/node_modules/
+.windsurf/
+
+# Data dir with db
+**/data/
+
+# Build output
+**/build
+**/.svelte-kit/
+/package
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*
+
+CLAUDE.md
+cliff.toml
+.replit
+.claude
