@@ -1,5 +1,5 @@
 <p align="center">
-   <img alt="Logo" width="150px" src="https://raw.githubusercontent.com/giacomo-folli/reflectiv/refs/heads/main/static/generated-icon.png" />
+   <img alt="Logo" width="150px" src="https://raw.githubusercontent.com/giacomo-folli/reflectiv/refs/heads/main/frontend/static/generated-icon.png" />
 </p>
 
 <h1 align="center">reflectiv</h1>
